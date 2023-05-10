@@ -1,0 +1,125 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+      <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+     </head>
+    <body>
+      <table border="1" class="dataframe display" id="myTable">
+  <thead>
+    <tr style="text-align: left;">
+      <th>tool</th>
+      <th>score_total</th>
+      <th>error_total</th>
+      <th>score_LTLCardinality</th>
+      <th>errors_LTLCardinality</th>
+      <th>score_LTLFireability</th>
+      <th>errors_LTLFireability</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2022-gold</td>
+      <td>50303</td>
+      <td>1</td>
+      <td>25430</td>
+      <td>1</td>
+      <td>24873</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>BVT-2023</td>
+      <td>52012</td>
+      <td>0</td>
+      <td>26117</td>
+      <td>0</td>
+      <td>25895</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>GreatSPN</td>
+      <td>22254</td>
+      <td>434</td>
+      <td>11025</td>
+      <td>217</td>
+      <td>11229</td>
+      <td>217</td>
+    </tr>
+    <tr>
+      <td>ITS-Tools</td>
+      <td>50523</td>
+      <td>3</td>
+      <td>25516</td>
+      <td>1</td>
+      <td>25007</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>LTSMin+red</td>
+      <td>47690</td>
+      <td>0</td>
+      <td>24377</td>
+      <td>0</td>
+      <td>23313</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>LoLa</td>
+      <td>41429</td>
+      <td>16</td>
+      <td>21317</td>
+      <td>5</td>
+      <td>20112</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <td>LoLa+red</td>
+      <td>50086</td>
+      <td>0</td>
+      <td>25371</td>
+      <td>0</td>
+      <td>24715</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Marcie+red</td>
+      <td>19212</td>
+      <td>0</td>
+      <td>10319</td>
+      <td>0</td>
+      <td>8893</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Smart+red</td>
+      <td>19328</td>
+      <td>0</td>
+      <td>10435</td>
+      <td>0</td>
+      <td>8893</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Tapaal</td>
+      <td>50021</td>
+      <td>0</td>
+      <td>25303</td>
+      <td>0</td>
+      <td>24718</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+      <script>
+        $(document).ready(function() {
+          $('#myTable').DataTable({
+            "paging": false,
+            "order": [[1, "asc"]]
+          });
+        });
+      </script>
+    </body>
+    </html>
+    
