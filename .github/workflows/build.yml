@@ -18,17 +18,16 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y r-base
-    - name: Cache R packages
-      uses: actions/cache@v3
-      with:
-        path: ${{ steps.get-r-lib-path.outputs.r-lib-path }}
-        key: r-${{ hashFiles('**/DESCRIPTION') }}
-        restore-keys: r-
     - name: Get R library path
       id: get-r-lib-path
       run: |
          echo "r-lib-path=$(Rscript -e 'cat(.libPaths()[1])')" >> $GITHUB_ENV
-
+    - name: Cache R packages
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.r-lib-path }}
+        key: r-${{ hashFiles('**/DESCRIPTION') }}
+        restore-keys: r-
     - name: Install R packages
       run: |
          sudo Rscript -e "install.packages(c('stringr', 'dplyr', 'tidyr', 'writexl', 'VennDiagram'), repos='https://cran.rstudio.com/')"
