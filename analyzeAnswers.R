@@ -1,4 +1,3 @@
-install.packages(c('stringr', 'dplyr', 'tidyr', 'writexl', 'VennDiagram'), repos = "http://cran.us.r-project.org")
 library(stringr)  # Load the package
 library(dplyr)
 library(tidyr)
