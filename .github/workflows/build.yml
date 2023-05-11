@@ -18,13 +18,7 @@ jobs:
       uses: r-lib/actions/setup-r-dependencies@v2
       with:
         cache-version: 2
-        extra-packages:
-            any::stringr
-            any::dplyr
-            any::tidyr
-            any::writexl
-            any::VennDiagram
-     
+        extra-packages: any::stringr, any::dplyr, any::tidyr, any::writexl, any::VennDiagram     
 	- name: deploy python dependencies
 	  run: sudo pip install pandas jinja2
     - name: Build pages
