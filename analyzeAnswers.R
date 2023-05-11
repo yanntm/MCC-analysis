@@ -1,3 +1,4 @@
+install.packages(c('stringr', 'dplyr', 'tidyr', 'writexl', 'VennDiagram'), repos = "http://cran.us.r-project.org")
 library(stringr)  # Load the package
 library(dplyr)
 library(tidyr)
@@ -97,7 +98,6 @@ colnames(df_new)
 
 # Load the required libraries
 library(VennDiagram)
-library(tidyr)
 
 # Reshape the data frame into long format
 df_long <- pivot_longer(df_new, cols = starts_with("Input"), names_to = "Input_index", values_to = "Input") %>%
