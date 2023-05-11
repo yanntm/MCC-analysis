@@ -28,7 +28,7 @@ jobs:
         python-version: 3.8
     - name: Install Python packages
       run: |
-        pip install pandas jinja2 natsorted
+        pip install pandas jinja2 natsort
     - name: Build pages
       run: ./runAnalysis.sh
     - name: Deploy to GitHub Pages
