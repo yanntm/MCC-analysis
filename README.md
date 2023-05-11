@@ -32,10 +32,6 @@ The repository contains the following files and directories:
   - `styles.css`: CSS file for styling the website.
 - `website/`: Directory where the final generated website files will be stored after running the analysis.
 
-Here's the updated README.md file with the sections you provided information for:
-
----
-
 ## Contributing
 Feel free to open issues if you have any suggestions, questions, or issues related to the project.
 
