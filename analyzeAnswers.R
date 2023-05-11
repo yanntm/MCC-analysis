@@ -6,9 +6,7 @@ library(writexl)
 raw_result_analysis <- read.csv(file = "raw-result-analysis.csv",  dec = ".", sep = ",",  header = TRUE, stringsAsFactors = FALSE)
 
 df <- raw_result_analysis
-colnames(df)
 df <- rename(df, tool = "X....tool")
-colnames(df)
 df <- separate(df, "flags.bonus.scores.mask", into = c("flags", "bonus", "score", "mask"), sep = ":")
 
 # Count number of 'T' or 'X' in 'mask' column for each tool and examination combination
@@ -108,104 +106,73 @@ df_long <- pivot_longer(df_new, cols = starts_with("Input"), names_to = "Input_i
 df_long <- unite(df_long, "Input", c("Input", "result_index"), sep = "_")
 df_long <- df_long[,c(1,2,4,5)]
 
-df2 <- df_long[,1:4]
+# Function to generate Venn diagrams for a given category
+generate_venn_diagrams <- function(df_category, category_name) {
+  # Split the dataframe by the tool column
+  tools_list <- split(df_category, df_category$tool)
 
-df2 <- subset(df2, Examination == "ReachabilityCardinality" | Examination == "ReachabilityFireability")
-df2 <- unite(df2, "Input", c("Examination", "Input"), sep = "_")
+  # Create a list of non-NA results for each tool
+  tool_results <- lapply(tools_list, function(tool_df) {
+    tool_df %>%
+      filter(!is.na(result)) %>%
+      select(Input, result) %>%
+      unique()
+  })
 
+  # Calculate set sizes for each index
+  sets <- lapply(tool_results, function(x) x$Input)
+  set_sizes <- sapply(sets, function(x) length(x))
 
-# Split the dataframe by the tool column
-tools_list <- split(df2, df2$tool)
+  # Filter out tools with a set size of 0 (i.e., the tool did not participate in the category)
+  non_empty_indices <- which(set_sizes != 0)
+  tool_results <- tool_results[non_empty_indices]
+  set_sizes <- set_sizes[non_empty_indices]
 
-# Create a list of non-NA results for each tool
-tool_results <- lapply(tools_list, function(tool_df) {
-  tool_df %>%
-    filter(!is.na(result)) %>%
-    select(Input, result) %>%
-    unique()
-})
+  # Get order of set sizes
+  set_order <- order(set_sizes, decreasing = TRUE)
 
-tool_names <- names(tool_results)
-tool_names <- as.data.frame(tool_names)
+  # Use order to create sorted list of tools
+  sorted_tools <- tool_results[set_order]
 
-sets <- lapply(tool_results, function(x) x$Input)
+  # Create Venn diagrams for each tool and its two next ones
+  for (i in 1:(length(sorted_tools) - 2)) {
+    # Get current tool and its two next ones
+    current_tool <- sorted_tools[[i]]$Input
+    next_tool_1 <- sorted_tools[[i + 1]]$Input
+    next_tool_2 <- sorted_tools[[i + 2]]$Input
 
-# Calculate set sizes for each index
-set_sizes <- sapply(sets, function(x) length(x))
+    # Create Venn diagram with these tools
+    tool_names <- names(sorted_tools)
+    venn.diagram(
+      x = list(current_tool, next_tool_1, next_tool_2),
+      category.names = tool_names[c(i, i + 1, i + 2)],
+      filename = paste0("website/", category_name, "_", i, "_venn.tiff"),
+	  main = paste(category_name, ":", tool_names[i], "(", set_sizes[set_order[i]], ") vs",
+               tool_names[i + 1], "(", set_sizes[set_order[i + 1]], ") vs",
+               tool_names[i + 2], "(", set_sizes[set_order[i + 2]], ")"),
 
-# Get order of set sizes
-set_order <- order(set_sizes, decreasing = TRUE)
-
-# Use order to create sorted list of tools
-sorted_tools <- tool_results[set_order]
-
-# Loop over each tool and its three next ones
-for (i in 1:(length(sorted_tools)-3)) {
-  # Get current tool and its three next ones
-  current_tool <- sorted_tools[[i]]$Input
-  next_tool_1 <- sorted_tools[[i+1]]$Input
-  next_tool_2 <- sorted_tools[[i+2]]$Input
-  next_tool_3 <- sorted_tools[[i+3]]$Input
-  
-  # Create Venn diagram with these tools
-  tool_names_subset <- tool_names[c(i, i+1, i+2, i+3), ]
-  set_list <- list(current_tool, next_tool_1, next_tool_2, next_tool_3)
-  names(set_list) <- tool_names_subset$tool_names
-  
-  png(filename = paste0("tool", set_order[i], "_venn.png"))
-  venn(set_list)
-  dev.off()
+      output = TRUE
+    )
+  }
 }
 
 
+# Define categories
+categories <- list(
+  state_space = c("StateSpace"),
+  global_properties = c("Liveness", "QuasiLiveness", "StableMarking", "ReachabilityDeadlock", "OneSafe"),
+  reachability = c("ReachabilityCardinality", "ReachabilityFireability"),
+  ctl = c("CTLCardinality", "CTLFireability"),
+  ltl = c("LTLCardinality", "LTLFireability"),
+  upper_bounds = c("UpperBounds")
+)
 
-
-
-
-
-# Split the dataframe by the tool column
-tools_list <- split(df2, df2$tool)
-
-# Create a list of non-NA results for each tool
-tool_results <- lapply(tools_list, function(tool_df) {
-  tool_df %>%
-    filter(!is.na(result)) %>%
-    select(Input, result) %>%
-    unique()
-})
-
-tool_names <- names(tool_results)
-tool_names <- as.data.frame(tool_names)
-
-sets <- lapply(tool_results, function(x) x$Input)
-
-
-# Calculate set sizes for each index
-set_sizes <- sapply(sets, function(x) length(x))
-
-# Get order of set sizes
-set_order <- order(set_sizes, decreasing = TRUE)
-
-# Use order to create sorted list of tools
-sorted_tools <- tool_results[set_order]
-
-
-# Loop over each tool and its two next ones
-for (i in 1:(length(sorted_tools)-2)) {
-  # Get current tool and its two next ones
-  current_tool <- sorted_tools[[i]]$Input
-  next_tool_1 <- sorted_tools[[i+1]]$Input
-  next_tool_2 <- sorted_tools[[i+2]]$Input
+# Iterate through each category to create Venn diagrams
+for (category_name in names(categories)) {
+  examinations <- categories[[category_name]]
+  df_category <- subset(df_long, Examination %in% examinations)
+  df_category <- unite(df_category, "Input", c("Examination", "Input"), sep = "_")
   
-  # Create Venn diagram with these tools
-  tool_names <- names(sorted_tools)
-  venn.diagram(
-    x = list(current_tool, next_tool_1, next_tool_2),
-    category.names = tool_names[c(i, i+1, i+2)],
-    filename = paste0("tool", set_order[i], "_venn.png"),
-    output=TRUE
-  )
+  # Call the generate_venn_diagrams function for the current category
+  generate_venn_diagrams(df_category, category_name)
 }
-
-
-
