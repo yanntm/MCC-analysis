@@ -18,10 +18,16 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y r-base
+    - name: Cache R packages
+      uses: actions/cache@v3
+      with:
+        path: ~/R/library
+        key: r-${{ hashFiles('**/DESCRIPTION') }}
+        restore-keys: r-
 
     - name: Install R packages
       run: |
-        sudo Rscript -e "install.packages(c('stringr', 'dplyr', 'tidyr', 'writexl', 'VennDiagram'), repos='https://cran.rstudio.com/')"
+        sudo Rscript -e "install.packages(c('stringr', 'dplyr', 'tidyr', 'writexl', 'VennDiagram'), repos='https://cran.rstudio.com/', lib='~/R/library')"
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
