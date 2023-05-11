@@ -14,13 +14,21 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    - name: install R packages
-      uses: r-lib/actions/setup-r-dependencies@v2
+    - name: Install R
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y r-base
+
+    - name: Install R packages
+      run: |
+        sudo Rscript -e "install.packages(c('stringr', 'dplyr', 'tidyr', 'writexl', 'VennDiagram'), repos='https://cran.rstudio.com/')"
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        cache-version: 2
-        extra-packages: any::stringr, any::dplyr, any::tidyr, any::writexl, any::VennDiagram     
-	- name: deploy python dependencies
-	  run: sudo pip install pandas jinja2
+        python-version: 3.8
+    - name: Install Python packages
+      run: |
+        pip install pandas jinja2 natsorted
     - name: Build pages
       run: ./runAnalysis.sh
     - name: Deploy to GitHub Pages
