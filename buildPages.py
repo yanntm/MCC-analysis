@@ -16,8 +16,7 @@ def custom_html_table(df):
         else:
             classes.append("details")
 
-    table_html = '<table id="myTable" class="display">'
-    
+    table_html = '<table id="myTable" class="display dataTables_wrapper">'
     header = '<thead><tr>'
     for i, col in enumerate(df.columns):
         header += f'<th class="{classes[i]}">{col}</th>'

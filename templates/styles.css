@@ -2,3 +2,14 @@ img.venn-diagram {
     max-width: 45%;
     height: auto;
 }
+
+table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+th, td {
+    white-space: nowrap;
+}
