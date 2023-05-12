@@ -32,7 +32,7 @@ jobs:
       run: |
          sudo Rscript -e "install.packages(c('stringr', 'dplyr', 'tidyr', 'writexl', 'VennDiagram'), repos='https://cran.rstudio.com/')"
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: 3.8
     - name: Install Python packages
