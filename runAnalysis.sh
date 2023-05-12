@@ -17,6 +17,16 @@ fi
 Rscript analyzeAnswers.R
 rm website/*.log
 
+
+# Convert TIFF images to PNG format
+cd website
+for tiff_image in *.tiff; do
+    png_image="${tiff_image%.*}.png"
+    convert "$tiff_image" "$png_image"
+    rm "$tiff_image"
+done
+cd ..
+
 # Run the Python script
 python3 buildPages.py
 mv *.html website/
