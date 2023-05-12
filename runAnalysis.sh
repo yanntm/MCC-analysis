@@ -41,14 +41,51 @@ process_year() {
 mkdir -p website
 cd website
 
-for year in {2017..2023}; do
+for year in {2021..2023}; do
 	mkdir $year
 	cd $year
 	cp -r ../../templates .
   	process_year "$year"
+  	rm *
+  	mv website/* .
   	cd ..
 done
 
+
 cd ..
+
+
+generate_main_index() {
+  echo "Generating main index.html..."
+  cat > website/index.html << EOL
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model Checking Contest Analysis</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Model Checking Contest Analysis</h1>
+  <p>Select a year to view the analysis:</p>
+  <ul>
+EOL
+
+  for year in {2021..2023}; do
+    cat >> website/index.html << EOL
+    <li><a href="${year}/index.html">MCC ${year} Analysis</a></li>
+EOL
+  done
+
+  cat >> website/index.html << EOL
+  </ul>
+</body>
+</html>
+EOL
+}
+
+
+generate_main_index
 
 echo "Finished processing all years."
