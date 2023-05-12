@@ -4,11 +4,22 @@ library(tidyr)
 library(writexl)
 
 
+# Parse command line arguments
+args <- commandArgs(trailingOnly = TRUE)
+
+# Set the current year, default to 2023 if not provided
+current_year <- if (length(args) >= 1) as.integer(args[1]) else 2017
+
+
 # Set default values for input file and output folder
 input_file <- "raw-result-analysis.csv"
 output_folder <- "website"
 
 raw_result_analysis <- read.csv(file = input_file,  dec = ".", sep = ",",  header = TRUE, stringsAsFactors = FALSE)
+
+if (current_year == 2019) {
+  raw_result_analysis$Examination[raw_result_analysis$Examination == "GlobalProperties"] <- "ReachabilityDeadlock"
+}
 
 df <- raw_result_analysis
 df <- rename(df, tool = "X....tool")
@@ -36,8 +47,6 @@ new_indices <- c(1, matrix(c(2:middle_index, (middle_index+1):n_cols), nrow = 2,
 # Reorder the columns of the dataframe based on the new index sequence
 scores_wide <- scores_wide[, new_indices]
 
-
-
 # Print the answer counts for each tool
 # write.csv(scores_wide, file = "answers.csv", row.names = FALSE)
 
@@ -50,19 +59,26 @@ write.csv(df_state_space, "state_space.csv", row.names = FALSE)
 create_table <- function(df, properties) {
   score_columns <- paste0("score_", properties)
   errors_columns <- paste0("errors_", properties)
+  
+  # Filter out columns that don't exist in the dataframe
+  existing_score_columns <- score_columns[score_columns %in% colnames(df)]
+  existing_errors_columns <- errors_columns[errors_columns %in% colnames(df)]
+  
   combined_columns <- c()
-  for (i in seq_along(properties)) {
-    combined_columns <- c(combined_columns, score_columns[i], errors_columns[i])
+  for (i in seq_along(existing_score_columns)) {
+    combined_columns <- c(combined_columns, existing_score_columns[i], existing_errors_columns[i])
   }
+  
   df_result <- df[, c("tool", combined_columns)]
-  df_result$score_total <- rowSums(df_result[, score_columns])
-  df_result$error_total <- rowSums(df_result[, errors_columns])
+  df_result$score_total <- rowSums(df_result[, existing_score_columns], na.rm = TRUE)
+  df_result$error_total <- rowSums(df_result[, existing_errors_columns], na.rm = TRUE)
   df_result <- df_result[, c("tool", "score_total", "error_total", combined_columns)]
   
   # Filter out tools with a score of 0 for all examinations in the table
-  df_result <- df_result[rowSums(df_result[, score_columns]) != 0,]
+  df_result <- df_result[rowSums(df_result[, existing_score_columns], na.rm = TRUE) != 0,]
   return(df_result)
 }
+
 
 # Global properties table
 global_properties <- c("Liveness", "QuasiLiveness", "StableMarking", "ReachabilityDeadlock", "OneSafe")
