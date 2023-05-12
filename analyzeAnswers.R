@@ -3,7 +3,12 @@ library(dplyr)
 library(tidyr)
 library(writexl)
 
-raw_result_analysis <- read.csv(file = "raw-result-analysis.csv",  dec = ".", sep = ",",  header = TRUE, stringsAsFactors = FALSE)
+
+# Set default values for input file and output folder
+input_file <- "raw-result-analysis.csv"
+output_folder <- "website"
+
+raw_result_analysis <- read.csv(file = input_file,  dec = ".", sep = ",",  header = TRUE, stringsAsFactors = FALSE)
 
 df <- raw_result_analysis
 df <- rename(df, tool = "X....tool")
@@ -145,7 +150,7 @@ generate_venn_diagrams <- function(df_category, category_name) {
     venn.diagram(
       x = list(current_tool, next_tool_1, next_tool_2),
       category.names = tool_names[c(i, i + 1, i + 2)],
-      filename = paste0("website/", category_name, "_", i, "_venn.tiff"),
+	  filename = paste0(output_folder, "/", category_name, "_", i, "_venn.tiff"),
 	  main = paste(category_name, ":", tool_names[i], "(", set_sizes[set_order[i]], ") vs",
                tool_names[i + 1], "(", set_sizes[set_order[i + 1]], ") vs",
                tool_names[i + 2], "(", set_sizes[set_order[i + 2]], ")"),
