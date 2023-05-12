@@ -30,6 +30,27 @@ scores <- df %>%
   group_by(tool, Examination) %>%
   summarize(score = sum(str_count(mask, "[T]")), errors = sum(str_count(mask, "[X]")))
 
+# Calculate the number of models for each examination
+num_models <- df %>%
+  group_by(Examination) %>%
+  summarize(models = n_distinct(Input))
+
+
+# Add the ideal tool row to the scores data frame
+ideal_tool_scores <- num_models %>%
+  mutate(tool = "Ideal Tool",
+         score = case_when(
+           Examination == "StateSpace" ~ models * 4,
+           Examination %in% c("Liveness", "QuasiLiveness", "StableMarking", "ReachabilityDeadlock", "OneSafe") ~ models,
+           Examination %in% c("ReachabilityCardinality", "ReachabilityFireability", "CTLCardinality", "CTLFireability",
+                              "LTLCardinality", "LTLFireability","UpperBounds") ~ models * 16
+         ),
+         errors = 0)
+
+ideal_tool_scores <- ideal_tool_scores[,-c(2)]
+
+scores <- rbind(scores, ideal_tool_scores)
+
 # Pivot the table wider, creating separate columns for scores and errors
 scores_wide <- scores %>%
   pivot_wider(names_from = Examination,
