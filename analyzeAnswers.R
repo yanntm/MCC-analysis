@@ -178,6 +178,13 @@ generate_venn_diagrams <- function(df_category, category_name) {
       select(Input, result) %>%
       unique()
   })
+  
+  # Compute the BVT results as the union of other tools' results
+  bvt_results <- unique(do.call(rbind, tool_results))
+
+  # Add a name for the BVT results and append it to the tool_results list
+  names(bvt_results) <- paste0("RBVT-", current_year)
+  tool_results <- c(tool_results, list(bvt_results))
 
   # Calculate set sizes for each index
   sets <- lapply(tool_results, function(x) x$Input)
