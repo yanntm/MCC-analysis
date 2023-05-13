@@ -155,10 +155,13 @@ for (category_name in names(categories)) {
   # Iterate through each individual examination to create Venn diagrams
   for (examination in examinations) {
     df_examination <- subset(df_long, Examination == examination)
-    df_examination <- unite(df_examination, "Input", c("Examination", "Input"), sep = "_")
+      # Check if there are any rows in df_examination
+      if (nrow(df_examination) > 0) {
+        df_examination <- unite(df_examination, "Input", c("Examination", "Input"), sep = "_")
     
-    # Call the generate_venn_diagrams function for the current examination
-    generate_venn_diagrams(df_examination, examination)
+        # Call the generate_venn_diagrams function for the current examination
+        generate_venn_diagrams(df_examination, examination)
+      }
   }
 
 }
