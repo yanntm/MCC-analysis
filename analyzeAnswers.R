@@ -48,8 +48,27 @@ ideal_tool_scores <- num_models %>%
          errors = 0)
 
 ideal_tool_scores <- ideal_tool_scores[,-c(2)]
-
 scores <- rbind(scores, ideal_tool_scores)
+
+
+calculate_bvt_scores <- function(df, examinations) {
+  df_filtered <- df %>%
+    filter(Examination %in% examinations) %>%
+    group_by(Input, Examination) %>%
+    summarize(score = max(str_count(mask, "[T]")))
+  
+  bvt_scores <- df_filtered %>%
+    group_by(Examination) %>%
+    summarize(score = sum(score))
+  
+  return(bvt_scores)
+}
+bvt_scores <- calculate_bvt_scores(df, unique(df$Examination))
+
+bvt_scores$row <- paste0("RBVT-", current_year)
+colnames(bvt_scores) <- c("Examination", "score", "tool")
+bvt_scores$errors <- 0
+scores <- rbind(scores, bvt_scores)
 
 # Pivot the table wider, creating separate columns for scores and errors
 scores_wide <- scores %>%
