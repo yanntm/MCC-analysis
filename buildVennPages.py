@@ -16,6 +16,12 @@ categories = {
     "upper_bounds": ["UpperBounds"]
 }
 
+examination_to_category = {}
+for category_name, examinations in categories.items():
+    for examination in examinations:
+        examination_to_category[examination] = category_name
+
+
 # Set up Jinja2 template environment
 env = Environment(loader=FileSystemLoader("templates"))
 
@@ -36,22 +42,31 @@ for venn_file in venn_files:
 
 print("VENN Examination files:", examination_files)
 
-
 # Generate HTML pages for each category
 for category, examinations in categories.items():
     venn_files_for_category = []
+    
+    # Add category Venn diagram files
+    category_venn_files = glob.glob(f"{category}_*_venn.png")
+    venn_files_for_category.extend((venn_file, category) for venn_file in category_venn_files)
+
     for examination in examinations:
         if examination in examination_files:
             venn_files_for_examination = examination_files[examination]
             venn_files_for_category.extend((venn_file, examination) for venn_file in venn_files_for_examination)
 
+    # Include the category name in the examinations list
+    examinations_with_category = [category] + examinations
+
     # Render the Venn diagrams page using the Jinja2 template
     template = env.get_template("venn.html")
     output_html = template.render(
         category_name=category,
-        examinations=examinations,
+        examinations=examinations_with_category,
         venn_files=venn_files_for_category
     )
+
+
 
     # Save the generated HTML to a file
     output_filename = f"{category}_venn.html"
