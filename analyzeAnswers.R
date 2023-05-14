@@ -60,7 +60,7 @@ colnames(df_mask_split) <- paste0("res_", seq_len(max_mask_width))
 
 # Combine the original and split mask dataframes
 df_new <- cbind(df[, 1:3], df_mask_split)
-colnames(df_new)
+# colnames(df_new)
 
 # Load the required libraries
 library(VennDiagram)
@@ -184,8 +184,9 @@ compute_bvt_score <- function(df, examination) {
   bvt_results <- unique(do.call(rbind, tool_results))
   
   # Debug step: Compare the answer sets of BVT-2023 and RBVT
-  if ("BVT-2023" %in% names(tools_list)) {
-    bvt_2023_results <- tools_list[["BVT-2023"]] %>%
+  bvtname <- paste0("BVT-", current_year)
+  if (bvtname %in% names(tools_list)) {
+    bvt_2023_results <- tools_list[[bvtname]] %>%
       filter(!is.na(result)) %>%  # Filter out NA elements from BVT-2023
       select(Input, result) %>%
       unique()
@@ -195,9 +196,9 @@ compute_bvt_score <- function(df, examination) {
     
     if (nrow(rbvt_only) > 0 || nrow(bvt_2023_only) > 0) {
       cat("\nExamination:", examination)
-      cat("\nRBVT-2023 only results:\n")
+      cat("\nRBVT only results:\n")
       print(rbvt_only)
-      cat("\nBVT-2023 only results:\n")
+      cat("\nBVT only results:\n")
       print(bvt_2023_only)
     }
   }
@@ -232,7 +233,7 @@ new_indices <- c(1, matrix(c(2:middle_index, (middle_index+1):n_cols), nrow = 2,
 scores_wide <- scores_wide[, new_indices]
 
 # Print the answer counts for each tool
-# write.csv(scores_wide, file = "answers.csv", row.names = FALSE)
+write.csv(scores_wide, file = "answers.csv", row.names = FALSE)
 
 df_reordered <- scores_wide
 # StateSpace table
