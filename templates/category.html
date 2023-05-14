@@ -11,9 +11,7 @@
     <div>{{ table_html | safe }}</div>
     <h2>Venn Diagrams</h2>
     <div>
-    {% for venn_file in venn_files %}
-        <img class="venn-diagram" src="{{ venn_file }}" alt="{{ category_name }} Venn Diagram">
-    {% endfor %}
+        <iframe src="{{ category_file }}_venn.html" width="100%" height="600" frameborder="0" style="border:0" allowfullscreen></iframe>
     </div>
     <p><a href="index.html">Back to index</a></p>
 </body>
