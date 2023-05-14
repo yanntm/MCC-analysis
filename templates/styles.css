@@ -1,6 +1,18 @@
 img.venn-diagram {
-    max-width: 45%;
+    width: 100%;
     height: auto;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    padding: 10px;
+    object-fit: contain;
+}
+
+.row {
+    margin: 0;
+}
+
+.col-md-4, .col-sm-6, .col-12 {
+    padding: 0;
 }
 
 table {
