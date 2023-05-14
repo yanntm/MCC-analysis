@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ category_name }} Venn Diagrams - MCC Analysis</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <h1>{{ category_name }} Venn Diagrams</h1>
+
+    <!-- Filter buttons -->
+    <div class="btn-group" role="group" aria-label="Filter">
+        <button type="button" class="btn btn-primary" onclick="filterImages('')">All</button>
+        {% for examination in examinations %}
+        <button type="button" class="btn btn-primary" onclick="filterImages('{{ examination }}')">{{ examination }}</button>
+        {% endfor %}
+    </div>
+
+    <div class="row">
+        {% for venn_file, examination in venn_files %}
+        <div class="col-md-4 col-sm-6 col-12 mb-4" data-examination="{{ examination }}">
+            <a href="{{ venn_file }}" data-toggle="lightbox">
+                <img class="venn-diagram img-fluid" src="{{ venn_file }}" alt="{{ examination }} Venn Diagram">
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <p><a href="category.html">Back to {{ category_name }}</a></p>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function filterImages(examination) {
+            $('.row > div').each(function() {
+                if (examination === '' || $(this).data('examination') === examination) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
