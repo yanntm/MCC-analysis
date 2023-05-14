@@ -44,10 +44,11 @@ process_year() {
 mkdir -p website
 cd website
 
-for year in {2017..2023}; do
+for year in {2016..2023}; do
 	mkdir $year
 	cd $year
 	cp -r ../../templates .
+	cp ../../templates/styles.css .
   	process_year "$year"
   	mv answers.csv website/
   	rm *
@@ -76,7 +77,7 @@ generate_main_index() {
   <ul>
 EOL
 
-  for year in {2017..2023}; do
+  for year in {2016..2023}; do
     cat >> website/index.html << EOL
     <li><a href="${year}/index.html">MCC ${year} Analysis</a></li>
 EOL
