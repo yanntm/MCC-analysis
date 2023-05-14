@@ -3,6 +3,7 @@ import glob
 import time
 import re
 from jinja2 import Environment, FileSystemLoader
+from natsort import natsorted
 
 import pandas as pd
 
@@ -32,7 +33,7 @@ print("VENN files:", venn_files)
 
 # Group Venn diagram files by examination
 examination_files = {}
-for venn_file in venn_files:
+for venn_file in natsorted(venn_files):
     match = re.match(r"(\w+)_\d+_venn\.png", venn_file)
     if match:
         examination = match.group(1)
@@ -47,7 +48,7 @@ for category, examinations in categories.items():
     venn_files_for_category = []
     
     # Add category Venn diagram files
-    category_venn_files = glob.glob(f"{category}_*_venn.png")
+    category_venn_files = natsorted(glob.glob(f"{category}_*_venn.png"))
     venn_files_for_category.extend((venn_file, category) for venn_file in category_venn_files)
 
     for examination in examinations:
