@@ -34,6 +34,9 @@ process_year() {
   cd ..
   
   python3 ../../buildPages.py 
+  cd website
+  python3 ../../../buildVennPages.py
+  cd .. 
   mv *.html website/
   python3 ../../buildFinalPages.py 
 }
@@ -46,6 +49,7 @@ for year in {2017..2023}; do
 	cd $year
 	cp -r ../../templates .
   	process_year "$year"
+  	mv answers.csv website/
   	rm *
   	mv website/* .
   	cd ..
