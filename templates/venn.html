@@ -12,21 +12,28 @@
 
     <!-- Filter buttons -->
     <div class="btn-group" role="group" aria-label="Filter">
-        <button type="button" class="btn btn-primary" onclick="filterImages('')">All</button>
+		<button type="button" class="btn btn-primary" onclick="filterImages('')">All</button>
         {% for examination in examinations %}
         <button type="button" class="btn btn-primary" onclick="filterImages('{{ examination }}')">{{ examination }}</button>
         {% endfor %}
     </div>
 
-    <div class="row">
-        {% for venn_file, examination in venn_files %}
-        <div class="col-md-4 col-sm-6 col-12 mb-4" data-examination="{{ examination }}">
-            <a href="{{ venn_file }}" data-toggle="lightbox">
-                <img class="venn-diagram img-fluid" src="{{ venn_file }}" alt="{{ examination }} Venn Diagram">
-            </a>
+    {% for examination in examinations %}
+    <div class="row mt-4" data-examination="{{ examination }}" {% if examination != category_name %}style="display:none"{% endif %}>
+        <div class="col-12">
+            <h2>{{ examination }}</h2>
         </div>
+        {% for venn_file, exam in venn_files %}
+            {% if examination == exam %}
+                <div class="col-md-4 col-sm-6 col-12 mb-4">
+                    <a href="{{ venn_file }}" data-toggle="lightbox">
+                        <img class="venn-diagram img-fluid" src="{{ venn_file }}" alt="{{ examination }} Venn Diagram">
+                    </a>
+                </div>
+            {% endif %}
         {% endfor %}
     </div>
+    {% endfor %}
 
     <p><a href="category.html">Back to {{ category_name }}</a></p>
 
@@ -34,15 +41,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        function filterImages(examination) {
-            $('.row > div').each(function() {
-                if (examination === '' || $(this).data('examination') === examination) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            });
-        }
+    function filterImages(examination) {
+        $('.btn-primary').removeClass('active');
+        $(`button[onclick="filterImages('${examination}')"]`).addClass('active');
+        $('.row[data-examination]').each(function() {
+            if (examination === '' || $(this).data('examination') === examination) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
     </script>
 </body>
 </html>
