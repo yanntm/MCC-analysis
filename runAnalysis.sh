@@ -21,6 +21,7 @@ process_year() {
   echo "Crunching data for $year"
   download_data "$year"
   mkdir website
+  cp -r ../../templates website/
   Rscript ../../analyzeAnswers.R $year
   
   rm website/*.log
