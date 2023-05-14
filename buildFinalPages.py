@@ -26,15 +26,11 @@ category_template = env.get_template("category.html")
 for category_name, category_file in categories.items():
     table_html = Path(f"website/{category_file}.html").read_text()
     
-    # Find all Venn diagrams for the category
-    venn_files = natsorted([f for f in os.listdir("website") if f.startswith(f"{category_file}_") and f.endswith("_venn.png")])
-    
     with open(f"website/{category_file}_final.html", "w") as category_file:
         category_file.write(category_template.render(
             category_name=category_name.replace("_", " "),
             table_html=table_html,
-            venn_files=venn_files
+            category_file=categories[category_name]
         ))
-
 
 shutil.copy("templates/styles.css", "website/styles.css")
