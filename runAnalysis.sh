@@ -96,8 +96,7 @@ EOL
   done
 
   cat >> website/index.html << EOL
-
-  <iframe src="timeplots.html" title="Time Plots" width="100%" height="600" style="border:none;"></iframe>
+  <a href="timeplots.html">PluriAnnual Plots</a>
 </body>
 </html>
 EOL
