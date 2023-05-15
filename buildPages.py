@@ -59,6 +59,8 @@ def generate_html(df, output_filename):
             table.columns('.total.errors').visible(errorsVisible);
           }}
 
+          updateVisibility();
+
           $('#detailsToggle').on('change', function() {{
             detailsVisible = this.checked;
             updateVisibility();
