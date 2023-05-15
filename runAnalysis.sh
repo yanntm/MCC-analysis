@@ -52,11 +52,22 @@ for year in {2016..2023}; do
 	cp ../../templates/styles.css .
   	process_year "$year"
   	mv answers.csv website/
+  	rm -r templates/
   	rm *
   	mv website/* .
   	cd ..
 done
 
+
+# generate time plots
+Rscript ../analyzeAnnual.R
+
+
+# generate HTML gallery for them
+cp -r ../templates/ .
+cp ../templates/styles.css .
+python3 ../buildTimePlotPages.py
+rm -rf templates/
 
 cd ..
 
@@ -85,11 +96,13 @@ EOL
   done
 
   cat >> website/index.html << EOL
-  </ul>
+
+  <iframe src="timeplots.html" title="Time Plots" width="100%" height="600" style="border:none;"></iframe>
 </body>
 </html>
 EOL
 }
+
 
 
 generate_main_index
