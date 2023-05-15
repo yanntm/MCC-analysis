@@ -42,15 +42,15 @@ def generate_html(df, output_filename):
      </head>
     <body>
       <label><input type="checkbox" id="detailsToggle" checked> Show details</label>
-      <label><input type="checkbox" id="errorsToggle" checked> Show errors</label>
+      <label><input type="checkbox" id="errorsToggle"> Show errors</label>
       {html_table}
       <script>
         $(document).ready(function() {{
           let detailsVisible = true;
-          let errorsVisible = true;
+          let errorsVisible = false;
           let table = $('#myTable').DataTable({{
             "paging": false,
-            "order": [[1, "asc"]]
+            "order": [[1, "desc"]]
           }});
 
           function updateVisibility() {{
