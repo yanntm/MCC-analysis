@@ -91,6 +91,15 @@ for (score_col in score_cols) {
   # Save the plot as a PNG in the "plots" directory
   ggsave(filename = paste0("./", gsub(" ", "_", score_col), "_time.png"), plot = p, width = 10, height = 7, dpi = 300)
   
+  
+  # Select only the columns we're interested in
+  combined_data2 <- combined_data2 %>%
+    select(tool, year, norm_score_col) %>%
+    rename(score = norm_score_col)
+  
+  # Write the data frame to a CSV file in the "csv" directory
+  write.csv(combined_data2, file = paste0("./csv/", gsub(" ", "_", score_col), "_time.csv"), row.names = FALSE)
+
 }
 
 
