@@ -21,7 +21,10 @@ html_output = template.render(images=images)
 with open('timeplots.html', 'w') as f:
     f.write(html_output)
 
-    
+
+# Get the annual_plot.html template
+template = env.get_template('annual_plot.html')
+ 
 # Create a list to hold links to the individual plot pages
 plot_links = []
 
