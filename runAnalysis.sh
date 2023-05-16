@@ -60,6 +60,7 @@ done
 
 
 # generate time plots
+mkdir -p csv
 Rscript ../analyzeAnnual.R
 
 
@@ -97,6 +98,7 @@ EOL
 
   cat >> website/index.html << EOL
   <a href="timeplots.html">PluriAnnual Plots</a>
+  <a href="PluriAnnual_dynamic.html">Dynamic Pluriannual plots</a>
 </body>
 </html>
 EOL
