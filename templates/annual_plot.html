@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <div id="plotDiv"></div>
+  
+  <h3>Select tools to display:</h3>
+  <div id="toolSelection"></div>
+  
+  <script>
+    // Load the CSV data
+    Plotly.d3.csv("{{csv_file}}", function(err, data){
+      var toolNames = [...new Set(data.map(row => row.tool))];
+      var traces = [];
+
+      // Create a trace for each tool
+      toolNames.forEach(function(toolName) {
+        var toolData = data.filter(row => row.tool === toolName);
+        var trace = {
+          x: toolData.map(row => row.year),
+          y: toolData.map(row => parseFloat(row.score)),
+          mode: 'lines+markers',
+          name: toolName,
+          line: {
+            shape: 'linear'
+          },
+          visible: 'legendonly'  // Initially hide all traces
+        };
+        traces.push(trace);
+      });
+
+      // Plot layout
+      var layout = {
+        title: '{{plot_id}}',
+        xaxis: {
+          title: 'Year',
+          type: 'category'
+        },
+        yaxis: {
+          title: 'Score (% of Ideal Tool)'
+        }
+      };
+
+      // Draw the initial plot
+      Plotly.newPlot('plotDiv', traces, layout);
+
+      // Add checkboxes for tool selection
+      var toolSelectionDiv = document.getElementById('toolSelection');
+      toolNames.forEach(function(toolName, i) {
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = 'checkbox-' + i;
+        checkbox.checked = false;  // Initially all checkboxes are unchecked
+
+        var label = document.createElement('label');
+        label.htmlFor = 'checkbox-' + i;
+        label.appendChild(document.createTextNode(toolName));
+
+        checkbox.addEventListener('change', function() {
+          Plotly.restyle('plotDiv', 'visible', this.checked ? true : 'legendonly', [i]);
+        });
+
+        toolSelectionDiv.appendChild(checkbox);
+        toolSelectionDiv.appendChild(label);
+        toolSelectionDiv.appendChild(document.createElement('br'));
+      });
+    });
+  </script>
+</body>
+</html>
