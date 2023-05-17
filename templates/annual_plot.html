@@ -5,7 +5,10 @@
 </head>
 <body>
   <div id="plotDiv"></div>
-  
+
+  <h3>Select data source:</h3>
+  <div id="dataSourceSelection"></div>
+
   <h3>Select normalization mode:</h3>
   <div>
     <input type="radio" id="rawScore" name="scoreType" value="score" checked>
@@ -15,35 +18,87 @@
     <input type="radio" id="bvtScore" name="scoreType" value="score_bvt">
     <label for="bvtScore">Normalized Score (RBVT)</label>
   </div>
+<script>
+  // Initial tools to display
+  const initialTools = ["Ideal Tool", "RBVT", "ITS-Tools", "Tapaal", "LoLA", "enpac", "GreatSPN", "smpt"];
+  
+  const csvFiles = {{csv_files|tojson}};  // List of CSV files
 
-  <script>
-    // Initial tools to display
-    const initialTools = ["Ideal Tool", "RBVT", "ITS-Tools", "Tapaal", "LoLA", "enpac", "GreatSPN", "smpt"];
+  const allData = {};  // Object to store data from all CSV files
 
-    // Load the CSV data
-    Plotly.d3.csv("{{csv_file}}", function(err, data){
-      var toolNames = [...new Set(data.map(row => row.tool))];
-      var traces = [];
-      
-      var scoreType = document.querySelector('input[name="scoreType"]:checked').value;
-
-      // Create a trace for each tool
-      toolNames.forEach(function(toolName) {
-        var toolData = data.filter(row => row.tool === toolName);
-        var trace = {
-          x: toolData.map(row => row.year),
-          y: toolData.map(row => parseFloat(row[scoreType])),
-          mode: 'lines+markers',
-          name: toolName,
-          line: {
-            shape: 'linear'
-          },
-          visible: initialTools.includes(toolName) ? true : 'legendonly'  // Show initial tools
-        };
-        traces.push(trace);
+  // Load data from all CSV files
+  const loadAllData = () => {
+    const promises = csvFiles.map(csvFile => {
+      return new Promise((resolve, reject) => {
+        Plotly.d3.csv(csvFile, function(error, data) {
+          if (error) {
+            reject(error);
+          } else {
+            const fileName = csvFile.split('/').pop().split('_')[1];  // Extract category/examination name from file name
+            allData[fileName] = data;  // Store data in the allData object with category/examination name as key
+            resolve();
+          }
+        });
       });
+    });
 
-      // Plot layout
+    return Promise.all(promises);
+  };
+
+  const generateDataSourceSelection = () => {
+	  const dataSourceDiv = document.getElementById('dataSourceSelection');
+	  Object.keys(allData).forEach((dataSource, index) => {
+	    const radioButton = document.createElement('input');
+	    radioButton.type = 'radio';
+	    radioButton.id = dataSource;
+	    radioButton.name = 'dataSource';
+	    radioButton.value = dataSource;
+	    if (index === 0) radioButton.checked = true;
+
+	    const label = document.createElement('label');
+	    label.htmlFor = dataSource;
+	    label.innerText = dataSource;
+
+	    dataSourceDiv.appendChild(radioButton);
+	    dataSourceDiv.appendChild(label);
+	    dataSourceDiv.appendChild(document.createElement('br'));
+	  });
+	};
+
+  
+  // Function to update plot with selected data source and score normalization mode
+  const updatePlot = (dataSource, scoreType) => {
+    const data = allData[dataSource];
+    //const toolNames = [...new Set(data.map(row => row.tool))].sort();
+    const traces = [];
+    // Count the number of points for each tool
+    const toolCounts = data.reduce((counts, row) => {
+      counts[row.tool] = (counts[row.tool] || 0) + 1;
+      return counts;
+    }, {});
+
+    // Sort the tools first by the number of points (in descending order) and then alphabetically
+    const toolNames = Object.entries(toolCounts)
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(entry => entry[0]);
+    
+    toolNames.forEach(function(toolName) {
+      var toolData = data.filter(row => row.tool === toolName);
+      toolData.sort((a, b) => a.year - b.year);
+
+      var trace = {
+        x: toolData.map(row => row.year),
+        y: toolData.map(row => parseFloat(row[scoreType])),
+        mode: 'lines+markers',
+        name: toolName,
+        line: {
+          shape: 'linear'
+        },
+        visible: initialTools.includes(toolName) ? true : 'legendonly'  // Show initial tools
+      };
+      traces.push(trace);
+    });
+       // Plot layout
       var layout = {
         title: '{{plot_id}}',
         xaxis: {
@@ -69,21 +124,33 @@
             "rgb(102, 102, 102)"
           ] 
       };
+    Plotly.newPlot('plotDiv', traces, layout);
+  };
 
-      // Draw the initial plot
-      Plotly.newPlot('plotDiv', traces, layout);
-
-      // Add radio button listener for score normalization mode
-      document.querySelectorAll('input[name="scoreType"]').forEach((elem) => {
-        elem.addEventListener("change", function(event) {
-          var value = event.target.value;
-          traces.forEach(function(trace, i) {
-            trace.y = data.filter(row => row.tool === trace.name).map(row => parseFloat(row[value]));
-          });
-          Plotly.newPlot('plotDiv', traces, layout);
-        });
+  loadAllData().then(() => {
+    // After all data is loaded, add radio button listeners and initialize plot
+	generateDataSourceSelection();
+    // Add radio button listener for data source selection
+    document.querySelectorAll('input[name="dataSource"]').forEach((elem) => {
+      elem.addEventListener("change", function(event) {
+        const dataSource = event.target.value;
+        const scoreType = document.querySelector('input[name="scoreType"]:checked').value;
+        updatePlot(dataSource, scoreType);
       });
     });
-  </script>
+
+    // Add radio button listener for score normalization mode selection
+    document.querySelectorAll('input[name="scoreType"]').forEach((elem) => {
+      elem.addEventListener("change", function(event) {
+        const scoreType = event.target.value;
+        const dataSource = document.querySelector('input[name="dataSource"]:checked').value;
+        updatePlot(dataSource, scoreType);
+      });
+    });
+
+    // Initialize plot with first data source and raw score
+    updatePlot(Object.keys(allData)[0], 'score');
+  });
+</script>
 </body>
 </html>
