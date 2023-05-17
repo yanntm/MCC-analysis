@@ -91,15 +91,44 @@ for (score_col in score_cols) {
   # Save the plot as a PNG in the "plots" directory
   ggsave(filename = paste0("./", gsub(" ", "_", score_col), "_time.png"), plot = p, width = 10, height = 7, dpi = 300)
   
+}
+
+
+# do it again but for building the CSV
+# Create a plot for each examination
+# Loop over score_XX columns
+for (score_col in score_cols) {
+  # Compute the name of the normalized score column
+  norm_score_col <- paste0("norm_", score_col)
+  
+  # Compute normalized scores for this examination
+  combined_data2 <- combined_data %>%
+    group_by(year) %>%
+    mutate(ideal_score = max(ifelse(tool == "Ideal Tool", .data[[score_col]], 0))) %>%
+    mutate(score_ideal = .data[[score_col]] / ideal_score * 100) %>%
+    ungroup()
+
+  # Compute the BVT score for each year
+  combined_data2 <- combined_data2 %>%
+    group_by(year) %>%
+    mutate(bvt_score = max(ifelse(tool == "RBVT", .data[[score_col]], 0))) %>%
+    ungroup()
+
+  # Compute the percentage of the BVT score
+  combined_data2 <- combined_data2 %>%
+    mutate(score_bvt = .data[[score_col]] / bvt_score * 100)
+
+  # Filter out tools with NA values for score_ideal and score_bvt
+  combined_data2 <- combined_data2 %>%
+    filter(!is.na(score_ideal), !is.na(score_bvt)) %>%
+    rename(score = score_col)
   
   # Select only the columns we're interested in
   combined_data2 <- combined_data2 %>%
-    select(tool, year, norm_score_col) %>%
-    rename(score = norm_score_col)
+    select(tool, year, score, score_ideal, score_bvt)
   
   # Write the data frame to a CSV file in the "csv" directory
   write.csv(combined_data2, file = paste0("./csv/", gsub(" ", "_", score_col), "_time.csv"), row.names = FALSE)
-
 }
 
 
