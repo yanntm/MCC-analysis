@@ -93,7 +93,15 @@ for (score_col in score_cols) {
   
 }
 
-
+# Define categories
+categories <- list(
+  state_space = c("StateSpace"),
+  global_properties = c("Liveness", "QuasiLiveness", "StableMarking", "ReachabilityDeadlock", "OneSafe"),
+  reachability = c("ReachabilityCardinality", "ReachabilityFireability"),
+  ctl = c("CTLCardinality", "CTLFireability"),
+  ltl = c("LTLCardinality", "LTLFireability"),
+  upper_bounds = c("UpperBounds")
+)
 # do it again but for building the CSV
 # Create a plot for each examination
 # Loop over score_XX columns
@@ -131,5 +139,51 @@ for (score_col in score_cols) {
   write.csv(combined_data2, file = paste0("./csv/", gsub(" ", "_", score_col), "_time.csv"), row.names = FALSE)
 }
 
+# New loop for each category
+for (category in names(categories)) {
+  category_examinations = categories[[category]]
+  
+  # Start with an empty data frame for this category
+  category_data <- data.frame()
+  
+  for (examination in category_examinations) {
+    # Read the examination data
+    examination_data <- read.csv(paste0("./csv/score_", examination, "_time.csv"))
+    
+    # If the category data is empty, initialize it with the examination data
+    if (nrow(category_data) == 0) {
+      category_data <- examination_data
+    } else {
+      # If the category data is not empty, merge it with the examination data and sum the scores
+      examination_data <- examination_data %>%
+        select(tool, year, score)  # Keep only the columns we need to merge and sum
+      
+      category_data <- merge(category_data, examination_data, by = c("tool", "year"), all = TRUE)
+      category_data <- category_data %>%
+        mutate(score = rowSums(.[, c("score.x", "score.y")], na.rm = TRUE)) %>%
+        select(-c(score.x, score.y))
+    }
+  }
+  
+  # Compute the ideal and BVT normalized scores for this category
+  category_data <- category_data %>%
+    group_by(year) %>%
+    mutate(ideal_score = max(ifelse(tool == "Ideal Tool", score, 0))) %>%
+    mutate(score_ideal = score / ideal_score * 100) %>%
+    ungroup()
 
+  category_data <- category_data %>%
+    group_by(year) %>%
+    mutate(bvt_score = max(ifelse(tool == "RBVT", score, 0))) %>%
+    ungroup()
 
+  category_data <- category_data %>%
+    mutate(score_bvt = score / bvt_score * 100)
+
+  # Remove the unneeded columns before writing to CSV
+  category_data <- category_data %>%
+    select(tool, year, score, score_ideal, score_bvt)
+
+  # Write the data frame to a CSV file in the "csv" directory
+  write.csv(category_data, file = paste0("./csv/score_", category, "_time.csv"), row.names = FALSE)
+}
