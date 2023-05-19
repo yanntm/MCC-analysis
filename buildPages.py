@@ -87,6 +87,13 @@ for csv_file in csv_files:
     if csv_file == 'raw-result-analysis.csv':
         continue  # Skip this file and move on to the next one
 
+    if csv_file == 'refined-result-bvt.csv':
+        continue  # Skip this file and move on to the next one
+
+    if csv_file == 'models.csv':
+        continue  # Skip this file and move on to the next one
+
+
     start_time = time.time()  # Record the start time for processing the current file
 
     # Load the CSV file into a pandas dataframe
