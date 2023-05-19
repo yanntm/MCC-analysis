@@ -11,7 +11,6 @@ args <- commandArgs(trailingOnly = TRUE)
 # Set the current year, default to 2023 if not provided
 current_year <- if (length(args) >= 1) as.integer(args[1]) else 2023
 
-
 # Set default values for input file and output folder
 input_file <- "raw-result-analysis.csv"
 output_folder <- "website"
@@ -26,9 +25,21 @@ df <- raw_result_analysis
 df <- rename(df, tool = "X....tool")
 df <- separate(df, "flags.bonus.scores.mask", into = c("flags", "bonus", "score", "mask"), sep = ":")
 
+
+# Parse the "Input" column into the "ModelFamily", "ModelType", "ModelInstance" columns
+df_models <- df %>% 
+  separate(Input, into = c("ModelFamily", "ModelType", "ModelInstance"), sep = "-", remove = FALSE)
+
+# Select the "ModelFamily", "ModelType", "ModelInstance" columns and remove duplicate rows
+df_models <- unique(df_models[, c("ModelFamily", "ModelType", "ModelInstance")])
+
+# Export the unique models to a CSV file
+write.csv(df_models, "models.csv", row.names = FALSE)
+
+
 # Filter out rows where 'tool' starts with "BVT"
 # their format is inconsistent with the rest, and we recompute it ourselves anyway
-# df <- df[!grepl("^BVT", df$tool),]
+df <- df[!grepl("^BVT", df$tool),]
 
 # Split mask column into individual characters
 max_mask_width <- max(nchar(gsub("[\\s?-]+", "", df$mask)))  # Get the widest mask
@@ -120,6 +131,32 @@ df_long <- rename(df_long, Result = "verdict")
 df_long <- df_long %>%
   separate(Input, into = c("ModelFamily", "ModelType", "ModelInstance"), sep = "-")
 
-write.csv(df_long, "refined-result.csv", row.names = FALSE)
+# Clone the df
+df_bvt <- df
+
+# Rename the Tool to BVT
+df_bvt$Tool <- "BVT"
+
+# Remove rows with "X" as Verdict
+df_bvt <- df_bvt[df_bvt$Verdict != "X",]
+
+# Keep only unique rows
+df_bvt <- df_bvt[!duplicated(df_bvt),]
+
+# Consistency check
+df_bvt_no_result <- df_bvt
+df_bvt_no_result$Result <- NULL
+if(nrow(df_bvt_no_result[!duplicated(df_bvt_no_result),]) != nrow(df_bvt)) {
+  print("Warning: Number of unique rows differs when ignoring 'Result'")
+}
+
+# Bind the rows back to the original dataframe
+df <- rbind(df, df_bvt)
+
+# Export the refined data to a CSV file
+write.csv(df, "refined-result-bvt.csv", row.names = FALSE)
+
+# Export the refined data to a CSV file
+write.csv(df_long, "refined-result-bvt.csv", row.names = FALSE)
 
 
