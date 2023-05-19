@@ -1,8 +1,6 @@
 library(stringr)  # Load the package
 library(dplyr)
 library(tidyr)
-library(writexl)
-library(VennDiagram)
 
 
 # Parse command line arguments
