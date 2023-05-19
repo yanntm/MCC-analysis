@@ -8,25 +8,37 @@ df <- read.csv("refined-result-bvt.csv")
 # Load models.csv
 models_df <- read.csv("models.csv")
 
-# Calculate the number of models
-num_models <- nrow(models_df)
-
-# Define a function to calculate ideal scores for a given examination
-ideal_scores <- function(examination) {
-  case_when(
-    examination == "StateSpace" ~ num_models * 4,
-    examination %in% c("Liveness", "QuasiLiveness", "StableMarking", "ReachabilityDeadlock", "OneSafe") ~ num_models,
-    examination %in% c("ReachabilityCardinality", "ReachabilityFireability", "CTLCardinality", "CTLFireability",
-                       "LTLCardinality", "LTLFireability","UpperBounds") ~ num_models * 16
-  )
-}
 
 # Function to process a single category
-process_category <- function(df, category_name, examinations) {
+process_category <- function(df, category_name, examinations, model_type = NULL) {
   # Filter the data to include only the specified examinations
   df_category <- df %>%
     filter(Examination %in% examinations)
   
+  # If a model type is provided, filter data based on the model type
+  if (!is.null(model_type)) {
+    df_category <- df_category %>%
+      filter(ModelType == model_type)
+  }
+  
+  # Calculate the number of models for the given model type
+  num_models <- if (is.null(model_type)) {
+    nrow(models_df)
+  } else {
+    nrow(models_df %>%
+           filter(ModelType == model_type))
+  }
+  # Define a function to calculate ideal scores for a given examination
+  ideal_scores <- function(examination) {
+    case_when(
+      examination == "StateSpace" ~ num_models * 4,
+      examination %in% c("Liveness", "QuasiLiveness", "StableMarking", "ReachabilityDeadlock", "OneSafe") ~ num_models,
+      examination %in% c("ReachabilityCardinality", "ReachabilityFireability", "CTLCardinality", "CTLFireability",
+                         "LTLCardinality", "LTLFireability","UpperBounds") ~ num_models * 16
+    )
+  }
+  
+
   # Calculate total answers and errors for each tool
   total_summary <- df_category %>%
     group_by(Tool) %>%
@@ -68,10 +80,7 @@ process_category <- function(df, category_name, examinations) {
   
   # Make the names of the columns in ideal_tool_row match the names in df_summary
   names(ideal_tool_row) <- names(df_summary)
-  
-  # Add the ideal tool row to the summary dataframe
-  df_summary <- rbind(df_summary, ideal_tool_row)
-  
+
   
   # Add the ideal tool row to the summary dataframe
   df_summary <- rbind(df_summary, ideal_tool_row)
@@ -90,7 +99,15 @@ categories <- list(
   upper_bounds = c("UpperBounds")
 )
 
-# Process each category
+
+model_types <- c("COL", "PT")
+for (model_type in model_types) {
+  for (category_name in names(categories)) {
+    process_category(df, paste0(category_name, "_", model_type), categories[[category_name]], model_type)
+  }
+}
+
+# Process the category without filtering by ModelType
 for (category_name in names(categories)) {
   process_category(df, category_name, categories[[category_name]])
 }
