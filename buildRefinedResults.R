@@ -131,6 +131,8 @@ df_long <- rename(df_long, Result = "verdict")
 df_long <- df_long %>%
   separate(Input, into = c("ModelFamily", "ModelType", "ModelInstance"), sep = "-")
 
+df <- df_long
+
 # Clone the df
 df_bvt <- df
 
@@ -155,8 +157,5 @@ df <- rbind(df, df_bvt)
 
 # Export the refined data to a CSV file
 write.csv(df, "refined-result-bvt.csv", row.names = FALSE)
-
-# Export the refined data to a CSV file
-write.csv(df_long, "refined-result-bvt.csv", row.names = FALSE)
 
 
