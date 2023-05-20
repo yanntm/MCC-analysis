@@ -7,6 +7,12 @@
 </head>
 <body>
 <div>
+<select id="model_type">
+    {% for type in model_types %}
+    <option value="{{ type }}">{{ type }}</option>
+    {% endfor %}
+</select>
+
     <select id="tool1">
         {% for tool in sorted_tools %}
         <option value="{{ tool }}" {{ 'selected' if loop.index == 1 else '' }}>{{ tool }}</option>
@@ -33,17 +39,62 @@
     <div id="venn_div"></div>
 
     <script>
+ // Load model type data
+    var model_type_dict = {};
+
+    // populate the unique_model_types variable from the template
+    var unique_model_types = {{ model_types|tojson|safe }};
+    // Assume unique_model_types is a list of model types obtained from Python
+    for (var i = 0; i < unique_model_types.length; i++) {
+        let model_type = unique_model_types[i];
+        model_type_dict[model_type] = new Set();
+        
+        $.getJSON(model_type + '.json', function(data) {
+            model_type_dict[model_type] = new Set(data);
+        });
+    }
+  
+
+    function filterDataByModelType(model_type) {
+        var filtered_data = {};
+        var model_type_set = model_type_dict[model_type];
+
+        console.log("Model type: " + model_type);
+        console.log("Size of model type set: " + model_type_set.size);
+
+        for (var tool in tool_index_dict) {
+            var original_set_size = tool_index_dict[tool].length; // Declare original_set_size with var
+            filtered_data[tool] = tool_index_dict[tool].filter(index => model_type_set.has(index));
+            var filtered_set_size = filtered_data[tool].length; // Declare filtered_set_size with var
+            
+            console.log("Tool: " + tool);
+            console.log("Original set size: " + original_set_size);
+            console.log("Filtered set size: " + filtered_set_size);
+        }
+
+        return filtered_data;
+    }
+
+
+    
     // define your JS function to update the Venn diagram
     function updateVenn() {
         var tool1 = document.getElementById('tool1').value;
         var tool2 = document.getElementById('tool2').value;
         var tool3 = document.getElementById('tool3').value;
         
+        var model_type = document.getElementById('model_type').value;
+        console.log("Selected model type: " + model_type);
+
+        // Filter the data based on the selected ModelType
+        var filtered_data = filterDataByModelType(model_type);
+        
         var sets = [
-            { name: tool1, data: tool_index_dict[tool1].map(String)  },
-            { name: tool2, data: tool_index_dict[tool2].map(String)  },
-            { name: tool3, data: tool_index_dict[tool3].map(String)  },
+            { name: tool1, data: filtered_data[tool1].map(String)  },
+            { name: tool2, data: filtered_data[tool2].map(String)  },
+            { name: tool3, data: filtered_data[tool3].map(String)  },
         ];
+
         
         $("#venn_div").jvenn({
             series: sets,
