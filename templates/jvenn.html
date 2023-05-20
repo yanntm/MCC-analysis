@@ -6,27 +6,28 @@
     <script src="https://jvenn.toulouse.inrae.fr/app/js/jvenn.min.js"></script>
 </head>
 <body>
- <div>
+<div>
     <select id="tool1">
-        {% for i, tool in enumerate(tool_index_dict.keys()) %}
-        <option value="{{ tool }}" {{ 'selected' if i == 0 else '' }}>{{ tool }}</option>
+        {% for tool in sorted_tools %}
+        <option value="{{ tool }}" {{ 'selected' if loop.index == 1 else '' }}>{{ tool }}</option>
         {% endfor %}
     </select>
-
+    
     <select id="tool2">
-        {% for i, tool in enumerate(tool_index_dict.keys()) %}
-        <option value="{{ tool }}" {{ 'selected' if i == 1 else '' }}>{{ tool }}</option>
+        {% for tool in sorted_tools %}
+        <option value="{{ tool }}" {{ 'selected' if loop.index == 2 else '' }}>{{ tool }}</option>
         {% endfor %}
     </select>
 
     <select id="tool3">
-        {% for i, tool in enumerate(tool_index_dict.keys()) %}
-        <option value="{{ tool }}" {{ 'selected' if i == 2 else '' }}>{{ tool }}</option>
+        {% for tool in sorted_tools %}
+        <option value="{{ tool }}" {{ 'selected' if loop.index == 3 else '' }}>{{ tool }}</option>
         {% endfor %}
     </select>
-
+    
     <button onclick="updateVenn()">Draw Venn diagram</button>
 </div>
+
 
 
     <div id="venn_div"></div>

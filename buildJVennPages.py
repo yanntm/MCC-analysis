@@ -17,8 +17,8 @@ for file_name in os.listdir(json_dir):
             data = json.load(f)
             tool_index_dict[tool_name] = data['answers']  # Store the "answers" indices in the dictionary
 
-# Sort the tool_index_dict by number of elements in each tool's set
-tool_index_dict = dict(sorted(tool_index_dict.items(), key=lambda item: len(item[1]), reverse=True))
+# Create a sorted list of tools by the number of elements in their set
+sorted_tools = sorted(tool_index_dict.keys(), key=lambda x: len(tool_index_dict[x]), reverse=True)
 
 # Set up Jinja2 template environment
 env = Environment(loader=FileSystemLoader("templates"))
@@ -27,7 +27,7 @@ env = Environment(loader=FileSystemLoader("templates"))
 template = env.get_template('jvenn.html')
 
 # Render template with the tool_index_dict
-output = template.render(tool_index_dict=tool_index_dict)
+output = template.render(tool_index_dict=tool_index_dict, sorted_tools=sorted_tools)
 
 # Write the output to a HTML file
 with open('venn_dynamic.html', 'w') as f:
