@@ -3,63 +3,64 @@ import json
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 
-# Define path where JSON files are stored
-json_dir = './json/'
+JSON_DIR = './json/'
 
-# Create a dictionary to store tool names and their corresponding indexes
-tool_index_dict = {}
+def load_tool_indexes():
+    tool_index_dict = {}
 
-# Loop through each JSON file in the directory
-for file_name in os.listdir(json_dir):
-    if file_name.endswith('.json'):
-        tool_name = os.path.splitext(file_name)[0]  # Get the tool name (file name without extension)
-        with open(os.path.join(json_dir, file_name)) as f:
-            data = json.load(f)
-            # Convert the "answers" indices into strings
-            tool_index_dict[tool_name] = [str(index) for index in data['answers']]
-
-# Render the tool_index_dict into a JSON string
-json_str = json.dumps(tool_index_dict)
-
-# Write the JSON string to a file
-with open('tool_index_dict.json', 'w') as f:
-    f.write(json_str)
+    for file_name in os.listdir(JSON_DIR):
+        if file_name.endswith('.json'):
+            tool_name = os.path.splitext(file_name)[0]
+            with open(os.path.join(JSON_DIR, file_name)) as f:
+                data = json.load(f)
+                tool_index_dict[tool_name] = [str(index) for index in data['answers']]
     
-    
-# Create a sorted list of tools by the number of elements in their set
-sorted_tools = sorted(tool_index_dict.keys(), key=lambda x: len(tool_index_dict[x]), reverse=True)
+    return tool_index_dict
 
-# Read the resolution file into a pandas DataFrame
-df_resolution = pd.read_csv('resolution.csv')
+def write_json_file(filename, data):
+    with open(filename, 'w') as f:
+        json.dump(data, f)
 
-# Create a dictionary to store model types and their corresponding indexes
-model_type_dict = {}
+def create_sorted_tool_list(tool_index_dict):
+    return sorted(tool_index_dict.keys(), key=lambda x: len(tool_index_dict[x]), reverse=True)
 
-# Load the data from the CSV file
-df = pd.read_csv('resolution.csv')
+def load_resolution_file():
+    return pd.read_csv('resolution.csv')
 
-# Get the unique model types
-unique_model_types = df['ModelType'].unique().tolist()
+def generate_filters(df, column_name):
+    unique_values = df[column_name].unique().tolist()
+    filter_dict = {}
 
-# Fill the model_type_dict
-for model_type in unique_model_types:
-    index_set = set(df[df['ModelType'] == model_type]['Index'].astype(str))
-    model_type_dict[model_type] = index_set
+    for value in unique_values:
+        index_set = set(df[df[column_name] == value]['Index'].astype(str))
+        filter_dict[value] = index_set
 
-# Write model type dictionaries to JSON files
-for model_type, index_set in model_type_dict.items():
-    with open(f'{model_type}.json', 'w') as f:
-        json.dump(sorted(list(index_set)), f)  # convert set to list before dumping as JSON
+    return filter_dict, unique_values
 
-# Set up Jinja2 template environment
-env = Environment(loader=FileSystemLoader("templates"))
+def write_filter_files(filter_dict):
+    for value, index_set in filter_dict.items():
+        write_json_file(f'{value}.json', sorted(list(index_set)))
 
-# Load Jinja2 template
-template = env.get_template('jvenn.html')
+def generate_html(tool_index_dict, sorted_tools, unique_values):
+    env = Environment(loader=FileSystemLoader("templates"))
+    template = env.get_template('jvenn.html')
+    output = template.render(tool_index_dict=tool_index_dict, sorted_tools=sorted_tools, model_types=unique_values)
 
-# Render template with the tool_index_dict
-output = template.render(tool_index_dict=tool_index_dict, sorted_tools=sorted_tools, model_types=unique_model_types)
+    with open('venn_dynamic.html', 'w') as f:
+        f.write(output)
 
-# Write the output to a HTML file
-with open('venn_dynamic.html', 'w') as f:
-    f.write(output)
+def main():
+    tool_index_dict = load_tool_indexes()
+    write_json_file('tool_index_dict.json', tool_index_dict)
+
+    sorted_tools = create_sorted_tool_list(tool_index_dict)
+
+    df_resolution = load_resolution_file()
+
+    model_type_dict, unique_model_types = generate_filters(df_resolution, 'ModelType')
+    write_filter_files(model_type_dict)
+
+    generate_html(tool_index_dict, sorted_tools, unique_model_types)
+
+if __name__ == "__main__":
+    main()
