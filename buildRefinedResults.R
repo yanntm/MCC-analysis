@@ -1,7 +1,7 @@
 library(stringr)  # Load the package
 library(dplyr)
 library(tidyr)
-
+library(jsonlite)
 
 # Parse command line arguments
 args <- commandArgs(trailingOnly = TRUE)
@@ -156,4 +156,42 @@ df <- rbind(df, df_bvt)
 # Export the refined data to a CSV file
 write.csv(df, "refined-result-bvt.csv", row.names = FALSE)
 
+
+colnames(df)
+# Create a unique index based on unique tuples
+resolution <- df %>%
+  filter(Verdict == "T") %>%
+  select(ModelFamily, ModelType, ModelInstance, Examination, ID, Result) %>%
+  distinct() %>%
+  rename(Consensus = Result) %>%
+  mutate(Index = row_number())
+
+# Save the resolution table to a CSV file
+write.csv(resolution, "resolution.csv", row.names = FALSE)
+
+# Create a mapping from the original df to the new index
+df <- df %>%
+  left_join(resolution, by = c("ModelFamily", "ModelType", "ModelInstance", "Examination" , "ID")) %>%
+  select(Tool, Index, Verdict)
+
+# Now you can split the df into separate JSON files for each Tool
+tools <- unique(df$Tool)
+for (tool in tools) {
+  # Filter rows for the current tool
+  df_tool <- df[df$Tool == tool,]
+  
+  # Separate indexes where Verdict is T and Verdict is X
+  verdict_T <- df_tool[df_tool$Verdict == "T",]$Index
+  verdict_F <- df_tool[df_tool$Verdict == "X",]$Index
+  
+  # Sort the vectors
+  verdict_T <- sort(verdict_T)
+  verdict_F <- sort(verdict_F)
+  
+  # Create a list to store in JSON
+  list_to_json <- list(answers = verdict_T, errors = verdict_F)
+  
+  # Write to a JSON file
+  write_json(list_to_json, paste0(tool, ".json"))
+}
 
