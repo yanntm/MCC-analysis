@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://jvenn.toulouse.inrae.fr/app/js/canvas2svg.js"></script>
+    <script src="https://jvenn.toulouse.inrae.fr/app/js/jvenn.min.js"></script>
+</head>
+<body>
+ <div>
+    <select id="tool1">
+        {% for i, tool in enumerate(tool_index_dict.keys()) %}
+        <option value="{{ tool }}" {{ 'selected' if i == 0 else '' }}>{{ tool }}</option>
+        {% endfor %}
+    </select>
+
+    <select id="tool2">
+        {% for i, tool in enumerate(tool_index_dict.keys()) %}
+        <option value="{{ tool }}" {{ 'selected' if i == 1 else '' }}>{{ tool }}</option>
+        {% endfor %}
+    </select>
+
+    <select id="tool3">
+        {% for i, tool in enumerate(tool_index_dict.keys()) %}
+        <option value="{{ tool }}" {{ 'selected' if i == 2 else '' }}>{{ tool }}</option>
+        {% endfor %}
+    </select>
+
+    <button onclick="updateVenn()">Draw Venn diagram</button>
+</div>
+
+
+    <div id="venn_div"></div>
+
+    <script>
+    // define your JS function to update the Venn diagram
+    function updateVenn() {
+        var tool1 = document.getElementById('tool1').value;
+        var tool2 = document.getElementById('tool2').value;
+        var tool3 = document.getElementById('tool3').value;
+        
+        var sets = [
+            { name: tool1, data: tool_index_dict[tool1].map(String)  },
+            { name: tool2, data: tool_index_dict[tool2].map(String)  },
+            { name: tool3, data: tool_index_dict[tool3].map(String)  },
+        ];
+        
+        $("#venn_div").jvenn({
+            series: sets,
+            displayStat: true,
+        });
+    }
+
+    // populate the tool_index_dict variable from the template
+    var tool_index_dict = {
+        {% for tool, indexes in tool_index_dict.items() %}
+        "{{ tool }}": {{ indexes|tojson|safe }},
+        {% endfor %}
+    };
+    
+    </script>
+</body>
+</html>
