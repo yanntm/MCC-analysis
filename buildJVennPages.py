@@ -15,7 +15,6 @@ def load_tool_indexes():
     
     return tool_index_dict
 
-
 def write_json_file(filename, data):
     with open(filename, 'w') as f:
         json.dump(data, f)
@@ -26,24 +25,23 @@ def create_sorted_tool_list(tool_index_dict):
 def load_resolution_file():
     return pd.read_csv('resolution.csv')
 
-def generate_filters(df, column_name):
-    unique_values = df[column_name].unique().tolist()
-    filter_dict = {}
+def generate_filters(df, filter_columns):
+    filters = {col: {} for col in filter_columns}
 
-    for value in unique_values:
-        index_set = set(df[df[column_name] == value]['Index'].astype(str))
-        filter_dict[value] = index_set
+    for col in filter_columns:
+        unique_values = df[col].unique().tolist()
 
-    return filter_dict, unique_values
+        for value in unique_values:
+            index_set = set(df[df[col] == value]['Index'].astype(str))
+            filters[col][value] = sorted(list(index_set))  # Convert set to list
+    
+    return filters
 
-def write_filter_files(filter_dict):
-    for value, index_set in filter_dict.items():
-        write_json_file(f'{value}.json', sorted(list(index_set)))
+def write_filter_files(filters):
+    write_json_file('filters.json', filters)
 
-from jinja2 import Environment, FileSystemLoader
-
-def generate_html(tool_index_dict, sorted_tools, unique_values, template):
-    output = template.render(tool_index_dict=tool_index_dict, sorted_tools=sorted_tools, model_types=unique_values)
+def generate_html(tool_index_dict, sorted_tools, filters, template):
+    output = template.render(tool_index_dict=tool_index_dict, sorted_tools=sorted_tools, filters=filters)
 
     with open('venn_dynamic.html', 'w') as f:
         f.write(output)
@@ -64,10 +62,11 @@ def main():
 
         df_resolution = load_resolution_file()
 
-        model_type_dict, unique_model_types = generate_filters(df_resolution, 'ModelType')
-        write_filter_files(model_type_dict)
+        filter_columns = ['Examination','ModelType']  # Update this list with any additional filter columns
+        filters = generate_filters(df_resolution, filter_columns)
+        write_filter_files(filters)
 
-        generate_html(tool_index_dict, sorted_tools, unique_model_types, template)
+        generate_html(tool_index_dict, sorted_tools, filters, template)
 
         os.chdir('..')
 
