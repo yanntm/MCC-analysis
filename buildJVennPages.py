@@ -25,6 +25,10 @@ def generate_filters(df, filter_columns):
 
     for col in filter_columns:
         unique_values = df[col].unique().tolist()
+	
+        # Don't create filter if only one unique value
+        if len(unique_values) <= 1:
+            continue
 
         for value in unique_values:
             index_set = set(df[df[col] == value]['Index'].astype(str))
@@ -54,7 +58,7 @@ def main():
 
         df_resolution = load_resolution_file()
 
-        filter_columns = ['Examination','ModelType']  # Update this list with any additional filter columns
+        filter_columns = ['Examination','ModelType','FormulaType']  # Update this list with any additional filter columns
         filters = generate_filters(df_resolution, filter_columns)
         write_filter_files(filters)
 
