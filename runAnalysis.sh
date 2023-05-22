@@ -24,6 +24,14 @@ process_year() {
   cp -r ../../templates website/
   Rscript ../../analyzeAnswers.R $year
   
+  Rscript ../../buildRefinedResults.R
+  HORACLE="../../horacle/conv/iscex$year.csv"
+  if [ -f $HORACLE ] ; then
+	  cp "../../horacle/conv/iscex$year.csv" ./forms.csv
+  fi
+  Rscript ../../fuseFormulaType.R
+  python3 ../../buildJVennPages.py 
+  
   rm website/*.log
   # Convert TIFF images to PNG format
   cd website
@@ -34,7 +42,7 @@ process_year() {
   done
   cd ..
   
-  python3 ../../buildPages.py 
+  python3 ../../buildHTMLFromCSV.py 
   cd website
   python3 ../../../buildVennPages.py
   cd .. 
