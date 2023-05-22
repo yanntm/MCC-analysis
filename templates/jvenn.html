@@ -7,108 +7,120 @@
 </head>
 <body>
 <div>
-<select id="model_type">
-    {% for type in model_types %}
-    <option value="{{ type }}">{{ type }}</option>
+    <h2>Interactive Venn Diagram</h2>
+    <p>Venn diagrams allow to refine our view of the scores to measure tool complementarity.
+    Each answer provided by a tool is a data point, we draw one circle per tool to contain all these points, and measure the overlaps with other selected tools.
+    You can filter the data as desired and choose the tools to compare, and the Draw button will compute the diagram on the fly, which may take a few seconds.</p>
+    
+    <h3>Filter</h3>
+    {% for col, values in filters.items() %}
+    <label for="{{ col }}">{{ col }}:</label>
+    <select id="{{ col }}">
+        <option value="All">All</option>
+        {% for value in values %}
+        <option value="{{ value }}">{{ value }}</option>
+        {% endfor %}
+    </select>
     {% endfor %}
-</select>
 
-    <select id="tool1">
-        {% for tool in sorted_tools %}
-        <option value="{{ tool }}" {{ 'selected' if loop.index == 1 else '' }}>{{ tool }}</option>
-        {% endfor %}
-    </select>
-    
-    <select id="tool2">
-        {% for tool in sorted_tools %}
-        <option value="{{ tool }}" {{ 'selected' if loop.index == 2 else '' }}>{{ tool }}</option>
-        {% endfor %}
-    </select>
-
-    <select id="tool3">
-        {% for tool in sorted_tools %}
-        <option value="{{ tool }}" {{ 'selected' if loop.index == 3 else '' }}>{{ tool }}</option>
-        {% endfor %}
-    </select>
-    
+    <h3>Select Tools and Draw</h3>
+    {% for i in range(1, 4) %}
+        <select id="tool{{ i }}">
+            {% for tool in sorted_tools %}
+            <option value="{{ tool }}" {{ 'selected' if loop.index == i+1 else '' }}>{{ tool }}</option>
+            {% endfor %}
+        </select>
+    {% endfor %}
     <button onclick="updateVenn()">Draw Venn diagram</button>
 </div>
 
+<div id="venn_div"></div>
 
+<p>Double click any region of the diagram to have a list of points. Refer to the <a href="./resolution.csv">resolution file</a> to understand the list of integers.</p>
 
-    <div id="venn_div"></div>
+<script>
+    var tool_index_dict = {
+        {% for tool, indexes in tool_index_dict.items() %}
+        "{{ tool }}": {{ indexes|tojson|safe }},
+        {% endfor %}
+    };
 
-    <script>
- // Load model type data
-    var model_type_dict = {};
+   
 
-    // populate the unique_model_types variable from the template
-    var unique_model_types = {{ model_types|tojson|safe }};
-    // Assume unique_model_types is a list of model types obtained from Python
-    for (var i = 0; i < unique_model_types.length; i++) {
-        let model_type = unique_model_types[i];
-        model_type_dict[model_type] = new Set();
-        
-        $.getJSON(model_type + '.json', function(data) {
-            model_type_dict[model_type] = new Set(data);
+    function loadFilterData() {
+        $.getJSON('filters.json', function(data) {
+            filter_dicts = data;
+            for (var col in filter_dicts) {
+                for (var value in filter_dicts[col]) {
+                    filter_dicts[col][value] = new Set(filter_dicts[col][value]);
+                }
+            }
         });
     }
-  
 
-    function filterDataByModelType(model_type) {
+    function filterData() {
         var filtered_data = {};
-        var model_type_set = model_type_dict[model_type];
 
-        console.log("Model type: " + model_type);
-        console.log("Size of model type set: " + model_type_set.size);
-
-        for (var tool in tool_index_dict) {
-            var original_set_size = tool_index_dict[tool].length; // Declare original_set_size with var
-            filtered_data[tool] = tool_index_dict[tool].filter(index => model_type_set.has(index));
-            var filtered_set_size = filtered_data[tool].length; // Declare filtered_set_size with var
-            
-            console.log("Tool: " + tool);
-            console.log("Original set size: " + original_set_size);
-            console.log("Filtered set size: " + filtered_set_size);
+        // Get selected values for each filter column and store them in a list of sets
+        var selected_sets = [];
+        for (var col in filter_dicts) {
+            var selected_value = document.getElementById(col).value;
+            if (selected_value !== 'All') {
+                selected_sets.push(filter_dicts[col][selected_value]);
+            }
         }
 
+        // If no filters are selected, return the original data
+        if (selected_sets.length === 0) {
+            return tool_index_dict;
+        }
+        
+        // If only one filter is selected, no need for intersection
+        if (selected_sets.length === 1) {
+            var selected_set = selected_sets[0];
+            for (var tool in tool_index_dict) {
+                filtered_data[tool] = tool_index_dict[tool].filter(index => selected_set.has(index));
+            }
+            return filtered_data;
+        }
+        
+        // Sort the selected_sets array from smallest to largest
+        selected_sets.sort((a, b) => a.size - b.size);
+
+        // Calculate the intersection of all selected sets
+        var intersection_set = selected_sets.reduce((a, b) => new Set([...a].filter(x => b.has(x))));
+        
+        // Filter the data for each tool by the intersection set
+        for (var tool in tool_index_dict) {
+            filtered_data[tool] = tool_index_dict[tool].filter(index => intersection_set.has(index));
+        }
+        
         return filtered_data;
     }
 
 
-    
-    // define your JS function to update the Venn diagram
+
     function updateVenn() {
         var tool1 = document.getElementById('tool1').value;
         var tool2 = document.getElementById('tool2').value;
         var tool3 = document.getElementById('tool3').value;
         
-        var model_type = document.getElementById('model_type').value;
-        console.log("Selected model type: " + model_type);
 
-        // Filter the data based on the selected ModelType
-        var filtered_data = filterDataByModelType(model_type);
-        
+        var filtered_data = filterData();
+
         var sets = [
             { name: tool1, data: filtered_data[tool1].map(String)  },
             { name: tool2, data: filtered_data[tool2].map(String)  },
             { name: tool3, data: filtered_data[tool3].map(String)  },
         ];
 
-        
         $("#venn_div").jvenn({
             series: sets,
             displayStat: true,
         });
     }
 
-    // populate the tool_index_dict variable from the template
-    var tool_index_dict = {
-        {% for tool, indexes in tool_index_dict.items() %}
-        "{{ tool }}": {{ indexes|tojson|safe }},
-        {% endfor %}
-    };
-    
-    </script>
+    loadFilterData();
+</script>
 </body>
 </html>
