@@ -5,22 +5,17 @@ from jinja2 import Environment, FileSystemLoader
 
 JSON_DIR = './'
 
-def load_tool_indexes():
-    tool_index_dict = {}
-
-    with open(os.path.join(JSON_DIR, 'tool_data.json')) as f:
-        data = json.load(f)
-        for tool_name, tool_data in data.items():
-            tool_index_dict[tool_name] = [str(index) for index in tool_data['answers']]
-    
-    return tool_index_dict
-
 def write_json_file(filename, data):
     with open(filename, 'w') as f:
         json.dump(data, f)
 
-def create_sorted_tool_list(tool_index_dict):
-    return sorted(tool_index_dict.keys(), key=lambda x: len(tool_index_dict[x]), reverse=True)
+def create_sorted_tool_list():
+    with open('tool_index_dict.json') as f:
+        tool_index_dict = json.load(f)
+    
+    tools = list(tool_index_dict.keys())
+    tools.sort(key=lambda x: len(tool_index_dict[x]['answers']), reverse=True)
+    return tools
 
 def load_resolution_file():
     return pd.read_csv('resolution.csv')
@@ -40,8 +35,8 @@ def generate_filters(df, filter_columns):
 def write_filter_files(filters):
     write_json_file('filters.json', filters)
 
-def generate_html(tool_index_dict, sorted_tools, filters, template):
-    output = template.render(tool_index_dict=tool_index_dict, sorted_tools=sorted_tools, filters=filters)
+def generate_html(sorted_tools, filters, template):
+    output = template.render(sorted_tools=sorted_tools, filters=filters)
 
     with open('venn_dynamic.html', 'w') as f:
         f.write(output)
@@ -55,10 +50,7 @@ def main():
     for category in categories:
         os.chdir(category)
 
-        tool_index_dict = load_tool_indexes()
-        write_json_file('tool_index_dict.json', tool_index_dict)
-
-        sorted_tools = create_sorted_tool_list(tool_index_dict)
+        sorted_tools = create_sorted_tool_list()  
 
         df_resolution = load_resolution_file()
 
@@ -66,7 +58,7 @@ def main():
         filters = generate_filters(df_resolution, filter_columns)
         write_filter_files(filters)
 
-        generate_html(tool_index_dict, sorted_tools, filters, template)
+        generate_html(sorted_tools, filters, template)
 
         os.chdir('..')
 

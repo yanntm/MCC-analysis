@@ -39,13 +39,12 @@
 <p>Double click any region of the diagram to have a list of points. Refer to the <a href="./resolution.csv">resolution file</a> to understand the list of integers.</p>
 
 <script>
-    var tool_index_dict = {
-        {% for tool, indexes in tool_index_dict.items() %}
-        "{{ tool }}": {{ indexes|tojson|safe }},
-        {% endfor %}
-    };
+var tool_index_dict = {};
 
-   
+// Load tool_index_dict from JSON file
+$.getJSON('tool_index_dict.json', function(data) {
+    tool_index_dict = data;
+});
 
     function loadFilterData() {
         $.getJSON('filters.json', function(data) {
@@ -58,46 +57,45 @@
         });
     }
 
-    function filterData() {
-        var filtered_data = {};
+function filterData() {
+    var filtered_data = {};
 
-        // Get selected values for each filter column and store them in a list of sets
-        var selected_sets = [];
-        for (var col in filter_dicts) {
-            var selected_value = document.getElementById(col).value;
-            if (selected_value !== 'All') {
-                selected_sets.push(filter_dicts[col][selected_value]);
-            }
+    // Get selected values for each filter column and store them in a list of sets
+    var selected_sets = [];
+    for (var col in filter_dicts) {
+        var selected_value = document.getElementById(col).value;
+        if (selected_value !== 'All') {
+            selected_sets.push(filter_dicts[col][selected_value]);
         }
+    }
 
-        // If no filters are selected, return the original data
-        if (selected_sets.length === 0) {
-            return tool_index_dict;
-        }
-        
-        // If only one filter is selected, no need for intersection
-        if (selected_sets.length === 1) {
-            var selected_set = selected_sets[0];
-            for (var tool in tool_index_dict) {
-                filtered_data[tool] = tool_index_dict[tool].filter(index => selected_set.has(index));
-            }
-            return filtered_data;
-        }
-        
-        // Sort the selected_sets array from smallest to largest
-        selected_sets.sort((a, b) => a.size - b.size);
+    // If no filters are selected, return the original data
+    if (selected_sets.length === 0) {
+        return tool_index_dict;
+    }
 
-        // Calculate the intersection of all selected sets
-        var intersection_set = selected_sets.reduce((a, b) => new Set([...a].filter(x => b.has(x))));
-        
-        // Filter the data for each tool by the intersection set
+    // If only one filter is selected, no need for intersection
+    if (selected_sets.length === 1) {
+        var selected_set = selected_sets[0];
         for (var tool in tool_index_dict) {
-            filtered_data[tool] = tool_index_dict[tool].filter(index => intersection_set.has(index));
+            filtered_data[tool] = tool_index_dict[tool]['answers'].filter(index => selected_set.has(index));
         }
-        
         return filtered_data;
     }
 
+    // Sort the selected_sets array from smallest to largest
+    selected_sets.sort((a, b) => a.size - b.size);
+
+    // Calculate the intersection of all selected sets
+    var intersection_set = selected_sets.reduce((a, b) => new Set([...a].filter(x => b.has(x))));
+    
+    // Filter the data for each tool by the intersection set
+    for (var tool in tool_index_dict) {
+        filtered_data[tool] = tool_index_dict[tool]['answers'].filter(index => intersection_set.has(index));
+    }
+    
+    return filtered_data;
+}
 
 
     function updateVenn() {
@@ -109,9 +107,9 @@
         var filtered_data = filterData();
 
         var sets = [
-            { name: tool1, data: filtered_data[tool1].map(String)  },
-            { name: tool2, data: filtered_data[tool2].map(String)  },
-            { name: tool3, data: filtered_data[tool3].map(String)  },
+            { name: tool1, data: filtered_data[tool1]['answers']  },
+            { name: tool2, data: filtered_data[tool2]['answers']  },
+            { name: tool3, data: filtered_data[tool3]['answers']  },
         ];
 
         $("#venn_div").jvenn({
