@@ -3,19 +3,18 @@ import json
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 
-JSON_DIR = './json/'
+JSON_DIR = './'
 
 def load_tool_indexes():
     tool_index_dict = {}
 
-    for file_name in os.listdir(JSON_DIR):
-        if file_name.endswith('.json'):
-            tool_name = os.path.splitext(file_name)[0]
-            with open(os.path.join(JSON_DIR, file_name)) as f:
-                data = json.load(f)
-                tool_index_dict[tool_name] = [str(index) for index in data['answers']]
+    with open(os.path.join(JSON_DIR, 'tool_data.json')) as f:
+        data = json.load(f)
+        for tool_name, tool_data in data.items():
+            tool_index_dict[tool_name] = [str(index) for index in tool_data['answers']]
     
     return tool_index_dict
+
 
 def write_json_file(filename, data):
     with open(filename, 'w') as f:
@@ -41,26 +40,36 @@ def write_filter_files(filter_dict):
     for value, index_set in filter_dict.items():
         write_json_file(f'{value}.json', sorted(list(index_set)))
 
-def generate_html(tool_index_dict, sorted_tools, unique_values):
-    env = Environment(loader=FileSystemLoader("templates"))
-    template = env.get_template('jvenn.html')
+from jinja2 import Environment, FileSystemLoader
+
+def generate_html(tool_index_dict, sorted_tools, unique_values, template):
     output = template.render(tool_index_dict=tool_index_dict, sorted_tools=sorted_tools, model_types=unique_values)
 
     with open('venn_dynamic.html', 'w') as f:
         f.write(output)
 
 def main():
-    tool_index_dict = load_tool_indexes()
-    write_json_file('tool_index_dict.json', tool_index_dict)
+    env = Environment(loader=FileSystemLoader("./templates"))
+    template = env.get_template('jvenn.html')
 
-    sorted_tools = create_sorted_tool_list(tool_index_dict)
+    categories = ['state_space', 'global_properties', 'reachability', 'ctl', 'ltl', 'upper_bounds']
 
-    df_resolution = load_resolution_file()
+    for category in categories:
+        os.chdir(category)
 
-    model_type_dict, unique_model_types = generate_filters(df_resolution, 'ModelType')
-    write_filter_files(model_type_dict)
+        tool_index_dict = load_tool_indexes()
+        write_json_file('tool_index_dict.json', tool_index_dict)
 
-    generate_html(tool_index_dict, sorted_tools, unique_model_types)
+        sorted_tools = create_sorted_tool_list(tool_index_dict)
+
+        df_resolution = load_resolution_file()
+
+        model_type_dict, unique_model_types = generate_filters(df_resolution, 'ModelType')
+        write_filter_files(model_type_dict)
+
+        generate_html(tool_index_dict, sorted_tools, unique_model_types, template)
+
+        os.chdir('..')
 
 if __name__ == "__main__":
     main()
