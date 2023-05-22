@@ -199,26 +199,31 @@ for (category_name in names(categories)) {
     left_join(resolution_category, by = c("ModelFamily", "ModelType", "ModelInstance", "Examination" , "ID")) %>%
     select(Tool, Index, Verdict)
   
-  # Now you can split the df_category into separate entries for each Tool
-  tools <- unique(df_category$Tool)
-  tool_data <- list()
-  for (tool in tools) {
+# Now you can split the df_category into separate entries for each Tool
+tools <- unique(df_category$Tool)
+tool_index_dict <- list()
+for (tool in tools) {
     # Filter rows for the current tool
     df_tool <- df_category[df_category$Tool == tool,]
-    
+
     # Separate indexes where Verdict is T and Verdict is X
     verdict_T <- df_tool[df_tool$Verdict == "T",]$Index
     verdict_F <- df_tool[df_tool$Verdict == "X",]$Index
-    
+
     # Sort the vectors
     verdict_T <- sort(verdict_T)
     verdict_F <- sort(verdict_F)
-    
+
+    # Convert numeric indices to string
+    verdict_T <- as.character(verdict_T)
+    verdict_F <- as.character(verdict_F)
+
     # Create a list to store in JSON
-    tool_data[[tool]] <- list(answers = verdict_T, errors = verdict_F)
-  }
-  
-  # Write to a JSON file in the category's directory
-  write_json(tool_data, file.path(category_name, "tool_data.json"))
+    tool_index_dict[[tool]] <- list(answers = verdict_T, errors = verdict_F)
+}
+
+# Write to a JSON file in the category's directory
+write_json(tool_index_dict, file.path(category_name, "tool_index_dict.json"))
+
 }
 
