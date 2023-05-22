@@ -158,40 +158,67 @@ write.csv(df, "refined-result-bvt.csv", row.names = FALSE)
 
 
 colnames(df)
-# Create a unique index based on unique tuples
-resolution <- df %>%
-  filter(Verdict == "T") %>%
-  select(ModelFamily, ModelType, ModelInstance, Examination, ID, Result) %>%
-  distinct() %>%
-  rename(Consensus = Result) %>%
-  mutate(Index = row_number())
 
-# Save the resolution table to a CSV file
-write.csv(resolution, "resolution.csv", row.names = FALSE)
 
-# Create a mapping from the original df to the new index
-df <- df %>%
-  left_join(resolution, by = c("ModelFamily", "ModelType", "ModelInstance", "Examination" , "ID")) %>%
-  select(Tool, Index, Verdict)
+# Define categories
+categories <- list(
+  state_space = c("StateSpace"),
+  global_properties = c("Liveness", "QuasiLiveness", "StableMarking", "ReachabilityDeadlock", "OneSafe"),
+  reachability = c("ReachabilityCardinality", "ReachabilityFireability"),
+  ctl = c("CTLCardinality", "CTLFireability"),
+  ltl = c("LTLCardinality", "LTLFireability"),
+  upper_bounds = c("UpperBounds")
+)
 
-# Now you can split the df into separate JSON files for each Tool
-tools <- unique(df$Tool)
-for (tool in tools) {
-  # Filter rows for the current tool
-  df_tool <- df[df$Tool == tool,]
+# Loop over categories
+for (category_name in names(categories)) {
   
-  # Separate indexes where Verdict is T and Verdict is X
-  verdict_T <- df_tool[df_tool$Verdict == "T",]$Index
-  verdict_F <- df_tool[df_tool$Verdict == "X",]$Index
+  # Get the category's examinations
+  category_examinations <- categories[[category_name]]
   
-  # Sort the vectors
-  verdict_T <- sort(verdict_T)
-  verdict_F <- sort(verdict_F)
+  # Filter df to only include rows where Examination is in category_examinations
+  df_category <- df[df$Examination %in% category_examinations, ]
   
-  # Create a list to store in JSON
-  list_to_json <- list(answers = verdict_T, errors = verdict_F)
+  # Create a unique index based on unique tuples for the category where Verdict is "T"
+  resolution_category <- df_category[df_category$Verdict == "T",] %>%
+    select(ModelFamily, ModelType, ModelInstance, Examination, ID, Result) %>%
+    distinct() %>%
+    rename(Consensus = Result) %>%
+    mutate(Index = row_number())
   
-  # Write to a JSON file
-  write_json(list_to_json, paste0(tool, ".json"))
+  # Create the category directory if it does not exist
+  if (!dir.exists(category_name)){
+    dir.create(category_name)
+  }
+  
+  # Write the category's resolution to a CSV file in the category's directory
+  write.csv(resolution_category, file.path(category_name, "resolution.csv"), row.names = FALSE)
+  
+  # Left join df_category with resolution_category to get the new Index
+  df_category <- df_category %>%
+    left_join(resolution_category, by = c("ModelFamily", "ModelType", "ModelInstance", "Examination" , "ID")) %>%
+    select(Tool, Index, Verdict)
+  
+  # Now you can split the df_category into separate entries for each Tool
+  tools <- unique(df_category$Tool)
+  tool_data <- list()
+  for (tool in tools) {
+    # Filter rows for the current tool
+    df_tool <- df_category[df_category$Tool == tool,]
+    
+    # Separate indexes where Verdict is T and Verdict is X
+    verdict_T <- df_tool[df_tool$Verdict == "T",]$Index
+    verdict_F <- df_tool[df_tool$Verdict == "X",]$Index
+    
+    # Sort the vectors
+    verdict_T <- sort(verdict_T)
+    verdict_F <- sort(verdict_F)
+    
+    # Create a list to store in JSON
+    tool_data[[tool]] <- list(answers = verdict_T, errors = verdict_F)
+  }
+  
+  # Write to a JSON file in the category's directory
+  write_json(tool_data, file.path(category_name, "tool_data.json"))
 }
 
