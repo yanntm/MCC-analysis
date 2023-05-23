@@ -52,7 +52,7 @@ process_year() {
 mkdir -p website
 cd website
 
-for year in {2021..2022}; do
+for year in {2016..2023}; do
 	mkdir $year
 	cd $year
 	cp -r ../../templates .
