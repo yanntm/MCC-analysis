@@ -71,7 +71,10 @@ function filterData() {
 
     // If no filters are selected, return the original data
     if (selected_sets.length === 0) {
-        return tool_index_dict;
+    	for (var tool in tool_index_dict) {
+            filtered_data[tool] = tool_index_dict[tool]['answers'];
+        }
+        return filtered_data;
     }
 
     // If only one filter is selected, no need for intersection
