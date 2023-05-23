@@ -191,6 +191,14 @@ for (category_name in names(categories)) {
     dir.create(category_name)
   }
   
+  # Reorder the column named "Index" to be the first column
+  resolution_category <- resolution_category[, c("Index", setdiff(names(resolution_category), "Index"))]
+
+  
+  # Decrease 'ID' by 1 and pad it with leading zeros
+  resolution_category <- resolution_category %>%
+    mutate(ID = str_pad(as.integer(ID) - 1, width = 2, side = "left", pad = "0"))
+  
   # Write the category's resolution to a CSV file in the category's directory
   write.csv(resolution_category, file.path(category_name, "resolution.csv"), row.names = FALSE)
   
