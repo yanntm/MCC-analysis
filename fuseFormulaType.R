@@ -9,8 +9,8 @@ library(stringr)  # for str_pad
 forms_df <- data.frame()
 
 # Check if forms.csv exists in the current working directory
-if (file.exists("./forms.csv")) {
-  forms_df <- read_delim("./forms.csv", delim = " ", col_names = c("Key", "FormulaType"))
+if (file.exists("./iscex.csv")) {
+  forms_df <- read_delim("./iscex.csv", delim = " ", col_names = c("Key", "FormulaType"))
   # Extract the keys from forms_df by splitting the 'Key' column
   forms_df <- forms_df %>%
     separate(Key, into = c("ModelFamily", "ModelType", "ModelInstance", "Examination", "ID"), sep = "-", remove = FALSE)
