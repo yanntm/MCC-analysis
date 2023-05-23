@@ -58,7 +58,7 @@ def main():
 
         df_resolution = load_resolution_file()
 
-        filter_columns = ['Examination','ModelType','FormulaType']  # Update this list with any additional filter columns
+        filter_columns = ['Examination','ModelType','FormulaType','Nupn']  # Update this list with any additional filter columns
         filters = generate_filters(df_resolution, filter_columns)
         write_filter_files(filters)
 
