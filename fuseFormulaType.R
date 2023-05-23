@@ -5,8 +5,9 @@ library(readr)
 library(stringr)  # for str_pad
 
 
-# Initialize forms_df as an empty data frame
+# Initialize forms_df and nupn_df as an empty data frames
 forms_df <- data.frame()
+nupn_df <- data.frame()
 
 # Check if forms.csv exists in the current working directory
 if (file.exists("./iscex.csv")) {
@@ -14,6 +15,19 @@ if (file.exists("./iscex.csv")) {
   # Extract the keys from forms_df by splitting the 'Key' column
   forms_df <- forms_df %>%
     separate(Key, into = c("ModelFamily", "ModelType", "ModelInstance", "Examination", "ID"), sep = "-", remove = FALSE)
+}
+
+# Check if nupn.csv exists in the current working directory
+if (file.exists("./nupn.csv")) {
+  nupn_df <- read_csv("./nupn.csv", col_types = cols())
+  nupn_df <- nupn_df %>%
+    separate(model, into = c("ModelFamily", "ModelType", "ModelInstance"), sep = "-", remove = FALSE) %>%
+    mutate(Nupn = case_when(
+      isNUPN == "FALSE" & isGenNUPN == "FALSE" ~ "NONE",
+      isNUPN == "FALSE" & isGenNUPN == "TRUE" ~ "GEN",
+      isNUPN == "TRUE" & isGenNUPN == "FALSE" ~ "NUPN",
+      TRUE ~ "ERROR"  # default case for unexpected combinations
+    ))
 }
 
 # List of folders to process
@@ -48,15 +62,19 @@ for (folder in folders) {
   
   # Join the two dataframes. Use left join to keep all records in resolution_df
   combined_df <- resolution_df %>%
-    left_join(forms_df, by = c("ModelFamily", "ModelType", "ModelInstance", "Examination", "ID"))
+    left_join(forms_df, by = c("ModelFamily", "ModelType", "ModelInstance", "Examination", "ID")) %>%
+    left_join(nupn_df, by = c("ModelFamily", "ModelType", "ModelInstance"))
   
-  # Fill the NA values in FormulaType column
+  # Fill the NA values in FormulaType and Nupn columns
   combined_df <- combined_df %>%
-    mutate(FormulaType = coalesce(.$FormulaType.y, .$FormulaType.x))
+    mutate(
+      FormulaType = coalesce(.$FormulaType.y, .$FormulaType.x),
+      Nupn = coalesce(.$Nupn, "NONE")
+    )
   
-  # Drop the 'Key' and 'FormulaType.x' columns
+  # Drop the 'Key', 'FormulaType.x', 'FormulaType.y', 'isSafe', 'isNUPN' and 'isGenNUPN' columns
   combined_df <- combined_df %>%
-    select(-Key, -FormulaType.x, -FormulaType.y)
+    select(-Key, -FormulaType.x, -FormulaType.y, -isSafe, -isNUPN, -isGenNUPN, -model)
   
   # Write the resulting dataframe to a new CSV file
   write_csv(combined_df, resolution_file_path)
