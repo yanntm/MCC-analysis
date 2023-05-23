@@ -45,51 +45,51 @@ combined_data$Tool <- case_when(
 )
 
 # Get the column names for examinations
-score_cols <- grep("^answer_", colnames(combined_data), value = TRUE)
+answer_cols <- grep("^answer_", colnames(combined_data), value = TRUE)
 
-# Replace 0 scores with NA (meaning the Tool did not participate)
-combined_data[score_cols] <- lapply(combined_data[score_cols], function(x) replace(x, x == 0, NA))
+# Replace 0 answers with NA (meaning the Tool did not participate)
+combined_data[answer_cols] <- lapply(combined_data[answer_cols], function(x) replace(x, x == 0, NA))
 
 # Create a plot for each examination
-# Loop over score_XX columns
-for (score_col in score_cols) {
-  # Compute the name of the normalized score column
-  norm_score_col <- paste0("norm_", score_col)
+# Loop over answer_XX columns
+for (answer_col in answer_cols) {
+  # Compute the name of the normalized answer column
+  norm_answer_col <- paste0("norm_", answer_col)
   
-  # Compute normalized scores for this examination
+  # Compute normalized answers for this examination
   combined_data2 <- combined_data %>%
     group_by(year) %>%
-    mutate(ideal_score = max(ifelse(Tool == "Ideal Tool", .data[[score_col]], 0))) %>%
-    mutate({{norm_score_col}} := .data[[score_col]] / ideal_score * 100) %>%
+    mutate(ideal_answer = max(ifelse(Tool == "Ideal Tool", .data[[answer_col]], 0))) %>%
+    mutate({{norm_answer_col}} := .data[[answer_col]] / ideal_answer * 100) %>%
     ungroup()
   
 
-  # Filter out Tools with NA values for norm_score_col
+  # Filter out Tools with NA values for norm_answer_col
   combined_data2 <- combined_data2 %>% 
-    filter(!is.na(.data[[norm_score_col]]))
+    filter(!is.na(.data[[norm_answer_col]]))
   
   
   # Count the number of years each Tool participated in this examination
   Tool_counts <- combined_data2 %>% 
-    filter(!is.na(.data[[norm_score_col]])) %>% 
+    filter(!is.na(.data[[norm_answer_col]])) %>% 
     group_by(Tool) %>%
     summarise(n = n_distinct(year))
   
   # Add points for all Tools
-  p <- ggplot(combined_data2, aes_string(x = "year", y = norm_score_col, color = "Tool")) +
+  p <- ggplot(combined_data2, aes_string(x = "year", y = norm_answer_col, color = "Tool")) +
     geom_point() +
     scale_x_continuous(breaks = unique(combined_data$year)) +
-    labs(title = paste(score_col, "Score Over Time"), x = "Year", y = "Score (% of Ideal Tool)") +
+    labs(title = paste(answer_col, "Score Over Time"), x = "Year", y = "Score (% of Ideal Tool)") +
     theme(legend.position = "bottom") +
     guides(color = guide_legend(ncol = 3, title = "Tool"))
   
   # Add lines for Tools that have participated more than once
   for (Tool in Tool_counts$Tool[Tool_counts$n > 1]) {
-    p <- p + geom_line(data = combined_data2[combined_data2$Tool == Tool, ], aes_string(x = "year", y = norm_score_col, color = "Tool"))
+    p <- p + geom_line(data = combined_data2[combined_data2$Tool == Tool, ], aes_string(x = "year", y = norm_answer_col, color = "Tool"))
   }
   
   # Save the plot as a PNG in the "plots" directory
-  ggsave(filename = paste0("./", gsub(" ", "_", score_col), "_time.png"), plot = p, width = 10, height = 7, dpi = 300)
+  ggsave(filename = paste0("./", gsub(" ", "_", answer_col), "_time.png"), plot = p, width = 10, height = 7, dpi = 300)
   
 }
 
@@ -104,39 +104,39 @@ categories <- list(
 )
 # do it again but for building the CSV
 # Create a plot for each examination
-# Loop over score_XX columns
-for (score_col in score_cols) {
-  # Compute the name of the normalized score column
-  norm_score_col <- paste0("norm_", score_col)
+# Loop over answer_XX columns
+for (answer_col in answer_cols) {
+  # Compute the name of the normalized answer column
+  norm_answer_col <- paste0("norm_", answer_col)
   
-  # Compute normalized scores for this examination
+  # Compute normalized answers for this examination
   combined_data2 <- combined_data %>%
     group_by(year) %>%
-    mutate(ideal_score = max(ifelse(Tool == "Ideal Tool", .data[[score_col]], 0))) %>%
-    mutate(score_ideal = .data[[score_col]] / ideal_score * 100) %>%
+    mutate(ideal_answer = max(ifelse(Tool == "Ideal Tool", .data[[answer_col]], 0))) %>%
+    mutate(answer_ideal = .data[[answer_col]] / ideal_answer * 100) %>%
     ungroup()
 
-  # Compute the BVT score for each year
+  # Compute the BVT answer for each year
   combined_data2 <- combined_data2 %>%
     group_by(year) %>%
-    mutate(bvt_score = max(ifelse(Tool == "RBVT", .data[[score_col]], 0))) %>%
+    mutate(bvt_answer = max(ifelse(Tool == "BVT", .data[[answer_col]], 0))) %>%
     ungroup()
 
-  # Compute the percentage of the BVT score
+  # Compute the percentage of the BVT answer
   combined_data2 <- combined_data2 %>%
-    mutate(score_bvt = .data[[score_col]] / bvt_score * 100)
+    mutate(answer_bvt = .data[[answer_col]] / bvt_answer * 100)
 
-  # Filter out Tools with NA values for score_ideal and score_bvt
+  # Filter out Tools with NA values for answer_ideal and answer_bvt
   combined_data2 <- combined_data2 %>%
-    filter(!is.na(score_ideal), !is.na(score_bvt)) %>%
-    rename(score = score_col)
+    filter(!is.na(answer_ideal), !is.na(answer_bvt)) %>%
+    rename(answer = answer_col)
   
   # Select only the columns we're interested in
   combined_data2 <- combined_data2 %>%
-    select(Tool, year, score, score_ideal, score_bvt)
+    select(Tool, year, answer, answer_ideal, answer_bvt)
   
   # Write the data frame to a CSV file in the "csv" directory
-  write.csv(combined_data2, file = paste0("./csv/", gsub(" ", "_", score_col), "_time.csv"), row.names = FALSE)
+  write.csv(combined_data2, file = paste0("./csv/", gsub(" ", "_", answer_col), "_time.csv"), row.names = FALSE)
 }
 
 # New loop for each category
@@ -154,35 +154,35 @@ for (category in names(categories)) {
     if (nrow(category_data) == 0) {
       category_data <- examination_data
     } else {
-      # If the category data is not empty, merge it with the examination data and sum the scores
+      # If the category data is not empty, merge it with the examination data and sum the answers
       examination_data <- examination_data %>%
-        select(Tool, year, score)  # Keep only the columns we need to merge and sum
+        select(Tool, year, answer)  # Keep only the columns we need to merge and sum
       
       category_data <- merge(category_data, examination_data, by = c("Tool", "year"), all = TRUE)
       category_data <- category_data %>%
-        mutate(score = rowSums(.[, c("score.x", "score.y")], na.rm = TRUE)) %>%
-        select(-c(score.x, score.y))
+        mutate(answer = rowSums(.[, c("answer.x", "answer.y")], na.rm = TRUE)) %>%
+        select(-c(answer.x, answer.y))
     }
   }
   
-  # Compute the ideal and BVT normalized scores for this category
+  # Compute the ideal and BVT normalized answers for this category
   category_data <- category_data %>%
     group_by(year) %>%
-    mutate(ideal_score = max(ifelse(Tool == "Ideal Tool", score, 0))) %>%
-    mutate(score_ideal = score / ideal_score * 100) %>%
+    mutate(ideal_answer = max(ifelse(Tool == "Ideal Tool", answer, 0))) %>%
+    mutate(answer_ideal = answer / ideal_answer * 100) %>%
     ungroup()
 
   category_data <- category_data %>%
     group_by(year) %>%
-    mutate(bvt_score = max(ifelse(Tool == "RBVT", score, 0))) %>%
+    mutate(bvt_answer = max(ifelse(Tool == "BVT", answer, 0))) %>%
     ungroup()
 
   category_data <- category_data %>%
-    mutate(score_bvt = score / bvt_score * 100)
+    mutate(answer_bvt = answer / bvt_answer * 100)
 
   # Remove the unneeded columns before writing to CSV
   category_data <- category_data %>%
-    select(Tool, year, score, score_ideal, score_bvt)
+    select(Tool, year, answer, answer_ideal, answer_bvt)
 
   # Write the data frame to a CSV file in the "csv" directory
   write.csv(category_data, file = paste0("./csv/answer_", category, "_time.csv"), row.names = FALSE)
