@@ -39,6 +39,10 @@ write.csv(df_models, "models.csv", row.names = FALSE)
 # their format is inconsistent with the rest, and we recompute it ourselves anyway
 df <- df[!grepl("^BVT", df$tool),]
 
+# Filter out rows where 'Input' starts with "S_"
+# these are the "Stripped" models we had in earlier editions of the MCC.
+df <- df[!grepl("^S_", df$Input),]
+
 # Split mask column into individual characters
 max_mask_width <- max(nchar(gsub("[\\s?-]+", "", df$mask)))  # Get the widest mask
 
