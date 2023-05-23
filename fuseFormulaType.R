@@ -28,10 +28,6 @@ for (folder in folders) {
   # Read the data from the CSV file
   resolution_df <- read_csv(resolution_file_path, col_types = cols(ID = col_character()))
   
-  # Decrease 'ID' by 1 and pad it with leading zeros
-  resolution_df <- resolution_df %>%
-    mutate(ID = str_pad(as.integer(ID) - 1, width = 2, side = "left", pad = "0"))
-  
   # Apply the conditional rules to resolution_df
   resolution_df <- resolution_df %>%
     mutate(FormulaType = case_when(
