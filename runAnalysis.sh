@@ -22,46 +22,45 @@ process_year() {
   download_data "$year"
   mkdir website
   cp -r ../../templates website/
-  Rscript ../../analyzeAnswers.R $year
+  # Rscript ../../analyzeAnswers.R $year
   
   Rscript ../../buildRefinedResults.R
   HORACLE="../../horacle/conv/iscex$year.csv"
   if [ -f $HORACLE ] ; then
-	  cp "../../horacle/conv/iscex$year.csv" ./forms.csv
+	  cp "../../horacle/conv/iscex$year.csv" ./iscex.csv
   fi
+  cp ../../nupn/nupn.csv .
   Rscript ../../fuseFormulaType.R
+  rm nupn.csv
+  if [ -f "iscex.csv" ] ; then
+  	rm iscex.csv
+  fi
+    
   python3 ../../buildJVennPages.py 
   
-  rm website/*.log
-  # Convert TIFF images to PNG format
-  cd website
-  for tiff_image in *.tiff; do
-    png_image="${tiff_image%.*}.png"
-    convert "$tiff_image" "$png_image"
-    rm "$tiff_image"
+  for i in ctl/  global_properties/  ltl/  reachability/  state_space/  upper_bounds/ ; do 
+  	cd $i;  
+  	python3 ../../../buildHTMLFromCSV.py ; 
+  	python3 ../../../csv_to_html.py resolution.csv ; 
+  	cd .. ; 
   done
-  cd ..
-  
-  python3 ../../buildHTMLFromCSV.py 
-  cd website
-  python3 ../../../buildVennPages.py
-  cd .. 
-  mv *.html website/
   python3 ../../buildFinalPages.py 
+  
+  rm raw-result-analysis.csv raw-result-analysis.csv.zip 
 }
 
 mkdir -p website
 cd website
 
-for year in {2016..2023}; do
+for year in {2021..2022}; do
 	mkdir $year
 	cd $year
 	cp -r ../../templates .
 	cp ../../templates/styles.css .
   	process_year "$year"
-  	mv answers.csv website/
+  	#mv answers.csv website/
   	rm -r templates/
-  	rm *
+  	# rm *
   	mv website/* .
   	cd ..
 done
@@ -105,7 +104,6 @@ EOL
   done
 
   cat >> website/index.html << EOL
-  <a href="timeplots.html">PluriAnnual Plots</a>
   <a href="PluriAnnual_dynamic.html">Dynamic Pluriannual plots</a>
 </body>
 </html>
