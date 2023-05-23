@@ -333,3 +333,34 @@ for (category_name in names(categories)) {
 }
 
 
+# Initialize an empty data frame
+answers_df <- data.frame()
+
+# Loop over the category names
+for (category_name in names(categories)) {
+  
+  # Read the category's scores.csv file
+  scores_df <- read.csv(file.path(category_name, "scores.csv"))
+  
+  # Drop the 'answer_total' and 'error_total' columns
+  scores_df <- scores_df %>% select(-c(answer_total, error_total))
+  
+  # If this is the first category, then answers_df is still empty and we can just copy scores_df into it
+  if (nrow(answers_df) == 0) {
+    answers_df <- scores_df
+  } else {
+    # Merge this category's data with the existing data
+    # By using a full join, we make sure that all tools are included, even if they didn't participate in every category
+    answers_df <- full_join(answers_df, scores_df, by = "Tool")
+  }
+  
+}
+
+# Fill NA values with 0
+answers_df[is.na(answers_df)] <- 0
+
+# Write the final dataframe to the answers.csv file
+write.csv(answers_df, "./answers.csv", row.names = FALSE)
+
+
+
