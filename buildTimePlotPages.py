@@ -41,8 +41,8 @@ plot_links = []
 # Loop over all categories
 for category, examinations in categories.items():
     # List of CSV files for the category and its examinations
-    csv_files = [f'csv/score_{category}_time.csv']
-    csv_files += [f'csv/score_{examination}_time.csv' for examination in examinations]
+    csv_files = [f'csv/answer_{category}_time.csv']
+    csv_files += [f'csv/answer_{examination}_time.csv' for examination in examinations]
     
     # Compute the plot_id
     plot_id = 'plot_' + category
