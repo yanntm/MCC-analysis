@@ -11,15 +11,15 @@
 
   <h3>Select normalization mode:</h3>
   <div>
-    <input type="radio" id="rawScore" name="scoreType" value="score" checked>
-    <label for="rawScore">Raw Score</label><br>
-    <input type="radio" id="idealScore" name="scoreType" value="score_ideal">
-    <label for="idealScore">Normalized Score (Ideal Tool)</label><br>
-    <input type="radio" id="bvtScore" name="scoreType" value="score_bvt">
-    <label for="bvtScore">Normalized Score (RBVT)</label>
+    <input type="radio" id="rawAnswer" name="answerType" value="answer" checked>
+    <label for="rawAnswer">Raw Answer Count</label><br>
+    <input type="radio" id="idealAnswer" name="answerType" value="answer_ideal">
+    <label for="idealAnswer">Normalized Answer Count (Ideal Tool)</label><br>
+    <input type="radio" id="bvtAnswer" name="answerType" value="answer_bvt">
+    <label for="bvtAnswer">Normalized Answer Count (RBVT)</label>
   </div>
 <script>
-  // Initial tools to display
+  // Initial Tools to display
   const initialTools = ["Ideal Tool", "RBVT", "ITS-Tools", "Tapaal", "LoLA", "enpac", "GreatSPN", "smpt"];
   
   const csvFiles = {{csv_files|tojson}};  // List of CSV files
@@ -66,35 +66,35 @@
 	};
 
   
-  // Function to update plot with selected data source and score normalization mode
-  const updatePlot = (dataSource, scoreType) => {
+  // Function to update plot with selected data source and answer normalization mode
+  const updatePlot = (dataSource, answerType) => {
     const data = allData[dataSource];
-    //const toolNames = [...new Set(data.map(row => row.tool))].sort();
+    //const ToolNames = [...new Set(data.map(row => row.Tool))].sort();
     const traces = [];
-    // Count the number of points for each tool
-    const toolCounts = data.reduce((counts, row) => {
-      counts[row.tool] = (counts[row.tool] || 0) + 1;
+    // Count the number of points for each Tool
+    const ToolCounts = data.reduce((counts, row) => {
+      counts[row.Tool] = (counts[row.Tool] || 0) + 1;
       return counts;
     }, {});
 
-    // Sort the tools first by the number of points (in descending order) and then alphabetically
-    const toolNames = Object.entries(toolCounts)
+    // Sort the Tools first by the number of points (in descending order) and then alphabetically
+    const ToolNames = Object.entries(ToolCounts)
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .map(entry => entry[0]);
     
-    toolNames.forEach(function(toolName) {
-      var toolData = data.filter(row => row.tool === toolName);
-      toolData.sort((a, b) => a.year - b.year);
+    ToolNames.forEach(function(ToolName) {
+      var ToolData = data.filter(row => row.Tool === ToolName);
+      ToolData.sort((a, b) => a.year - b.year);
 
       var trace = {
-        x: toolData.map(row => row.year),
-        y: toolData.map(row => parseFloat(row[scoreType])),
+        x: ToolData.map(row => row.year),
+        y: ToolData.map(row => parseFloat(row[answerType])),
         mode: 'lines+markers',
-        name: toolName,
+        name: ToolName,
         line: {
           shape: 'linear'
         },
-        visible: initialTools.includes(toolName) ? true : 'legendonly'  // Show initial tools
+        visible: initialTools.includes(ToolName) ? true : 'legendonly'  // Show initial Tools
       };
       traces.push(trace);
     });
@@ -106,7 +106,7 @@
           type: 'category'
         },
         yaxis: {
-          title: 'Score'
+          title: 'Answers'
         },
         legend: {
           orientation: 'h',
@@ -134,22 +134,22 @@
     document.querySelectorAll('input[name="dataSource"]').forEach((elem) => {
       elem.addEventListener("change", function(event) {
         const dataSource = event.target.value;
-        const scoreType = document.querySelector('input[name="scoreType"]:checked').value;
-        updatePlot(dataSource, scoreType);
+        const answerType = document.querySelector('input[name="answerType"]:checked').value;
+        updatePlot(dataSource, answerType);
       });
     });
 
-    // Add radio button listener for score normalization mode selection
-    document.querySelectorAll('input[name="scoreType"]').forEach((elem) => {
+    // Add radio button listener for answer normalization mode selection
+    document.querySelectorAll('input[name="answerType"]').forEach((elem) => {
       elem.addEventListener("change", function(event) {
-        const scoreType = event.target.value;
+        const answerType = event.target.value;
         const dataSource = document.querySelector('input[name="dataSource"]:checked').value;
-        updatePlot(dataSource, scoreType);
+        updatePlot(dataSource, answerType);
       });
     });
 
-    // Initialize plot with first data source and raw score
-    updatePlot(Object.keys(allData)[0], 'score');
+    // Initialize plot with first data source and raw answer
+    updatePlot(Object.keys(allData)[0], 'answer');
   });
 </script>
 </body>
