@@ -73,7 +73,7 @@ df$results <- lapply(df$results, function(x) {
 })
 
 # Now we should be able to use the separate function without errors
-df <- separate(df, "results", into = paste0("ver_", seq_len(max_mask_width)), sep = " ", convert = TRUE)
+df <- separate(df, "results", into = paste0("ver_", seq_len(max_mask_width)), sep = " ", convert = FALSE)
 
 
 handle_mask <- function(mask, max_mask_width) {
@@ -101,7 +101,7 @@ handle_mask <- function(mask, max_mask_width) {
 df$mask <- lapply(df$mask, handle_mask, max_mask_width=max_mask_width)
 
 # Separate the mask and results into individual columns
-df <- separate(df, mask, into=paste0("res_", seq_len(max_mask_width)), sep=" ", convert=TRUE)
+df <- separate(df, mask, into=paste0("res_", seq_len(max_mask_width)), sep=" ", convert=FALSE)
 
 # Pivot longer for the 'ver_' columns
 df_ver <- df %>%
