@@ -5,9 +5,22 @@ library(readr)
 library(stringr)  # for str_pad
 
 
-# Initialize forms_df and nupn_df as an empty data frames
-forms_df <- data.frame()
-nupn_df <- data.frame()
+# Initialize forms_df and nupn_df with required columns
+forms_df <- data.frame(Key = character(),
+                       ModelFamily = character(), 
+                       ModelType = character(), 
+                       ModelInstance = character(), 
+                       Examination = character(),
+                       ID = character(), 
+                       FormulaType = character(),
+                       stringsAsFactors = FALSE)
+
+nupn_df <- data.frame(ModelFamily = character(), 
+                      ModelType = character(), 
+                      ModelInstance = character(), 
+                      Nupn = character(),
+                      stringsAsFactors = FALSE)
+
 
 # Check if forms.csv exists in the current working directory
 if (file.exists("./iscex.csv")) {
@@ -45,18 +58,18 @@ for (folder in folders) {
   # Apply the conditional rules to resolution_df
   resolution_df <- resolution_df %>%
     mutate(FormulaType = case_when(
-      grepl("LTL", Examination) & Consensus == "T" ~ "INV",
-      grepl("LTL", Examination) & Consensus == "F" ~ "CEX",
-      Examination == "ReachabilityDeadlock" & Consensus == "T" ~ "CEX",
-      Examination == "ReachabilityDeadlock" & Consensus == "F" ~ "INV",
-      Examination == "OneSafe" & Consensus == "T" ~ "INV",
-      Examination == "OneSafe" & Consensus == "F" ~ "CEX",
-      Examination == "StableMarking" & Consensus == "T" ~ "INV",
-      Examination == "StableMarking" & Consensus == "F" ~ "CEX",
-      Examination == "QuasiLiveness" & Consensus == "T" ~ "INV",
-      Examination == "QuasiLiveness" & Consensus == "F" ~ "CEX",
-      Examination == "Liveness" & Consensus == "T" ~ "INV",
-      Examination == "Liveness" & Consensus == "F" ~ "CEX",
+      grepl("LTL", Examination) & Consensus == "TRUE" ~ "INV",
+      grepl("LTL", Examination) & Consensus == "FALSE" ~ "CEX",
+      Examination == "ReachabilityDeadlock" & Consensus == "TRUE" ~ "CEX",
+      Examination == "ReachabilityDeadlock" & Consensus == "FALSE" ~ "INV",
+      Examination == "OneSafe" & Consensus == "TRUE" ~ "INV",
+      Examination == "OneSafe" & Consensus == "FALSE" ~ "CEX",
+      Examination == "StableMarking" & Consensus == "TRUE" ~ "INV",
+      Examination == "StableMarking" & Consensus == "FALSE" ~ "CEX",
+      Examination == "QuasiLiveness" & Consensus == "TRUE" ~ "INV",
+      Examination == "QuasiLiveness" & Consensus == "FALSE" ~ "CEX",
+      Examination == "Liveness" & Consensus == "TRUE" ~ "INV",
+      Examination == "Liveness" & Consensus == "FALSE" ~ "CEX",
       TRUE ~ "UNKNOWN"  # default case
     ))
   
