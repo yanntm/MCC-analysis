@@ -75,6 +75,10 @@ df$results <- lapply(df$results, function(x) {
 # Now we should be able to use the separate function without errors
 df <- separate(df, "results", into = paste0("ver_", seq_len(max_mask_width)), sep = " ", convert = FALSE)
 
+# Replace "DNF" and "DNC" values with NA in the ver_1 column
+df <- df %>%
+  mutate(ver_1 = ifelse(ver_1 %in% c("DNF", "DNC"), NA, ver_1))
+
 
 handle_mask <- function(mask, max_mask_width) {
   # Split string into individual characters
@@ -134,6 +138,8 @@ df_long <- df_long %>%
 
 df <- df_long
 
+df <- df %>% replace(., . == "NA", NA)
+
 # Clone the df
 df_bvt <- df
 
@@ -141,7 +147,8 @@ df_bvt <- df
 df_bvt$Tool <- "BVT"
 
 # Remove rows with "X" as Verdict
-df_bvt <- df_bvt[df_bvt$Verdict != "X",]
+df_bvt <- df_bvt[df_bvt$Verdict == "T",]
+
 
 # Keep only unique rows
 df_bvt <- df_bvt[!duplicated(df_bvt),]
@@ -156,9 +163,13 @@ if(nrow(df_bvt_no_result[!duplicated(df_bvt_no_result),]) != nrow(df_bvt)) {
 # Bind the rows back to the original dataframe
 df <- rbind(df, df_bvt)
 
+df <- df %>% replace(., . == "NA", NA)
+
 # Export the refined data to a CSV file
 # write.csv(df, "refined-result-bvt.csv", row.names = FALSE)
 
+df <- df %>%
+  filter(!is.na(Verdict))
 
 colnames(df)
 
@@ -188,28 +199,28 @@ for (category_name in names(categories)) {
     distinct() %>%
     rename(Consensus = Result) %>%
     mutate(Index = row_number())
-  
-  # Create the category directory if it does not exist
-  if (!dir.exists(category_name)){
-    dir.create(category_name)
-  }
-  
+
+  # Left join df_category with resolution_category to get the new Index
+  df_category <- df_category %>%
+    left_join(resolution_category, by = c("ModelFamily", "ModelType", "ModelInstance", "Examination" , "ID")) %>%
+    select(Tool, Index, Verdict)
+
   # Reorder the column named "Index" to be the first column
   resolution_category <- resolution_category[, c("Index", setdiff(names(resolution_category), "Index"))]
-
   
   # Decrease 'ID' by 1 and pad it with leading zeros
   resolution_category <- resolution_category %>%
     mutate(ID = str_pad(as.integer(ID) - 1, width = 2, side = "left", pad = "0"))
   
+  # Create the category directory if it does not exist
+  if (!dir.exists(category_name)){
+    dir.create(category_name)
+  }
+
   # Write the category's resolution to a CSV file in the category's directory
   write.csv(resolution_category, file.path(category_name, "resolution.csv"), row.names = FALSE)
   
-  # Left join df_category with resolution_category to get the new Index
-  df_category <- df_category %>%
-    left_join(resolution_category, by = c("ModelFamily", "ModelType", "ModelInstance", "Examination" , "ID")) %>%
-    select(Tool, Index, Verdict)
-  
+    
 # Now you can split the df_category into separate entries for each Tool
 tools <- unique(df_category$Tool)
 tool_index_dict <- list()
