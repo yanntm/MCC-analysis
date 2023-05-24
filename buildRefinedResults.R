@@ -15,9 +15,8 @@ output_folder <- "website"
 
 raw_result_analysis <- read.csv(file = input_file,  dec = ".", sep = ",",  header = TRUE, stringsAsFactors = FALSE)
 
-if (current_year == 2019) {
-  raw_result_analysis$Examination[raw_result_analysis$Examination == "GlobalProperties"] <- "ReachabilityDeadlock"
-}
+# Just for 2019 where ReachabilityDeadlock was renamed.
+raw_result_analysis$Examination[raw_result_analysis$Examination == "GlobalProperties"] <- "ReachabilityDeadlock"
 
 df <- raw_result_analysis
 df <- rename(df, tool = "X....tool")
@@ -245,6 +244,10 @@ process_category <- function(df, category_name, examinations, model_type = NULL)
   # Filter the data to include only the specified examinations
   df_category <- df %>%
     filter(Examination %in% examinations)
+  
+  # Update the examinations variable to include only those present in df_category
+  examinations <- unique(df_category$Examination)
+  
   
   # If a model type is provided, filter data based on the model type
   if (!is.null(model_type)) {
