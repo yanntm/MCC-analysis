@@ -31,7 +31,7 @@ jobs:
     - name: Install R packages
       run: |
          mkdir -p ${{ env.R_LIBS_USER }}
-         Rscript -e "install.packages(c('stringr', 'dplyr', 'tidyr', 'writexl', 'VennDiagram', 'ggplot2'), repos='https://cran.rstudio.com/', lib='${{ env.R_LIBS_USER }}')"
+         Rscript -e "install.packages(c('stringr', 'dplyr', 'tidyr', 'writexl', 'VennDiagram', 'ggplot2', 'jsonlite'), repos='https://cran.rstudio.com/', lib='${{ env.R_LIBS_USER }}')"
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
