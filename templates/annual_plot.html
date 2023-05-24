@@ -20,7 +20,7 @@
   </div>
 <script>
   // Initial Tools to display
-  const initialTools = ["Ideal Tool", "RBVT", "ITS-Tools", "Tapaal", "LoLA", "enpac", "GreatSPN", "smpt"];
+  const initialTools = ["Ideal Tool", "BVT", "ITS-Tools", "Tapaal", "LoLA", "enpac", "GreatSPN", "smpt"];
   
   const csvFiles = {{csv_files|tojson}};  // List of CSV files
 
@@ -68,6 +68,19 @@
   
   // Function to update plot with selected data source and answer normalization mode
   const updatePlot = (dataSource, answerType) => {
+	    // Initialize shownTools to be the same as initialTools
+	    let shownTools = initialTools.slice();
+
+	    // If the plot already exists, collect the currently visible tools
+	    if (typeof plotDiv.data !== "undefined") {
+	      shownTools = [];
+	      for(let i = 0; i < plotDiv.data.length; i++){
+	        if(plotDiv.data[i].visible === true){
+	          shownTools.push(plotDiv.data[i].name);
+	        }
+	      }
+	    }  
+	  
     const data = allData[dataSource];
     //const ToolNames = [...new Set(data.map(row => row.Tool))].sort();
     const traces = [];
@@ -94,13 +107,14 @@
         line: {
           shape: 'linear'
         },
-        visible: initialTools.includes(ToolName) ? true : 'legendonly'  // Show initial Tools
+        visible: shownTools.includes(ToolName) ? true : 'legendonly'  // Show initial Tools
       };
       traces.push(trace);
     });
        // Plot layout
       var layout = {
         title: '{{plot_id}}',
+        height: 600,
         xaxis: {
           title: 'Year',
           type: 'category'
