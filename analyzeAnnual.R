@@ -50,49 +50,6 @@ answer_cols <- grep("^answer_", colnames(combined_data), value = TRUE)
 # Replace 0 answers with NA (meaning the Tool did not participate)
 combined_data[answer_cols] <- lapply(combined_data[answer_cols], function(x) replace(x, x == 0, NA))
 
-# Create a plot for each examination
-# Loop over answer_XX columns
-for (answer_col in answer_cols) {
-  # Compute the name of the normalized answer column
-  norm_answer_col <- paste0("norm_", answer_col)
-  
-  # Compute normalized answers for this examination
-  combined_data2 <- combined_data %>%
-    group_by(year) %>%
-    mutate(ideal_answer = max(ifelse(Tool == "Ideal Tool", .data[[answer_col]], 0))) %>%
-    mutate({{norm_answer_col}} := .data[[answer_col]] / ideal_answer * 100) %>%
-    ungroup()
-  
-
-  # Filter out Tools with NA values for norm_answer_col
-  combined_data2 <- combined_data2 %>% 
-    filter(!is.na(.data[[norm_answer_col]]))
-  
-  
-  # Count the number of years each Tool participated in this examination
-  Tool_counts <- combined_data2 %>% 
-    filter(!is.na(.data[[norm_answer_col]])) %>% 
-    group_by(Tool) %>%
-    summarise(n = n_distinct(year))
-  
-  # Add points for all Tools
-  p <- ggplot(combined_data2, aes_string(x = "year", y = norm_answer_col, color = "Tool")) +
-    geom_point() +
-    scale_x_continuous(breaks = unique(combined_data$year)) +
-    labs(title = paste(answer_col, "Score Over Time"), x = "Year", y = "Score (% of Ideal Tool)") +
-    theme(legend.position = "bottom") +
-    guides(color = guide_legend(ncol = 3, title = "Tool"))
-  
-  # Add lines for Tools that have participated more than once
-  for (Tool in Tool_counts$Tool[Tool_counts$n > 1]) {
-    p <- p + geom_line(data = combined_data2[combined_data2$Tool == Tool, ], aes_string(x = "year", y = norm_answer_col, color = "Tool"))
-  }
-  
-  # Save the plot as a PNG in the "plots" directory
-  ggsave(filename = paste0("./", gsub(" ", "_", answer_col), "_time.png"), plot = p, width = 10, height = 7, dpi = 300)
-  
-}
-
 # Define categories
 categories <- list(
   state_space = c("StateSpace"),
