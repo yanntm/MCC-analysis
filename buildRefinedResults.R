@@ -107,6 +107,7 @@ df$mask <- lapply(df$mask, handle_mask, max_mask_width=max_mask_width)
 # Separate the mask and results into individual columns
 df <- separate(df, mask, into=paste0("res_", seq_len(max_mask_width)), sep=" ", convert=FALSE)
 
+{
 # Pivot longer for the 'ver_' columns
 df_ver <- df %>%
   pivot_longer(cols = starts_with("ver_"), names_to = "ID", values_to = "verdict") %>%
@@ -125,6 +126,8 @@ df_long <- df_long %>%
   select(tool, Input, Examination, ID, result, verdict)
 
 df_long <- df_long %>%
+  replace(., . == "NA", NA) %>%
+  filter(!is.na(result)) %>%
   group_by(tool, Input, Examination, ID) %>%
   filter(!all(is.na(result))) %>%
   ungroup()
@@ -139,7 +142,9 @@ df_long <- df_long %>%
 df <- df_long
 
 df <- df %>% replace(., . == "NA", NA)
+}
 
+{
 # Clone the df
 df_bvt <- df
 
@@ -148,7 +153,6 @@ df_bvt$Tool <- "BVT"
 
 # Remove rows with "X" as Verdict
 df_bvt <- df_bvt[df_bvt$Verdict == "T",]
-
 
 # Keep only unique rows
 df_bvt <- df_bvt[!duplicated(df_bvt),]
@@ -162,6 +166,7 @@ if(nrow(df_bvt_no_result[!duplicated(df_bvt_no_result),]) != nrow(df_bvt)) {
 
 # Bind the rows back to the original dataframe
 df <- rbind(df, df_bvt)
+}
 
 df <- df %>% replace(., . == "NA", NA)
 
