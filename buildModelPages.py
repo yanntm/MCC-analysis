@@ -56,3 +56,51 @@ template_variables = {
 with open("models.html", "w") as f:
     f.write(template.render(template_variables, image_files=image_dict))
 
+# Reorder and drop redundant 'Model' column
+df = df[['ModelFamily', 'ModelType', 'ModelInstance', 'Places', 'Transitions', 'Arcs']]
+
+# Generate table HTML
+table_html = df.to_html(index=False, classes="display", justify="left", escape=False, table_id="myTable")
+
+# Generate the final HTML including DataTable initialization
+html = f"""
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+  <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+  Currently showing: 
+  <select id="modelTypeSelect">
+    <option value="">All</option>
+    <option value="COL">COL</option>
+    <option value="PT">PT</option>
+  </select> models
+  <br/>
+  {table_html}
+  <script>
+    $(document).ready(function() {{
+      var table = $('#myTable').DataTable({{
+        "pageLength": 25,
+        "caseInsensitive": false
+      }});
+
+      $('#modelTypeSelect').on('change', function() {{
+        table
+          .column(1) // modelType is the second column (0-indexed)
+          .search(this.value)
+          .draw();
+      }});
+    }});
+  </script>
+</body>
+</html>"""
+
+# Write to file
+with open('ModelDescriptions.html', 'w') as f:
+    f.write(html)
+    
+
+    
