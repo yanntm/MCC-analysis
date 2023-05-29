@@ -6,13 +6,51 @@
     <title>MCC Model Size Analysis - 2023 Edition</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>    
 </head>
 <body>
     <h1>MCC 2023 Model Size Analysis</h1>
 	<p>We provide analysis for three categories: Petri Net (PT), Colored Petri Net (COL), and All. The 'All' category contains all models.</p>
-   	<p>The MCC '23 models contained {{ total_model_instances }} model instances coming from {{ total_model_families }} model families, of which {{ total_COL_model_families }} are COL model families. In total there are {{ total_PT_model_instances }} PT model instances and {{ total_COL_model_instances }} COL model instances in this dataset.</p>
+   	<p>The MCC '23 models contained {{ total_model_instances }} model instances coming from {{ total_model_families }} model families, of which {{ total_COL_model_families }} are COL model families. In total there are {{ total_PT_model_instances }} PT model instances and {{ total_COL_model_instances }} COL model instances in this dataset.
+   	Out of these {{ total_PT_model_instances }} PT model instances, {{ pt_from_col_instances }} are instances produced from COL models by unfolding.</p>
+
+<div id="chartContainer" style="display:none;">
+    <div id="pieChart"></div>
+</div>
+
+<button id="showPlotButton">Show as plot ▼</button>
+
+<script>
+var data = [{
+  values: [{{ total_COL_model_instances }}, {{ pt_from_col_instances }}, {{ pt_not_from_col_instances }}],
+  labels: ['COL','PT from COL', 'PT'],
+  type: 'pie'
+}];
+
+var layout = {
+  width: 500,
+  height: 500,
+  title: 'PT Model Instances',
+};
+
+$('#showPlotButton').click(function() {
+    var container = $('#chartContainer');
+    var button = $('#showPlotButton');
+
+    if (container.is(':visible')) {
+        container.hide();
+        button.html('Show as plot ▼');
+    } else {
+        container.show();
+        Plotly.newPlot('pieChart', data, layout);
+        button.html('Hide plot ▲');
+    }
+});
+</script>
+   	
 	<p>Both visualizations of the <a href="ModelDescriptions.html">raw data</a> <a href="ModelDescriptions.csv">(download as CSV)</a> show the distribution of model sizes across the various models analyzed in this study. The raw data gives the precise sizes of different model attributes, while the visualizations provide a more holistic and comprehensive view of the distribution and spread of these attributes.</p>
-	    
+	
     <!-- Filter buttons -->
     <div class="btn-group" role="group" aria-label="Filter">
         {% for category in image_files.keys() %}
