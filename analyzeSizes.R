@@ -9,6 +9,8 @@ library(dplyr)
 create_density_plot <- function(df, column_name, model_type=NULL) {
   if (!is.null(model_type)) {
     df <- df %>% filter(ModelType == model_type)
+  } else {
+    model_type <- "All"
   }
   
   p <- ggplot(df, aes_string(x = column_name)) +
@@ -18,7 +20,7 @@ create_density_plot <- function(df, column_name, model_type=NULL) {
                   labels = c("1", "10", 100 ,expression(10^3), expression(10^4),
                              expression(10^5), expression(10^6))) +  # Manual labels
     theme_minimal() +
-    ggtitle(paste0("Histogram with Density Plot of ", column_name, " (Log Scale)")) +
+    ggtitle(paste0("Histogram with Density Plot of ", column_name, " (Log Scale) for ",model_type," Models")) +
     xlab(paste0("Number of ", column_name, " (Log Scale)")) +
     ylab("Density")
   
@@ -42,7 +44,7 @@ create_box_plot <- function(df, model_type=NULL) {
                   labels = c("1", "10", "100" ,expression(10^3), expression(10^4),
                              expression(10^5), expression(10^6), expression(10^7))) +  # Manual labels
     theme_minimal() +
-    ggtitle(paste0("Box Plot of Places, Transitions, and Arcs (Log Scale)")) +
+    ggtitle(paste0("Box Plot of Places, Transitions, and Arcs (Log Scale) for ",model_type," Models")) +
     xlab("Metric") +
     ylab("Count (Log Scale)")
   
