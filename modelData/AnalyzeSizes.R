@@ -30,6 +30,8 @@ create_density_plot <- function(df, column_name, model_type=NULL) {
 create_box_plot <- function(df, model_type=NULL) {
   if (!is.null(model_type)) {
     df <- df %>% filter(ModelType == model_type)
+  } else {
+    model_type <- "All"
   }
   
   df_long <- pivot_longer(df, cols = c(Places, Transitions, Arcs), names_to = "Metric", values_to = "Count")
