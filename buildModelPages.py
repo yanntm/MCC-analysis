@@ -42,6 +42,8 @@ total_COL_model_families = df[df['ModelType'] == 'COL']['ModelFamily'].nunique()
 total_PT_model_instances = df[df['ModelType'] == 'PT']['Model'].nunique()
 total_COL_model_instances = df[df['ModelType'] == 'COL']['Model'].nunique()
 
+
+
 # Prepare the variables for the template
 template_variables = {
     "image_files": image_dict,
@@ -51,6 +53,14 @@ template_variables = {
     "total_PT_model_instances": total_PT_model_instances,
     "total_COL_model_instances": total_COL_model_instances
 }
+
+col_model_families = set(df[df['ModelType'] == 'COL']['ModelFamily'])
+pt_from_col_instances = df[(df['ModelType'] == 'PT') & (df['ModelFamily'].isin(col_model_families))]['Model'].nunique()
+template_variables["pt_from_col_instances"] = pt_from_col_instances
+
+pt_not_from_col_instances = total_PT_model_instances - pt_from_col_instances
+template_variables["pt_not_from_col_instances"] = pt_not_from_col_instances
+
 
 # Render the template and write it to models.html
 with open("models.html", "w") as f:
