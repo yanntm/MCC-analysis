@@ -69,13 +69,22 @@ done
 # generate time plots
 mkdir -p csv
 Rscript ../analyzeAnnual.R
-
-
 # generate HTML gallery for them
 cp -r ../templates/ .
 cp ../templates/styles.css .
 python3 ../buildTimePlotPages.py
 rm -rf templates/
+
+
+# generate model size plots
+mkdir models
+cd models
+cp ../../modelData/ModelDescriptions.csv .
+Rscript ../../analyzeSizes.R
+cp -r ../../templates/ . ; python3 ../../buildModelPages.py
+cp templates/styles.css .
+rm -rf templates
+cd ..
 
 cd ..
 
@@ -105,6 +114,7 @@ EOL
 
   cat >> website/index.html << EOL
   <a href="PluriAnnual_dynamic.html">Dynamic Pluriannual plots</a>
+  <a href="models/index.html">Analysis of the Models of MCC</a>
 </body>
 </html>
 EOL
