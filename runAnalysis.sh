@@ -114,7 +114,7 @@ EOL
 
   cat >> website/index.html << EOL
   <a href="PluriAnnual_dynamic.html">Dynamic Pluriannual plots</a>
-  <a href="models/index.html">Analysis of the Models of MCC</a>
+  <a href="models/models.html">Analysis of the Models of MCC</a>
 </body>
 </html>
 EOL
