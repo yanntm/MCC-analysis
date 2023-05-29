@@ -59,6 +59,19 @@ with open("models.html", "w") as f:
 # Reorder and drop redundant 'Model' column
 df = df[['ModelFamily', 'ModelType', 'ModelInstance', 'Places', 'Transitions', 'Arcs']]
 
+# Function to determine ParameterType
+def get_parameter_type(group):
+    if len(group) == 1:
+        return 'none'
+    elif (group[['Places', 'Transitions', 'Arcs']].nunique() == 1).all():
+        return 'marking'
+    else:
+        return 'structure'
+
+# Compute ParameterType for each group and map it back to the corresponding rows in the original dataframe
+parameter_types = df.groupby(['ModelFamily', 'ModelType']).apply(get_parameter_type)
+df['ParameterType'] = df.set_index(['ModelFamily', 'ModelType']).index.map(parameter_types)
+
 # Generate table HTML
 table_html = df.to_html(index=False, classes="display", justify="left", escape=False, table_id="myTable")
 
