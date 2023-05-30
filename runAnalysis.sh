@@ -81,6 +81,7 @@ mkdir models
 cd models
 cp ../../modelData/ModelDescriptions.csv .
 Rscript ../../analyzeSizes.R
+Rscript ../../analyzeHardness.R
 cp -r ../../templates/ . ; python3 ../../buildModelPages.py
 cp templates/styles.css .
 rm -rf templates
@@ -113,8 +114,9 @@ EOL
   done
 
   cat >> website/index.html << EOL
-  <a href="PluriAnnual_dynamic.html">Dynamic Pluriannual plots</a>
-  <a href="models/models.html">Analysis of the Models of MCC</a>
+  <a href="PluriAnnual_dynamic.html">Dynamic Pluriannual plots</a><br/>
+  <a href="models/models.html">Analysis of the Models of MCC</a><br/>
+  <a href="models/ModelHardness.html">How hard are the Models of MCC ? (page still WIP)</a>
 </body>
 </html>
 EOL
