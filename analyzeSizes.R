@@ -4,6 +4,8 @@ library(readr)
 library(scales)
 library(tidyr)
 library(dplyr)
+library(forcats)
+
 
 # Function to create density histogram plot
 create_density_plot <- function(df, column_name, model_type=NULL) {
@@ -38,7 +40,7 @@ create_box_plot <- function(df, model_type=NULL) {
   
   df_long <- pivot_longer(df, cols = c(Places, Transitions, Arcs), names_to = "Metric", values_to = "Count")
   
-  p <- ggplot(df_long, aes(x = Metric, y = Count)) +
+  p <- ggplot(df_long, aes(x = fct_relevel(Metric, "Places", "Transitions", "Arcs"), y = Count)) +
     geom_boxplot() +
     scale_y_log10(breaks = c(1,10,100,1e3,1e4,1e5,1e6,1e7),  # Manual breaks
                   labels = c("1", "10", "100" ,expression(10^3), expression(10^4),
@@ -50,6 +52,7 @@ create_box_plot <- function(df, model_type=NULL) {
   
   ggsave(filename = paste0("box_plot_", model_type, ".png"), plot = p, dpi = 300)
 }
+
 
 # Load the data
 data <- read_csv("ModelDescriptions.csv")
