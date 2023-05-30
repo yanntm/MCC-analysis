@@ -20,9 +20,11 @@ def sort_func(filename):
 
 # Create a dictionary mapping category to png files
 image_dict = {
-    'All': sorted([f for f in png_files if 'All' in f], key=sort_func),
-    'COL': sorted([f for f in png_files if 'COL' in f], key=sort_func),
-    'PT': sorted([f for f in png_files if 'PT' in f], key=sort_func)
+    'All': sorted([f for f in png_files if '_All.png' in f], key=sort_func),
+    'COL': sorted([f for f in png_files if '_COL.png' in f], key=sort_func),
+    'PTAll': sorted([f for f in png_files if '_PTAll.png' in f], key=sort_func),
+    'PT': sorted([f for f in png_files if '_PT.png' in f and '_PTAll.png' not in f and '_PTUnfolding.png' not in f], key=sort_func),
+    'PTUnfolding': sorted([f for f in png_files if '_PTUnfolding.png' in f], key=sort_func),
 }
 
 # Load Jinja2 environment
