@@ -10,7 +10,7 @@ library(forcats)
 # Function to create density histogram plot
 create_density_plot <- function(df, column_name, model_type=NULL) {
   if (!is.null(model_type)) {
-    df <- df %>% filter(ModelType == model_type)
+    df <- df %>% filter(ModelTypeUpdated == model_type)
   } else {
     model_type <- "All"
   }
@@ -33,7 +33,7 @@ create_density_plot <- function(df, column_name, model_type=NULL) {
 # Function to create box plot
 create_box_plot <- function(df, model_type=NULL) {
   if (!is.null(model_type)) {
-    df <- df %>% filter(ModelType == model_type)
+    df <- df %>% filter(ModelTypeUpdated == model_type)
   } else {
     model_type <- "All"
   }
@@ -53,7 +53,6 @@ create_box_plot <- function(df, model_type=NULL) {
   ggsave(filename = paste0("box_plot_", model_type, ".png"), plot = p, dpi = 300)
 }
 
-
 # Load the data
 data <- read_csv("ModelDescriptions.csv")
 
@@ -61,23 +60,30 @@ data <- read_csv("ModelDescriptions.csv")
 data <- data %>% 
   separate(Model, into = c("ModelFamily", "ModelType", "ModelInstance"), sep = "-")
 
-# Invoke the function for Places, Transitions, and Arcs
-create_density_plot(data, "Places")
-create_density_plot(data, "Transitions")
-create_density_plot(data, "Arcs")
+# Function to create all plots
+create_all_plots <- function(df, model_type=NULL) {
+  create_density_plot(df, "Places", model_type)
+  create_density_plot(df, "Transitions", model_type)
+  create_density_plot(df, "Arcs", model_type)
+  create_box_plot(df, model_type)
+}
 
-# Invoke the function for Places, Transitions, and Arcs for each ModelType separately
-create_density_plot(data, "Places", "COL")
-create_density_plot(data, "Transitions", "COL")
-create_density_plot(data, "Arcs", "COL")
+# Compute COL model families
+col_model_families <- unique(data[data$ModelType == 'COL',]$ModelFamily)
 
-create_density_plot(data, "Places", "PT")
-create_density_plot(data, "Transitions", "PT")
-create_density_plot(data, "Arcs", "PT")
+# Step 1: Update 'PT' to 'PTAll'
+data$ModelTypeUpdated <- ifelse(data$ModelType == 'PT', 'PTAll', data$ModelType)
 
-# Create box plot for all data
-create_box_plot(data)
+# Create all plots for 'COL' and 'PTAll'
+create_all_plots(data, "COL")
+create_all_plots(data, "PTAll")
 
-# Create box plot for each ModelType separately
-create_box_plot(data, "COL")
-create_box_plot(data, "PT")
+# Step 2: Decompose 'PTAll' into 'PTUnfolding' and 'PT'
+data$ModelTypeUpdated <- ifelse(data$ModelTypeUpdated == 'PTAll' & data$ModelFamily %in% col_model_families, 'PTUnfolding', data$ModelTypeUpdated)
+data$ModelTypeUpdated <- ifelse(data$ModelTypeUpdated == 'PTAll' & !(data$ModelFamily %in% col_model_families), 'PT', data$ModelTypeUpdated)
+
+# Create all plots for 'PTUnfolding' and 'PT'
+create_all_plots(data, "PTUnfolding")
+create_all_plots(data, "PT")
+
+create_all_plots(data)
