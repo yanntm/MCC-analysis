@@ -24,14 +24,14 @@
 <script>
 var data = [{
   values: [{{ total_COL_model_instances }}, {{ pt_from_col_instances }}, {{ pt_not_from_col_instances }}],
-  labels: ['COL','PT from COL', 'PT'],
+  labels: ['COL','PT from Unfolding', 'PT'],
   type: 'pie'
 }];
 
 var layout = {
   width: 500,
   height: 500,
-  title: 'PT Model Instances',
+  title: 'Decomposition of {{ total_model_instances }} Model Instances',
 };
 
 $('#showPlotButton').click(function() {
