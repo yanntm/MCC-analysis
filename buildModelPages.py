@@ -84,48 +84,55 @@ def get_parameter_type(group):
 parameter_types = df.groupby(['ModelFamily', 'ModelType']).apply(get_parameter_type)
 df['ParameterType'] = df.set_index(['ModelFamily', 'ModelType']).index.map(parameter_types)
 
-# Generate table HTML
-table_html = df.to_html(index=False, classes="display", justify="left", escape=False, table_id="myTable")
+def export_to_html(df, filename, table_id):
+    # Generate table HTML
+    table_html = df.to_html(index=False, classes="display", justify="left", escape=False, table_id=table_id)
 
-# Generate the final HTML including DataTable initialization
-html = f"""
-<!DOCTYPE html>
-<html>
-<head>
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
-  <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-</head>
-<body>
-  Currently showing: 
-  <select id="modelTypeSelect">
-    <option value="">All</option>
-    <option value="COL">COL</option>
-    <option value="PT">PT</option>
-  </select> models
-  <br/>
-  {table_html}
-  <script>
-    $(document).ready(function() {{
-      var table = $('#myTable').DataTable({{
-        "pageLength": 25,
-        "caseInsensitive": false
-      }});
+    # Generate the final HTML including DataTable initialization
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+      <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+      <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    </head>
+    <body>
+      Currently showing: 
+      <select id="modelTypeSelect">
+        <option value="">All</option>
+        <option value="COL">COL</option>
+        <option value="PT">PT</option>
+      </select> models
+      <br/>
+      {table_html}
+      <script>
+        $(document).ready(function() {{
+          var table = $('#{table_id}').DataTable({{
+            "pageLength": 25,
+            "caseInsensitive": false
+          }});
 
-      $('#modelTypeSelect').on('change', function() {{
-        table
-          .column(1) // modelType is the second column (0-indexed)
-          .search(this.value)
-          .draw();
-      }});
-    }});
-  </script>
-</body>
-</html>"""
+          $('#modelTypeSelect').on('change', function() {{
+            table
+              .column(1) // modelType is the second column (0-indexed)
+              .search(this.value)
+              .draw();
+          }});
+        }});
+      </script>
+    </body>
+    </html>"""
 
-# Write to file
-with open('ModelDescriptions.html', 'w') as f:
-    f.write(html)
-    
+    # Write to file
+    with open(filename, 'w') as f:
+        f.write(html)
+
+df2 = pd.read_csv("ModelHardness.csv")
+
+# Call the function with each DataFrame and the desired output filename
+export_to_html(df, 'ModelDescriptions.html', 'myTable1')
+export_to_html(df2, 'ModelHardness.html', 'myTable2')
+
 
     
