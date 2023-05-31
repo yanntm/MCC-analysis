@@ -83,6 +83,7 @@ cp ../../modelData/ModelDescriptions.csv .
 Rscript ../../analyzeSizes.R
 Rscript ../../analyzeHardness.R
 cp -r ../../templates/ . ; python3 ../../buildModelPages.py
+python3 ../../buildHardnessPlots.py
 cp templates/styles.css .
 rm -rf templates
 cd ..
@@ -116,7 +117,7 @@ EOL
   cat >> website/index.html << EOL
   <a href="PluriAnnual_dynamic.html">Dynamic Pluriannual plots</a><br/>
   <a href="models/models.html">Analysis of the Models of MCC</a><br/>
-  <a href="models/ModelHardness.html">How hard are the Models of MCC ? (page still WIP)</a>
+  <a href="models/hardness_plot_rendered.html">How hard are the Models of MCC ? (page still WIP)</a>
 </body>
 </html>
 EOL
