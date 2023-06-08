@@ -6,7 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 df = pd.read_csv("ModelHardness.csv")
 
 # Define ideal scores
-ideal_scores = {'ctl': 32, 'global_properties': 5, 'ltl': 16, 'reachability': 32, 'state_space': 4, 'upper_bounds': 16}
+ideal_scores = {'ctl': 32, 'global_properties': 5, 'ltl': 32, 'reachability': 32, 'state_space': 4, 'upper_bounds': 16}
 
 # List all examination categories and years
 categories = ['ctl', 'global_properties', 'ltl', 'reachability', 'state_space', 'upper_bounds']
