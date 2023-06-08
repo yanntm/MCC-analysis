@@ -18,7 +18,7 @@ resolution_data <- list()
 for(year in years){
   # Get all directories containing resolution.csv in the given year
   directories <- list.files(path = paste0("../", year), pattern = "resolution.csv", recursive = TRUE, full.names = TRUE)
-
+  
   # For each directory (i.e., examination category)
   for(dir in directories){
     # Extract examination name from the directory path
@@ -28,13 +28,26 @@ for(year in years){
     resolution <- read_csv(dir)
     resolution <- resolution %>% mutate(ModelKey = paste(ModelFamily, ModelType, ModelInstance, sep = "-"))
     
+    # Process BVT data
     # Join resolution data with original df, count the number of resolved instances per model
-    joined <- df %>%
+    joined_bvt <- df %>%
       left_join(resolution, by = "ModelKey") %>%
       group_by(ModelKey) %>%
       summarise(count = n(), .groups = "drop") %>%
       replace_na(list(count = 0)) %>%
       rename(!!paste0(examination, "BVT", year) := count)
+    
+    # Process SOL data
+    # Join resolution data with original df, sum the Solutions per model
+    joined_sol <- df %>%
+      left_join(resolution, by = "ModelKey") %>%
+      group_by(ModelKey) %>%
+      summarise(sum_solutions = sum(Solutions, na.rm = TRUE), .groups = "drop") %>%
+      replace_na(list(sum_solutions = 0)) %>%
+      rename(!!paste0(examination, "SOL", year) := sum_solutions)
+    
+    # Join BVT and SOL data
+    joined <- full_join(joined_bvt, joined_sol, by = "ModelKey")
     
     # Load model data and create 'ModelKey' field
     models <- read_csv(paste0("../", year, "/models.csv"))
@@ -43,7 +56,7 @@ for(year in years){
     # Flag if model exists in the year's models.csv
     joined <- joined %>% 
       mutate(ExistsModels = ifelse(ModelKey %in% models$ModelKey, 1, 0))
-      
+    
     # Flag if model exists in resolution.csv
     joined <- joined %>% 
       mutate(ExistsResolution = ifelse(ModelKey %in% resolution$ModelKey, 1, 0))
@@ -51,10 +64,10 @@ for(year in years){
     
     # Replace counts with 0 for models not existing in resolution.csv
     joined <- joined %>% 
-      mutate_at(vars(ends_with(paste0("BVT", year))), list(~if_else(ExistsResolution == 0, 0, .))) %>%
-      mutate_at(vars(ends_with(paste0("BVT", year))), list(~if_else(ExistsModels == 0, NA_real_, .))) %>%
+      mutate_at(vars(ends_with(paste0("BVT", year)) | ends_with(paste0("SOL", year))), list(~if_else(ExistsResolution == 0, 0, .))) %>%
+      mutate_at(vars(ends_with(paste0("BVT", year)) | ends_with(paste0("SOL", year))), list(~if_else(ExistsModels == 0, NA_real_, .))) %>%
       select(-ExistsModels, -ExistsResolution)
-
+    
     # Append joined data to the list
     resolution_data[[length(resolution_data) + 1]] <- joined
   }
