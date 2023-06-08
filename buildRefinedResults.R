@@ -19,6 +19,9 @@ raw_result_analysis <- read.csv(file = input_file,  dec = ".", sep = ",",  heade
 raw_result_analysis$Examination[raw_result_analysis$Examination == "GlobalProperties"] <- "ReachabilityDeadlock"
 
 df <- raw_result_analysis
+
+rm(raw_result_analysis)
+
 df <- rename(df, tool = "X....tool")
 df <- separate(df, "flags.bonus.scores.mask", into = c("flags", "bonus", "score", "mask"), sep = ":")
 
@@ -121,6 +124,9 @@ df_res <- df %>%
 # Join the two data frames
 df_long <- left_join(df_ver, df_res, by = c("tool", "Input", "Examination", "ID"))
 
+rm(df_res)
+rm(df_ver)
+
 # Select the desired columns
 df_long <- df_long %>%
   select(tool, Input, Examination, ID, result, verdict)
@@ -140,7 +146,7 @@ df_long <- df_long %>%
   separate(Input, into = c("ModelFamily", "ModelType", "ModelInstance"), sep = "-")
 
 df <- df_long
-
+rm(df_long)
 df <- df %>% replace(., . == "NA", NA)
 }
 
@@ -163,6 +169,7 @@ df_bvt_no_result$Result <- NULL
 if(nrow(df_bvt_no_result[!duplicated(df_bvt_no_result),]) != nrow(df_bvt)) {
   print("Warning: Number of unique rows differs when ignoring 'Result'")
 }
+rm(df_bvt_no_result)
 
 # Bind the rows back to the original dataframe
 df <- rbind(df, df_bvt)
@@ -188,6 +195,99 @@ categories <- list(
   ltl = c("LTLCardinality", "LTLFireability"),
   upper_bounds = c("UpperBounds")
 )
+
+# Define tool families
+tool_families <- list(list("tedd-c", "tedd-s", "tedd"), 
+                      list("ITS-Tools", "ITS-Tools.M", "ITS-Tools.L", "ITS-Lola", "LTSMin+red", "Marcie+red", "Smart+red", "LoLa+red"),
+                      list("M4M.full","M4M.struct"),
+                      list("Irma.full","Irma.struct"),
+                      list("Tapaal(EXP)","Tapaal(PAR)","Tapaal")
+                      #... add more here as needed
+                      )
+
+
+# Define a function to generate the tool-query matrix
+generate_tool_query_matrix <- function(tool_index_data, resolution_length) {
+  # Initialize a matrix with zeros
+  tool_query_matrix <- matrix(0, nrow = resolution_length, ncol = length(tool_index_data), 
+                              dimnames = list(NULL, names(tool_index_data)))
+  
+  # For each tool in tool_index_data
+  for (tool in names(tool_index_data)) {
+    # Get the indices for which the tool provided a solution
+    indices <- tool_index_data[[tool]]$answers
+    indices <- as.integer(indices)
+    
+    # Use vectorized assignment to set the solved queries to 1
+    tool_query_matrix[indices, tool] <- 1
+  }
+  
+  return(tool_query_matrix)
+}
+
+get_tool_family_dict <- function(tool_families, all_tools) {
+  tool_family_dict <- list()
+  next_family_index <- length(tool_families) + 1  # Start assigning new families after predefined ones
+  
+  for(i in seq_along(tool_families)) {
+    for(tool in tool_families[[i]]) {
+      tool_family_dict[[tool]] <- i
+    }
+  }
+  
+  for(tool in all_tools) {
+    if(!(tool %in% names(tool_family_dict))) {
+      # If a tool is not part of any predefined family, assign a new family to it
+      tool_family_dict[[tool]] <- next_family_index
+      next_family_index <- next_family_index + 1
+    }
+  }
+  
+  return(tool_family_dict)
+}
+
+
+
+
+# Define a function to add the hardness metric
+add_hardness_metric <- function(resolution, tool_query_matrix, tool_family_dict) {
+  # Initialize the hardness metric with zeros
+  hardness_metric <- numeric(nrow(tool_query_matrix))
+  
+  # For each query in the tool_query_matrix
+  for(i in seq_len(nrow(tool_query_matrix))) {
+    # Find the indices of the tools that provided a solution
+    solution_indices <- which(tool_query_matrix[i, ] == 1)
+    solution_tools <- colnames(tool_query_matrix)[solution_indices]
+    
+    # Filter out the virtual tools
+    solution_tools <- solution_tools[!(solution_tools %in% c("BVT", "GoldLastYear"))]
+    
+    # Check if any solution_tool is not in tool_family_dict
+    for(tool in solution_tools) {
+      if(!(tool %in% names(tool_family_dict))) {
+        # If tool not in tool_family_dict, print debugging info
+        print(paste("Tool not found in tool_family_dict:", tool))
+        print("Current solution_tools:")
+        print(solution_tools)
+        print("Current tool_family_dict:")
+        print(tool_family_dict)
+      }
+    }
+    
+    # Get the families of the solution tools
+    solution_families <- unique(sapply(solution_tools, function(tool) tool_family_dict[[tool]]))
+    
+    # Compute the hardness metric: count the number of different families, bound the result by 3
+    hardness_metric[i] <- min(length(solution_families), 3)
+  }
+  
+  # Add the hardness metric to the resolution data frame
+  resolution$Solutions <- hardness_metric
+  
+  return(resolution)
+}
+
 
 # Loop over categories
 for (category_name in names(categories)) {
@@ -222,14 +322,10 @@ for (category_name in names(categories)) {
     dir.create(category_name)
   }
 
-  # Write the category's resolution to a CSV file in the category's directory
-  write.csv(resolution_category, file.path(category_name, "resolution.csv"), row.names = FALSE)
-  
-    
-# Now you can split the df_category into separate entries for each Tool
-tools <- unique(df_category$Tool)
-tool_index_dict <- list()
-for (tool in tools) {
+  # Now you can split the df_category into separate entries for each Tool
+  tools <- unique(df_category$Tool)
+  tool_index_dict <- list()
+  for (tool in tools) {
     # Filter rows for the current tool
     df_tool <- df_category[df_category$Tool == tool,]
 
@@ -247,12 +343,24 @@ for (tool in tools) {
 
     # Create a list to store in JSON
     tool_index_dict[[tool]] <- list(answers = verdict_T, errors = verdict_F)
+  }
+
+  # Generate the tool-query matrix
+  tool_query_matrix <- generate_tool_query_matrix(tool_index_dict, nrow(resolution_category))
+
+  # Add the hardness metric to the resolution data frame
+  all_tools <- unique(df_category$Tool)
+  tool_family_dict <- get_tool_family_dict(tool_families, all_tools)
+  resolution_category <- add_hardness_metric(resolution_category, tool_query_matrix, tool_family_dict)
+
+
+  # Write the category's resolution to a CSV file in the category's directory
+  write.csv(resolution_category, file.path(category_name, "resolution.csv"), row.names = FALSE)
+
+  # Write to a JSON file in the category's directory
+  write_json(tool_index_dict, file.path(category_name, "tool_index_dict.json"))
 }
 
-# Write to a JSON file in the category's directory
-write_json(tool_index_dict, file.path(category_name, "tool_index_dict.json"))
-
-}
 
 
 # Function to process a single category
