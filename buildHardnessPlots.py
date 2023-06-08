@@ -28,11 +28,14 @@ for category in categories:
     model_keys_list = []
     scores_list = []
     normalized_scores_list = []
+    hardness_scores_list = []
     
     # For each year, extract scores for this category
     for year in years:
         # Group by 'ModelKey' and calculate average score for this category in this year
         df_year = df.groupby('ModelKey')[f'{category}BVT{year}'].mean().reset_index()
+        # New df for hardness scores
+        df_hardness = df.groupby('ModelKey')[f'{category}SOL{year}'].mean().reset_index()  
         # Add this year to years_list
         years_list.extend([year]*len(df_year))
         # Add model keys to model_keys_list
@@ -40,6 +43,9 @@ for category in categories:
         # Add average scores to scores_list
         scores = df_year[f'{category}BVT{year}']
         scores_list.extend(scores)
+        # Add hardness scores to hardness_scores_list
+        hardness_scores = df_hardness[f'{category}SOL{year}']
+        hardness_scores_list.extend(hardness_scores)
         # Add normalized scores to normalized_scores_list
         normalized_scores_list.extend(scores / ideal_scores[category])
         # If year is 2023, update hardest_models_2023 dictionary
@@ -53,7 +59,8 @@ for category in categories:
         'Year': years_list,
         'ModelKey': model_keys_list,
         'Score': scores_list,
-        'NormalizedScore': normalized_scores_list
+        'NormalizedScore': normalized_scores_list,
+        'HardnessScore': hardness_scores_list
     })
     # Drop rows with missing score
     df_category = df_category.dropna(subset=['Score'])
