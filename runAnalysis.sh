@@ -46,6 +46,8 @@ process_year() {
   done
   python3 ../../buildFinalPages.py 
   
+  Rscript ../../plotHardness.R
+  
   rm raw-result-analysis.csv raw-result-analysis.csv.zip 
 }
 
@@ -73,6 +75,10 @@ Rscript ../analyzeAnnual.R
 cp -r ../templates/ .
 cp ../templates/styles.css .
 python3 ../buildTimePlotPages.py
+
+# generate hardness plots page
+python3 ../buildHardnessPage.py
+
 rm -rf templates/
 
 
@@ -117,7 +123,8 @@ EOL
   cat >> website/index.html << EOL
   <a href="PluriAnnual_dynamic.html">Dynamic Pluriannual plots</a><br/>
   <a href="models/models.html">Analysis of the Models of MCC</a><br/>
-  <a href="models/hardness_plot_rendered.html">How hard are the Models of MCC ? (page still WIP)</a>
+  <a href="models/hardness_plot_rendered.html">Model Hardness: Dynamic Pluriannual plots</a>
+  <a href="hardness.html">Model Hardness: Static plots</a>
 </body>
 </html>
 EOL
