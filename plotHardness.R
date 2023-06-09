@@ -59,11 +59,8 @@ create_plot <- function(data, name){
 }
 
 # Load the ModelDescriptions.csv data
-model_desc <- read_csv("ModelDescriptions.csv")
+model_desc <- read_csv("models.csv")
 
-# Parse the "Input" column into the "ModelFamily", "ModelType", "ModelInstance" columns
-model_desc <- model_desc %>% 
-  separate(Model, into = c("ModelFamily", "ModelType", "ModelInstance"), sep = "-", remove = FALSE)
 
 # Define ideal scores
 ideal_scores <- c('ctl' = 32, 'global_properties' = 5, 'ltl' = 32, 'reachability' = 32, 'state_space' = 4, 'upper_bounds' = 16)
