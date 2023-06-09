@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Hardness</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+    .row {
+        flex-wrap: wrap;
+    }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Model Hardness</h1>
+
+<!-- Filter controls -->
+<p>Show yearly data for 
+    <select class="form-control d-inline-block w-auto" id="yearSelect" onchange="filterImagesByYear(this.value);">
+        <option value="all">All years</option>
+        {% for year in years %}
+            <option value="{{ year }}" {% if year == "2023" %}selected{% endif %}>{{ year }}</option>
+        {% endfor %}
+    </select>
+    or focus on examination 
+    <select class="form-control d-inline-block w-auto" id="examinationSelect" onchange="filterImagesByExamination(this.value);">
+        <option value="all">All examinations</option>
+        {% for examination in examinations %}
+            <option value="{{ examination }}">{{ examination }}</option>
+        {% endfor %}
+    </select>
+</p>
+
+
+<div class="row mt-4">
+    {% for year, examinations in image_files.items() %}
+        {% for examination, images in examinations.items() %}
+            {% for image_file in images %}
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="{{ year }}" data-examination="{{ examination }}" style="display: none">
+                    <a href="{{ year }}/{{ image_file }}" data-toggle="lightbox">
+                        <h5 class="text-center">{{ year }} - {{ examination }}</h5>
+                        <img class="diagram img-fluid" src="{{ year }}/{{ image_file }}" alt="{{ year }} - {{ examination }} Diagram">
+                    </a>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+</div>
+
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+function filterImagesByYear(year) {
+    year = Number(year);  // Convert the year string to a number.
+    $('.filter-btn').removeClass('active');
+    $(`button[data-year="${year}"]`).addClass('active');
+    $('#examinationSelect').val('all');
+    $('.col-md-4[data-year]').each(function() {
+        if ($(this).data('year') === year || year === 'all') {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    });
+}
+
+
+function filterImagesByExamination(examination) {
+    $('.filter-btn').removeClass('active');
+    $(`button[data-examination="${examination}"]`).addClass('active');
+    $('.filter-year').val('all');
+    $('.col-md-4[data-examination]').each(function() {
+        if ($(this).data('examination') === examination || examination === 'all') {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    });
+}
+
+$(document).ready(function() {
+    filterImagesByYear('2023');
+});
+</script>
+</body>
+</html>
