@@ -141,8 +141,7 @@ for (category in unique(df$Category)) {
   print(p)
 }
 
-
-# normalized to total hard queries
+# with HARD
 
 # Initialize an empty list to store the data frames
 data_list <- list()
@@ -175,7 +174,7 @@ for (year in years) {
           filter(Index %in% as.integer(tool_data[[tool]]$answers)) %>%
           count(Year, Category, FormulaType, Difficulty) %>%
           mutate(Tool = tool)
-       }
+      }
     }
     
     # Combine all tool data into one data frame
@@ -198,14 +197,19 @@ for (year in years) {
 # Combine all data into one data frame
 df <- bind_rows(data_list)
 
-# Plot the grouped bar chart
-p <- ggplot(df, aes(x = Tool, y = Proportion, fill = FormulaType, alpha = Difficulty)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  facet_grid(Category ~ Year) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-  scale_alpha_manual(values = c("Hard" = 1, "Other" = 0.5)) +
-  labs(x = "Tool", y = "Proportion of Successful Results", fill = "FormulaType", alpha = "Difficulty", title = "Performance of Main Tools for Each Task")
-
-print(p)
+# Loop over each category and plot separately
+for (category in unique(df$Category)) {
+  df_category <- df %>% filter(Category == category)
+  
+  p <- ggplot(df_category, aes(x = Tool, y = Proportion, fill = FormulaType, alpha = Difficulty)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    facet_grid(~Year) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+    scale_alpha_manual(values = c("Hard" = 1, "Other" = 0.5)) +
+    labs(x = "Tool", y = "Proportion of Successful Results", fill = "FormulaType", alpha = "Difficulty", 
+         title = paste("Performance of Main Tools for", category))
+  
+  print(p)
+}
 
