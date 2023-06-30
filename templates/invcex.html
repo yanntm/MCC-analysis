@@ -3,19 +3,59 @@
 <head>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        .plot-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .plot-grid > div {
+            flex: 0 0 calc(33% - 20px); /* or any other percentage less than 50% to leave some space between */
+        }
+    </style>
 </head>
 <body>
+	<h1>Analysis of Counter-examples vs Invariants</h1>
+	<p>In this page we perform a refined analysis that distinguishes two kinds of properties:
+		<ul>
+			<li>INV : A property that requires a proof, that is universal and bears over all states or paths.</li>
+			<li>CEX : A property you can disprove (or prove) by exhibiting a counter-example (or witness)</li>
+			<li>UNK : Properties for which no verdict is available, because no tool could treat it, so that we don't know whether it is INV or CEX.</li>
+		</ul>		
+	</p>
+	<p>
+		We introduce this decomposition of properties for Global Properties :
+		<ul>
+			<li>ReachabilityDeadlock : if TRUE, there is a deadlock, it is CEX. Otherwise it is considered INV.</li>
+			<li>StableMarking : if TRUE, there is a place whose marking will never vary, it is CEX. Otherwise it is considered INV.</li>
+			<li>OneSafe : if FALSE, there is a place whose marking can exceed 1, it is CEX. Otherwise it is considered INV.</li>
+			<li>QuasiLiveness : if FALSE, there is a transition that can never be fired, it is CEX.  Otherwise it is considered INV.</li>
+			<li>Liveness : if FALSE, there is a transition that is not live, it is CEX. Otherwise it is considered INV.</li>
+		</ul>
+		We introduce also introduce it for Reachability and LTL:
+		<ul>
+			<li>Reachability AG : when the formula is of the form AG(p), and it is FALSE it is CEX. Otherwise it is considered INV.</li>
+			<li>Reachability EF : when the formula is of the form EF(p), and it is TRUE it is CEX (a witness suffices). Otherwise it is considered INV.</li>
+			<li>LTL : when the formula is FALSE it is CEX (and we can produce a counter-example). Otherwise it is considered INV since a TRUE LTL property naturally covers all paths.</li>
+		</ul>
+	</p>
+	<p>We first study the decomposition of formulas in the MCC benchmark according to this criterion.</p>
+	
+    <div class="plot-grid">
+    <!-- Plots will be inserted here -->
+    </div>
     <script>
         d3.csv('formulas.csv').then(function(data) {
-            var categories = [...new Set(data.map(row => row.Category))];
+            var plotGrid = document.querySelector('.plot-grid');
+            var categories = [...new Set(data.map(row => row.Examination))];
             
             categories.forEach(function(category) {
                 // Create a new div for this category
                 var div = document.createElement('div');
-                document.body.appendChild(div);
+                plotGrid.appendChild(div);
                 
                 // Filter the data for this category
-                var categoryData = data.filter(row => row.Category === category);
+                var categoryData = data.filter(row => row.Examination === category);
                 
                 var traces = [];
                 var formulaTypes = [...new Set(categoryData.map(row => row.FormulaType))];
@@ -31,7 +71,7 @@
                 });
 
                 var layout = {
-                    title: "Yearly Proportions of Formula Types in " + category,
+                    title: category,
                     barmode: 'stack',
                     xaxis: {
                         title: "Year",
