@@ -129,7 +129,9 @@ EOL
   <a href="models/models.html">Analysis of the Models of MCC</a><br/>
   <a href="models/hardness_plot_rendered.html">Model Hardness: Dynamic Pluriannual plots</a><br/>
   <a href="hardness.html">Model Hardness: Static plots</a><br/>
-  <a href="invcex/invcex.html">Analysis of Invariants vs Counter-examples</a><br/>
+  <a href="invcex/invcex.html">Analysis of Invariants vs Counter-examples (Formulas)</a><br/>
+  <a href="invcex/toolinvcex.html">Analysis of Invariants vs Counter-examples (Tools)</a><br/>
+  <a href="invcex/toolinvcexhard.html">Analysis of Invariants vs Counter-examples (Tools + Hard)</a><br/>
 </body>
 </html>
 EOL
