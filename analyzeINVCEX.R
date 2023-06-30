@@ -51,16 +51,65 @@ for (year in years) {
   }
 }
 
+
+# Loop through all years, categories and examinations
+for (year in years) {
+  for (i in seq_along(categories)) {
+    category <- categories[i]
+    multiplier <- multipliers[i]
+    
+    resolution_file_name <- paste0(year, "/", category, "/resolution.csv")
+    
+    # Read the resolution CSV
+    data <- read.csv(resolution_file_name)
+    
+    # Add year and category as columns
+    data$Year <- year
+    data$Category <- category
+    
+    # Count occurrences of each FormulaType for each Examination
+    data <- data %>% group_by(Year, Category, Examination) %>% count(FormulaType)
+    
+    models_file_name <- paste0(year, "/models.csv")
+    
+    # Read the models CSV and count the number of rows (models)
+    models_data <- read.csv(models_file_name)
+    n_models <- nrow(models_data)
+    
+    # Loop through all examinations
+    for (examination in unique(data$Examination)) {
+      
+      # Determine multiplier based on examination type
+      examination_multiplier <- ifelse(grepl("Cardinality|Fireability", examination), 16, 1)
+      
+      data_examination <- data %>% filter(Examination == examination)
+      
+      # Calculate the number of UNK formulas
+      n_UNK <- n_models * examination_multiplier - sum(data_examination$n)
+      
+      # Add a row for UNK formulas
+      data_UNK <- tibble(Year = year, Category = category, Examination=examination, FormulaType = "UNK", n = n_UNK)
+      data <- bind_rows(data, data_UNK)
+      
+    }
+    
+    data_list[[length(data_list) + 1]] <- data
+  }
+}
+
 # Combine all data into one data frame
 df <- bind_rows(data_list)
 
 # Calculate proportions
 df <- df %>% 
-  group_by(Year, Category) %>% 
+  group_by(Year, Category, Examination) %>% 
   mutate(Proportion = n / sum(n))
 
 # Convert FormulaType to a factor and set levels
 df$FormulaType <- factor(df$FormulaType, levels = c("UNK", "CEX", "INV"))
+
+df$Examination[is.na(df$Examination)] <- paste(df$Category[is.na(df$Examination)], "All")
+
 
 # Define the filename
 filename <- "invcex/formulas.csv"
