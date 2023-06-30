@@ -14,6 +14,8 @@ main_tools <- c("ITS-Tools", "Tapaal", "GreatSPN", "LoLA", "smpt", "enPAC", "ITS
 # Initialize an empty list to store the data frames
 data_list <- list()
 
+dir.create("invcex")
+
 # Loop through all years and categories
 for (year in years) {
   for (i in seq_along(categories)) {
@@ -59,6 +61,12 @@ df <- df %>%
 
 # Convert FormulaType to a factor and set levels
 df$FormulaType <- factor(df$FormulaType, levels = c("UNK", "CEX", "INV"))
+
+# Define the filename
+filename <- "invcex/formulas.csv"
+
+# Write the data frame to CSV
+write.csv(df, file = filename, row.names = FALSE)
 
 # Create the plot
 p <- ggplot(df, aes(x = Year, y = Proportion, fill = FormulaType)) +
@@ -126,6 +134,13 @@ for (year in years) {
 # Combine all data into one data frame
 df <- bind_rows(data_list)
 
+# Define the filename
+filename <- "invcex/tools.csv"
+
+# Write the data frame to CSV
+write.csv(df, file = filename, row.names = FALSE)
+
+
 # Loop over each category and plot separately
 for (category in unique(df$Category)) {
   df_category <- df %>% filter(Category == category)
@@ -168,13 +183,13 @@ for (year in years) {
     tool_counts <- list()
     
     for (tool in names(tool_data)) {
-      if (tool %in% main_tools) {
+     # if (tool %in% main_tools) {
         # Calculate the number of successful results for each tool, FormulaType and solution difficulty
         tool_counts[[tool]] <- resolution_data %>%
           filter(Index %in% as.integer(tool_data[[tool]]$answers)) %>%
           count(Year, Category, FormulaType, Difficulty) %>%
           mutate(Tool = tool)
-      }
+    #  }
     }
     
     # Combine all tool data into one data frame
@@ -197,6 +212,13 @@ for (year in years) {
 # Combine all data into one data frame
 df <- bind_rows(data_list)
 
+# Define the filename
+filename <- "invcex/tools_hard.csv"
+
+# Write the data frame to CSV
+write.csv(df, file = filename, row.names = FALSE)
+
+
 # Loop over each category and plot separately
 for (category in unique(df$Category)) {
   df_category <- df %>% filter(Category == category)
@@ -212,4 +234,27 @@ for (category in unique(df$Category)) {
   
   print(p)
 }
+
+
+# Loop over each category and each year, and plot separately
+for (category in unique(df$Category)) {
+  for (year in unique(df$Year)) {
+    df_year_category <- df %>% filter(Category == category & Year == year)
+    
+    if (nrow(df_year_category) > 0) {  # Check if there is any data for this year and category
+      p <- ggplot(df_year_category, aes(x = Tool, y = Proportion, fill = FormulaType, alpha = Difficulty)) +
+        geom_bar(stat = "identity", position = "dodge") +
+        theme_minimal() +
+        theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+        scale_alpha_manual(values = c("Hard" = 1, "Other" = 0.5)) +
+        labs(x = "Tool", y = "Proportion of Successful Results", fill = "FormulaType", alpha = "Difficulty", 
+             title = paste("Performance of Main Tools for", category, "in", year))
+      
+      print(p)
+    }
+  }
+}
+
+
+
 
