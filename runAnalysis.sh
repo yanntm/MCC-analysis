@@ -54,7 +54,7 @@ process_year() {
 mkdir -p website
 cd website
 
-for ((year=2023; year > 2015; year--)); do 
+for ((year=2023; year > 2017; year--)); do 
 	mkdir $year
 	cd $year
 	cp -r ../../templates .
@@ -78,6 +78,10 @@ python3 ../buildTimePlotPages.py
 
 # generate hardness plots page
 python3 ../buildHardnessPage.py
+
+# generate invcex
+Rscript ../analyzeINVCEX.R
+python3 ../buildInvCex.py
 
 rm -rf templates/
 
@@ -114,7 +118,7 @@ generate_main_index() {
   <ul>
 EOL
 
-  for year in {2016..2023}; do
+  for year in {2018..2023}; do
     cat >> website/index.html << EOL
     <li><a href="${year}/index.html">MCC ${year} Analysis</a></li>
 EOL
@@ -123,8 +127,9 @@ EOL
   cat >> website/index.html << EOL
   <a href="PluriAnnual_dynamic.html">Dynamic Pluriannual plots</a><br/>
   <a href="models/models.html">Analysis of the Models of MCC</a><br/>
-  <a href="models/hardness_plot_rendered.html">Model Hardness: Dynamic Pluriannual plots</a>
-  <a href="hardness.html">Model Hardness: Static plots</a>
+  <a href="models/hardness_plot_rendered.html">Model Hardness: Dynamic Pluriannual plots</a><br/>
+  <a href="hardness.html">Model Hardness: Static plots</a><br/>
+  <a href="invcex/invcex.html">Analysis of Invariants vs Counter-examples</a><br/>
 </body>
 </html>
 EOL
