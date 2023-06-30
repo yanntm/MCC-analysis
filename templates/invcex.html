@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+    <script>
+        d3.csv('formulas.csv').then(function(data) {
+            var categories = [...new Set(data.map(row => row.Category))];
+            
+            categories.forEach(function(category) {
+                // Create a new div for this category
+                var div = document.createElement('div');
+                document.body.appendChild(div);
+                
+                // Filter the data for this category
+                var categoryData = data.filter(row => row.Category === category);
+                
+                var traces = [];
+                var formulaTypes = [...new Set(categoryData.map(row => row.FormulaType))];
+                
+                formulaTypes.forEach(function(formulaType) {
+                    var filteredData = categoryData.filter(row => row.FormulaType === formulaType);
+                    traces.push({
+                        x: filteredData.map(row => row.Year),
+                        y: filteredData.map(row => +row.Proportion), // convert to numbers
+                        name: formulaType,
+                        type: 'bar'
+                    });
+                });
+
+                var layout = {
+                    title: "Yearly Proportions of Formula Types in " + category,
+                    barmode: 'stack',
+                    xaxis: {
+                        title: "Year",
+                    },
+                    yaxis: {
+                        title: "Proportion",
+                    },
+                };
+                
+                Plotly.newPlot(div, traces, layout);
+            });
+        });
+    </script>
+</body>
+</html>
