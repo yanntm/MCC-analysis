@@ -1,0 +1,14 @@
+"Tool","answer_total","error_total","answer_UpperBounds","error_UpperBounds"
+"BVT",13226,0,13226,0
+"GreatSPN",8768,0,8768,0
+"ITS-Tools",8258,0,8258,0
+"ITS-Tools.L",7545,0,7545,0
+"Irma.full",4934,0,4934,0
+"Irma.struct",4913,0,4913,0
+"LTSMin",5360,0,5360,0
+"LoLA",11983,0,11983,0
+"M4M.full",3788,1,3788,1
+"M4M.struct",3857,1,3857,1
+"Tapaal",8483,3,8483,3
+"smart",4940,0,4940,0
+"Ideal Tool",15152,0,15152,0
