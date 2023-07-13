@@ -56,6 +56,38 @@ create_plot <- function(data, name){
   
   # Save the plot
   ggsave(filename = paste0(name, "ModelEase.png"), plot = plot, width = 8, height = 12)
+  
+  
+  # Create a color-blind/BW friendly palette
+colors <- c("unsolved" = "grey80", 
+            "hard (1 tool only)" = "skyblue2", 
+            "medium (2 tools)" = "orange2", 
+            "easy (3 or more tools)" = "olivedrab3")
+
+# Create the plot
+plot <- ggplot(data_long, 
+               aes(y = reorder(paste(ModelFamily, ModelType, sep = "-"), -sort_value), 
+                   x = count/total_solutions, 
+                   fill = solution)) +
+  geom_bar(stat = "identity", width=0.8) +  # Increased width for thinner bars
+  scale_x_continuous(labels = scales::percent) +  # Use percentage labels for the x-axis
+  scale_fill_manual(values = colors) +
+  labs(title = NULL,
+       x = NULL,
+       y = NULL,  # Remove y-axis label
+       fill = NULL) +
+  theme_minimal() +
+  theme(
+    legend.position = "top",  # Move legend to top
+    legend.box = "horizontal",  # Make legend horizontal
+    axis.text.y = element_blank(),  # Remove y-axis tick labels
+    panel.grid.minor.y = element_blank(),  # Remove minor y grid lines
+    panel.grid.major.y = element_blank()  # Remove major y grid lines
+  )
+
+# Save the plot
+ggsave(filename = paste0(name, "_ModelEase.pdf"), plot = plot, width = 8, height = 7, device = "pdf")
+
 }
 
 # Load the ModelDescriptions.csv data
