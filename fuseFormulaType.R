@@ -37,8 +37,8 @@ if (file.exists("./nupn.csv")) {
     separate(model, into = c("ModelFamily", "ModelType", "ModelInstance"), sep = "-", remove = FALSE) %>%
     mutate(Nupn = case_when(
       isNUPN == "FALSE" & isGenNUPN == "FALSE" ~ "NONE",
-      isNUPN == "FALSE" & isGenNUPN == "TRUE" ~ "GEN",
-      isNUPN == "TRUE" & isGenNUPN == "FALSE" ~ "NUPN",
+      isSafe == "TRUE" & isNUPN == "FALSE" & isGenNUPN == "TRUE" ~ "GEN",
+      isSafe == "TRUE" & isNUPN == "TRUE" & isGenNUPN == "FALSE" ~ "NUPN",
       TRUE ~ "ERROR"  # default case for unexpected combinations
     ))
 }
