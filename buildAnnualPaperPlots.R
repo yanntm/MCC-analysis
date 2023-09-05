@@ -23,9 +23,9 @@ generate_plot <- function(category) {
   
   # Generate plot
   p <- ggplot(data, aes(x = year, y = answer_ideal, color = Tool, shape = Tool)) +
-    geom_line() +
-    geom_point(size = 3) +
-    scale_y_continuous(breaks = seq(0, 100, by = 10)) +  # Set y-axis breaks every 10%
+    geom_line(size = 1.5) +
+    geom_point(size = 6) +
+    scale_y_continuous(breaks = seq(0, 100, by = 10), labels = scales::percent_format(scale = 1)) +  # Set y-axis breaks every 10%
     scale_color_manual(values = tool_colors) +
     scale_shape_manual(values = tool_shapes) +  # Set shapes
     labs(x = NULL, y = NULL, title = NULL) + # Remove labels and title
@@ -33,7 +33,11 @@ generate_plot <- function(category) {
     theme(
       legend.position = "top",  # Move legend to top
       legend.box = "horizontal",  # Make legend horizontal
-      panel.grid.minor = element_blank()  # Remove minor grid lines
+      panel.grid.minor = element_blank(),  # Remove minor grid lines
+      axis.title = element_text(size = 16, face = "bold"),  # Increase size & make axis title bold
+      axis.text = element_text(size = 16, face = "bold"),   # Increase size & make axis text bold
+      legend.title = element_text(size = 16, face = "bold"),  # Increase size & make legend title bold
+      legend.text = element_text(size = 16, face = "bold")    # Increase size & make legend text bold
     )
   
   # Save plot
