@@ -1,0 +1,13 @@
+"Tool","answer_total","error_total","answer_ReachabilityCardinality","error_ReachabilityCardinality","answer_ReachabilityFireability","error_ReachabilityFireability"
+"BVT",28551,0,14503,0,14048,0
+"GreatSPN",9969,0,4896,0,5073,0
+"ITS-Tools",19915,0,10019,0,9896,0
+"ITS-Tools.L",19356,0,9868,0,9488,0
+"Irma.full",13599,0,7110,0,6489,0
+"Irma.struct",13579,0,7147,0,6432,0
+"LTSMin",13148,10,6423,0,6725,10
+"LoLA",25998,1,13588,1,12410,0
+"M4M.full",12244,0,6062,0,6182,0
+"M4M.struct",12808,0,6761,0,6047,0
+"Tapaal",27662,0,14186,0,13476,0
+"Ideal Tool",30304,0,15152,0,15152,0

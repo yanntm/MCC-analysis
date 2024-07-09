@@ -1,0 +1,10 @@
+"Tool","answer_total","error_total","answer_UpperBounds","error_UpperBounds"
+"2023-gold",26480,89,26480,89
+"BVT",27401,0,27401,0
+"GreatSPN",16266,4,16266,4
+"GreatSPN+red",27000,94,27000,94
+"ITS-Tools",27028,89,27028,89
+"LTSMin+red",26556,95,26556,95
+"LoLA",20937,449,20937,449
+"Tapaal",25527,45,25527,45
+"Ideal Tool",28512,0,28512,0
