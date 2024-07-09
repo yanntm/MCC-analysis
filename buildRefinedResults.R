@@ -7,7 +7,7 @@ library(jsonlite)
 args <- commandArgs(trailingOnly = TRUE)
 
 # Set the current year, default to 2023 if not provided
-current_year <- if (length(args) >= 1) as.integer(args[1]) else 2023
+current_year <- if (length(args) >= 1) as.integer(args[1]) else 2024
 
 # Set default values for input file and output folder
 input_file <- "raw-result-analysis.csv"

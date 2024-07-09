@@ -49,10 +49,10 @@ for category in categories:
         # Add normalized scores to normalized_scores_list
         normalized_scores_list.extend(scores / ideal_scores[category])
         # If year is 2023, update hardest_models_2023 dictionary
-        if year == 2023:
+        if year == 2024:
             for key, score in df_year.values:
-                if key not in hardest_models_2023 or score < hardest_models_2023[key]:
-                    hardest_models_2023[key] = score
+                if key not in hardest_models_2023 or score < hardest_models_2024[key]:
+                    hardest_models_2024[key] = score
     
     # Create data frame for this category
     df_category = pd.DataFrame({
