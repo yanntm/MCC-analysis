@@ -1,0 +1,11 @@
+"Tool","answer_total","error_total","answer_LTLCardinality","error_LTLCardinality","answer_LTLFireability","error_LTLFireability"
+"2023-gold",52709,12,26679,10,26030,2
+"BVT",54525,0,27432,0,27093,0
+"GreatSPN",24358,489,12078,249,12280,240
+"GreatSPN+red",49344,7,25289,1,24055,6
+"ITS-Tools",50316,1,25647,0,24669,1
+"LTSMin",42084,674,21495,365,20589,309
+"LTSMin+red",50909,179,26009,84,24900,95
+"LoLA",29268,17,15428,9,13840,8
+"Tapaal",51750,0,26300,0,25450,0
+"Ideal Tool",57024,0,28512,0,28512,0
