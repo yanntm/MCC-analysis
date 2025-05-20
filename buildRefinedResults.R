@@ -198,7 +198,7 @@ categories <- list(
 
 # Define tool families
 tool_families <- list(list("tedd-c", "tedd-s", "tedd"), 
-                      list("ITS-Tools", "ITS-Tools.M", "ITS-Tools.L", "ITS-Lola", "LTSMin+red", "Marcie+red", "Smart+red", "LoLa+red"),
+                      list("ITS-Tools", "ITS-Tools.M", "ITS-Tools.L", "ITS-Lola", "LTSMin+red", "Marcie+red", "Smart+red", "LoLa+red", "GreatSPN+red"),
                       list("M4M.full","M4M.struct"),
                       list("Irma.full","Irma.struct"),
                       list("Tapaal(EXP)","Tapaal(PAR)","Tapaal")
