@@ -10,7 +10,7 @@ ideal_scores = {'ctl': 32, 'global_properties': 5, 'ltl': 32, 'reachability': 32
 
 # List all examination categories and years
 categories = ['ctl', 'global_properties', 'ltl', 'reachability', 'state_space', 'upper_bounds']
-years = list(range(2016, 2024))
+years = list(range(2016, 2025))
 
 # Create a new column 'ModelKey' as a concatenation of 'ModelFamily' and 'ModelType'
 df['ModelKey'] = df['ModelFamily'] + "_" + df['ModelType']
@@ -18,8 +18,8 @@ df['ModelKey'] = df['ModelFamily'] + "_" + df['ModelType']
 # Initialize list to store data frames, one for each category
 dfs = []
 csv_files = []
-# Initialize dictionary to store lowest scoring models of 2023
-hardest_models_2023 = {}
+# Initialize dictionary to store lowest scoring models of latest
+hardest_models_latest = {}
 
 # For each category, create a data frame with columns 'Year', 'ModelKey', 'Score', 'NormalizedScore'
 for category in categories:
@@ -48,11 +48,11 @@ for category in categories:
         hardness_scores_list.extend(hardness_scores)
         # Add normalized scores to normalized_scores_list
         normalized_scores_list.extend(scores / ideal_scores[category])
-        # If year is 2023, update hardest_models_2023 dictionary
-        if year == 2024:
+        # If year is latest, update hardest_models_latest dictionary
+        if year == 2025:
             for key, score in df_year.values:
-                if key not in hardest_models_2023 or score < hardest_models_2024[key]:
-                    hardest_models_2024[key] = score
+                if key not in hardest_models_latest or score < hardest_models_latest[key]:
+                    hardest_models_latest[key] = score
     
     # Create data frame for this category
     df_category = pd.DataFrame({
@@ -72,8 +72,8 @@ for category in categories:
     df_category.to_csv(filename, index=False)
     csv_files.append(filename)
 
-# Compute the ten "hardest" models (those with the lowest average score in 2023 over all categories)
-ten_hardest_models = sorted(hardest_models_2023, key=hardest_models_2023.get)[:10]
+# Compute the ten "hardest" models (those with the lowest average score in latest over all categories)
+ten_hardest_models = sorted(hardest_models_latest, key=hardest_models_latest.get)[:10]
 
 # Set up Jinja2 template environment
 env = Environment(loader=FileSystemLoader("templates"))
