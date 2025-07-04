@@ -3,36 +3,28 @@
 set -x
 
 download_data() {
-  local YEAR=$1
-  echo "Downloading data for year ${YEAR}..."
-  
-  # If no archive is present, try downloading one
-  if [ ! -f "raw-result-analysis.csv.zip" ] && [ ! -f "raw-result-analysis.csv.tar.gz" ] ; then
-    echo "No local archive found. Downloading..."
-    # Try zip first
-    curl --fail "https://mcc.lip6.fr/${YEAR}/archives/raw-result-analysis.csv.zip" -o "raw-result-analysis.csv.zip"
-    # If curl failed (e.g. 404), try tar.gz
-    if [ $? -ne 0 ]; then
-      echo "Could not download zip file, trying tar.gz..."
-      rm -f "raw-result-analysis.csv.zip" # remove empty file on failure
-      curl --fail "https://mcc.lip6.fr/${YEAR}/archives/raw-result-analysis.csv.tar.gz" -o "raw-result-analysis.csv.tar.gz"
-      if [ $? -ne 0 ]; then
-        echo "ERROR: could not download neither zip nor tar.gz archive for year ${YEAR}."
-        # We don't exit, just report, to follow original script's behavior
-      fi
-    fi
-  fi
+    local YEAR=$1
 
-  if [ ! -f "raw-result-analysis.csv" ] ; then
-    if [ -f "raw-result-analysis.csv.zip" ] ; then
-      unzip "raw-result-analysis.csv.zip" 
-      rm -rf __MACOSX
-    elif [ -f "raw-result-analysis.csv.tar.gz" ] ; then
-      tar -xzf "raw-result-analysis.csv.tar.gz"
-    else
-      echo "ERROR: no archive found to extract from for year ${YEAR}."
+    # Attempt to download the .zip file if it doesn't exist
+    if [ ! -f "raw-result-analysis.csv.zip" ]; then
+        curl -s "https://mcc.lip6.fr/${YEAR}/archives/raw-result-analysis.csv.zip" -o "raw-result-analysis.csv.zip"
     fi
-  fi
+
+    # Check if the .zip file is too small (≤ 10KB), indicating it’s invalid
+    if [ $(stat -c%s "raw-result-analysis.csv.zip" 2>/dev/null || echo 0) -le 10000 ]; then
+        # Remove the .zip file to ensure we start fresh
+        rm -f "raw-result-analysis.csv.zip"
+        # Download and process the .tar.gz file
+        curl -s "https://mcc.lip6.fr/${YEAR}/archives/raw-result-analysis.csv.tar.gz" -o "raw-result-analysis.csv.tar.gz"
+        tar -xzf "raw-result-analysis.csv.tar.gz"
+        # Create a new .zip file from the extracted CSV
+        zip "raw-result-analysis.csv.zip" "raw-result-analysis.csv"
+        # Clean up the .tar.gz file
+        rm -f "raw-result-analysis.csv.tar.gz"
+    fi
+
+    # Unzip the .zip file (should now be valid)
+    unzip -o "raw-result-analysis.csv.zip"
 }
 
 process_year() {
