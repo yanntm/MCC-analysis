@@ -1,0 +1,6 @@
+"Tool","answer_total","error_total","answer_Liveness","error_Liveness","answer_OneSafe","error_OneSafe","answer_QuasiLiveness","error_QuasiLiveness","answer_ReachabilityDeadlock","error_ReachabilityDeadlock","answer_StableMarking","error_StableMarking"
+"2024-gold",8695,0,1657,0,1852,0,1661,0,1776,0,1749,0
+"BVT",8899,0,1741,0,1855,0,1713,0,1802,0,1788,0
+"ITS-Tools",8793,0,1721,0,1851,0,1687,0,1770,0,1764,0
+"Tapaal",7685,0,1367,0,1798,0,1427,0,1610,0,1483,0
+"Ideal Tool",9275,0,1855,0,1855,0,1855,0,1855,0,1855,0

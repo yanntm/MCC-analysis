@@ -1,0 +1,9 @@
+"Tool","answer_StateSpace","error_StateSpace","answer_Liveness","error_Liveness","answer_OneSafe","error_OneSafe","answer_QuasiLiveness","error_QuasiLiveness","answer_ReachabilityDeadlock","error_ReachabilityDeadlock","answer_StableMarking","error_StableMarking","answer_ReachabilityCardinality","error_ReachabilityCardinality","answer_ReachabilityFireability","error_ReachabilityFireability","answer_CTLCardinality","error_CTLCardinality","answer_CTLFireability","error_CTLFireability","answer_LTLCardinality","error_LTLCardinality","answer_LTLFireability","error_LTLFireability","answer_UpperBounds","error_UpperBounds"
+"2024-gold",5239,0,1657,0,1852,0,1661,0,1776,0,1749,0,28459,0,27295,0,23259,0,20951,5,27835,0,27195,0,28283,0
+"BVT",5661,0,1741,0,1855,0,1713,0,1802,0,1788,0,29071,0,28939,0,25286,0,23716,0,28810,0,28523,0,28600,0
+"ITS-Tools",3333,0,1721,0,1851,0,1687,0,1770,0,1764,0,28352,0,27895,1,18464,1,15310,1,27627,1,26882,1,28334,2
+"tedd",5589,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+"Ideal Tool",7420,0,1855,0,1855,0,1855,0,1855,0,1855,0,29680,0,29680,0,29680,0,29680,0,29680,0,29680,0,29680,0
+"Tapaal",0,0,1367,0,1798,0,1427,0,1610,0,1483,0,28668,0,27815,0,23250,0,20960,0,27848,0,27185,2,26813,0
+"smpt",0,0,0,0,0,0,0,0,0,0,0,0,26298,0,25734,0,0,0,0,0,0,0,0,0,0,0
+"EnPac",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,26583,25,25937,19,0,0

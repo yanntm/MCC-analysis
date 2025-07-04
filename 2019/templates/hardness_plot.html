@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <div id="plotDiv"></div>
+
+  <h3>Select examination category:</h3>
+  <div id="dataSourceSelection"></div>
+
+  <h3>Select score type:</h3>
+  <div>
+    <input type="radio" id="rawScore" name="scoreType" value="Score" checked>
+    <label for="rawScore">Raw Score</label><br/>
+    <input type="radio" id="normalizedScore" name="scoreType" value="NormalizedScore">
+    <label for="normalizedScore">Normalized Score (to Ideal Score)</label><br/>
+	<input type="radio" id="hardnessScore" name="scoreType" value="HardnessScore">
+    <label for="hardnessScore">Score with Hardness</label>
+  </div>
+  
+  
+    <h3>Update shown traces to the
+  <select id="numTraces"> 
+    <option value="5">5</option>
+    <option value="10" selected>10</option>
+    <option value="20">20</option>
+  </select>
+   hardest in year
+  <select id="selectedYear"> 
+    <option value="2016">2016</option>
+    <option value="2017">2017</option>
+    <option value="2018">2018</option>
+    <option value="2019">2019</option>
+    <option value="2020">2020</option>
+    <option value="2021">2021</option>
+    <option value="2022">2022</option>
+    <option value="2023" selected>2023</option>
+  </select>
+  <button id="updateTracesButton">Go</button>
+  </h3>
+   <h4>You can access the <a href="ModelHardness.html">raw data here</a> or <a href="ModelHardness.csv">as CSV</a> </h4>
+<script>
+  // Initial ModelKeys to display
+  const initialModelKeys = {{initial_model_keys|tojson}};
+  
+  const csvFiles = {{csv_files|tojson}};  // List of CSV files
+
+  const allData = {};  // Object to store data from all CSV files
+
+  // Load data from all CSV files
+  const loadAllData = () => {
+    const promises = csvFiles.map(csvFile => {
+      return new Promise((resolve, reject) => {
+        Plotly.d3.csv(csvFile, function(error, data) {
+          if (error) {
+            reject(error);
+          } else {
+            const fileName = csvFile.split('/').pop().split('.')[0];  // Extract category name from file name
+            allData[fileName] = data;  // Store data in the allData object with category name as key
+            resolve();
+          }
+        });
+      });
+    });
+
+    return Promise.all(promises);
+  };
+
+  const generateDataSourceSelection = () => {
+	  const dataSourceDiv = document.getElementById('dataSourceSelection');
+	  Object.keys(allData).forEach((dataSource, index) => {
+	    const radioButton = document.createElement('input');
+	    radioButton.type = 'radio';
+	    radioButton.id = dataSource;
+	    radioButton.name = 'dataSource';
+	    radioButton.value = dataSource;
+	    if (index === 0) radioButton.checked = true;
+
+	    const label = document.createElement('label');
+	    label.htmlFor = dataSource;
+	    label.innerText = dataSource;
+
+	    dataSourceDiv.appendChild(radioButton);
+	    dataSourceDiv.appendChild(label);
+	    dataSourceDiv.appendChild(document.createElement('br'));
+	  });
+	};
+
+  
+  // Function to update plot with selected data source and score type
+  const updatePlot = (dataSource, scoreType, overrideModelKeys) => {  // CHANGE: added overrideModelKeys parameter
+	  let shownModelKeys;
+
+	  if (overrideModelKeys !== null) {  // CHANGE: check if we have override model keys
+	    shownModelKeys = overrideModelKeys;
+	  } else {
+	    // Initialize shownModelKeys to be the same as initialModelKeys
+	    shownModelKeys = initialModelKeys.slice();
+	    // If the plot already exists, collect the currently visible ModelKeys
+	    if (typeof plotDiv.data !== "undefined") {
+	      shownModelKeys = [];
+	      for(let i = 0; i < plotDiv.data.length; i++){
+	        if(plotDiv.data[i].visible === true){
+	          shownModelKeys.push(plotDiv.data[i].name);
+	        }
+	      }
+	    }
+	  }	  
+    const data = allData[dataSource];
+    const ModelKeys = [...new Set(data.map(row => row.ModelKey))].sort();
+    const traces = [];
+
+    ModelKeys.forEach(function(ModelKey) {
+      var ModelKeyData = data.filter(row => row.ModelKey === ModelKey);
+      ModelKeyData.sort((a, b) => a.Year - b.Year);
+
+      var trace = {
+        x: ModelKeyData.map(row => row.Year),
+        y: ModelKeyData.map(row => parseFloat(row[scoreType])),
+        mode: 'lines+markers',
+        name: ModelKey,
+        visible: (shownModelKeys.includes(ModelKey)) ? true : "legendonly"
+      };
+
+      traces.push(trace);
+    });
+
+    var layout = {
+      title: 'Model Hardness',
+      xaxis: {
+        title: 'Year'
+      },
+      yaxis: {
+        title: 'Score',
+        range: [0, 1.2 * Math.max(...traces.map(trace => Math.max(...trace.y)))],
+        autorange: false
+      },
+      legend: {
+          orientation: 'h',
+          y: -0.5  // Position the legend below the plot
+        },
+      colorway: [
+          "rgb(229, 134, 6)","rgb(93, 105, 177)","rgb(82, 188, 163)","rgb(153, 201, 69)",
+          "rgb(204, 97, 176)","rgb(36, 121, 108)","rgb(218, 165, 27)","rgb(47, 138, 196)",
+          "rgb(118, 78, 159)","rgb(237, 100, 90)","rgb(165, 170, 153)","rgb(136, 204, 238)",
+          "rgb(204, 102, 119)","rgb(221, 204, 119)","rgb(17, 119, 51)","rgb(51, 34, 136)",
+          "rgb(170, 68, 153)","rgb(68, 170, 153)","rgb(153, 153, 51)","rgb(136, 34, 85)",
+          "rgb(102, 17, 0)","rgb(136, 136, 136)","rgb(95, 70, 144)","rgb(29, 105, 150)",
+          "rgb(56, 166, 165)","rgb(15, 133, 84)","rgb(115, 175, 72)","rgb(237, 173, 8)",
+          "rgb(225, 124, 5)","rgb(204, 80, 62)","rgb(148, 52, 110)","rgb(111, 64, 112)",
+          "rgb(102, 102, 102)"
+        ] 
+    };
+    
+
+    Plotly.newPlot('plotDiv', traces, layout);
+  };
+
+  // Function to update the traces shown based on selected year and number of traces - CHANGE
+  const updateShownTraces = () => {
+    const selectedYear = document.getElementById('selectedYear').value;
+    const numTraces = document.getElementById('numTraces').value;
+    const dataSource = document.querySelector('input[name="dataSource"]:checked').value;
+
+    const data = allData[dataSource].filter(row => row.Year === selectedYear);
+    const sortedData = data.sort((a, b) => a.Score - b.Score);
+    const hardestModelKeys = sortedData.slice(0, numTraces).map(row => row.ModelKey);
+
+    initialModelKeys.length = 0;
+    Array.prototype.push.apply(initialModelKeys, hardestModelKeys);
+
+    updatePlot(dataSource, document.querySelector('input[name="scoreType"]:checked').value, hardestModelKeys);  
+  };
+  
+  // Add event listeners to radio buttons
+  document.addEventListener('DOMContentLoaded', function() {
+    loadAllData().then(() => {
+      generateDataSourceSelection();
+      updatePlot(Object.keys(allData)[0], 'Score', null);
+
+      document.querySelectorAll('input[name="dataSource"]').forEach(radioButton => {
+        radioButton.addEventListener('change', function() {
+          updatePlot(this.value, document.querySelector('input[name="scoreType"]:checked').value, null);
+        });
+      });
+
+      document.querySelectorAll('input[name="scoreType"]').forEach(radioButton => {
+        radioButton.addEventListener('change', function() {
+          updatePlot(document.querySelector('input[name="dataSource"]:checked').value, this.value, null);
+        });
+      });
+      
+      document.getElementById('updateTracesButton').addEventListener('click', updateShownTraces); // CHANGE
+
+    }).catch(console.error);
+  });
+
+</script>
+</body>
+</html>
