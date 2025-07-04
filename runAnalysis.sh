@@ -6,13 +6,32 @@ download_data() {
   local YEAR=$1
   echo "Downloading data for year ${YEAR}..."
   
-  if [ ! -f "raw-result-analysis.csv.zip" ] ; then
-    curl "https://mcc.lip6.fr/${YEAR}/archives/raw-result-analysis.csv.zip" -o "raw-result-analysis.csv.zip"
+  # If no archive is present, try downloading one
+  if [ ! -f "raw-result-analysis.csv.zip" ] && [ ! -f "raw-result-analysis.csv.tar.gz" ] ; then
+    echo "No local archive found. Downloading..."
+    # Try zip first
+    curl --fail "https://mcc.lip6.fr/${YEAR}/archives/raw-result-analysis.csv.zip" -o "raw-result-analysis.csv.zip"
+    # If curl failed (e.g. 404), try tar.gz
+    if [ $? -ne 0 ]; then
+      echo "Could not download zip file, trying tar.gz..."
+      rm -f "raw-result-analysis.csv.zip" # remove empty file on failure
+      curl --fail "https://mcc.lip6.fr/${YEAR}/archives/raw-result-analysis.csv.tar.gz" -o "raw-result-analysis.csv.tar.gz"
+      if [ $? -ne 0 ]; then
+        echo "ERROR: could not download neither zip nor tar.gz archive for year ${YEAR}."
+        # We don't exit, just report, to follow original script's behavior
+      fi
+    fi
   fi
 
   if [ ! -f "raw-result-analysis.csv" ] ; then
-    unzip "raw-result-analysis.csv.zip" 
-    rm -rf __MACOSX
+    if [ -f "raw-result-analysis.csv.zip" ] ; then
+      unzip "raw-result-analysis.csv.zip" 
+      rm -rf __MACOSX
+    elif [ -f "raw-result-analysis.csv.tar.gz" ] ; then
+      tar -xzf "raw-result-analysis.csv.tar.gz"
+    else
+      echo "ERROR: no archive found to extract from for year ${YEAR}."
+    fi
   fi
 }
 
@@ -48,7 +67,7 @@ process_year() {
   
   Rscript ../../plotHardness.R
   
-  rm raw-result-analysis.csv raw-result-analysis.csv.zip 
+  rm -f raw-result-analysis.csv raw-result-analysis.csv.zip raw-result-analysis.csv.tar.gz 
 }
 
 mkdir -p website
