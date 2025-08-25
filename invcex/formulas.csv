@@ -1,0 +1,211 @@
+"Year","Category","FormulaType","n","Examination","Proportion"
+2020,"global_properties","CEX",3134,"global_properties All",0.510008136696501
+2020,"global_properties","INV",2162,"global_properties All",0.351830756712775
+2020,"global_properties","UNK",849,"global_properties All",0.138161106590724
+2020,"reachability","CEX",24850,"reachability All",0.631865337672905
+2020,"reachability","INV",13641,"reachability All",0.34685211554109
+2020,"reachability","UNK",837,"reachability All",0.0212825467860049
+2020,"ltl","CEX",25107,"ltl All",0.638400122050447
+2020,"ltl","INV",10549,"ltl All",0.268231285598047
+2020,"ltl","UNK",3672,"ltl All",0.0933685923515053
+2021,"global_properties","CEX",4017,"global_properties All",0.569383416017009
+2021,"global_properties","INV",2798,"global_properties All",0.396598157335223
+2021,"global_properties","UNK",240,"global_properties All",0.0340184266477675
+2021,"reachability","CEX",28765,"reachability All",0.637070340184266
+2021,"reachability","INV",15557,"reachability All",0.344547306874557
+2021,"reachability","UNK",830,"reachability All",0.0183823529411765
+2021,"ltl","CEX",31192,"ltl All",0.690822111977321
+2021,"ltl","INV",12275,"ltl All",0.271859496810772
+2021,"ltl","UNK",1685,"ltl All",0.0373183912119065
+2022,"global_properties","CEX",4702,"global_properties All",0.581570810142239
+2022,"global_properties","INV",3112,"global_properties All",0.384910327767471
+2022,"global_properties","UNK",271,"global_properties All",0.0335188620902907
+2022,"reachability","CEX",30468,"reachability All",0.588821892393321
+2022,"reachability","INV",19875,"reachability All",0.384102504638219
+2022,"reachability","UNK",1401,"reachability All",0.0270756029684601
+2022,"ltl","CEX",35284,"ltl All",0.681895485466914
+2022,"ltl","INV",14817,"ltl All",0.286352040816327
+2022,"ltl","UNK",1643,"ltl All",0.0317524737167594
+2023,"global_properties","CEX",4890,"global_properties All",0.582836710369487
+2023,"global_properties","INV",3220,"global_properties All",0.383790226460071
+2023,"global_properties","UNK",280,"global_properties All",0.033373063170441
+2023,"reachability","CEX",33948,"reachability All",0.632225864123957
+2023,"reachability","INV",18731,"reachability All",0.348834177592372
+2023,"reachability","UNK",1017,"reachability All",0.018939958283671
+2023,"ltl","CEX",37659,"ltl All",0.701337157330155
+2023,"ltl","INV",14353,"ltl All",0.26730110250298
+2023,"ltl","UNK",1684,"ltl All",0.0313617401668653
+2024,"global_properties","CEX",5189,"global_properties All",0.582379349046016
+2024,"global_properties","INV",3394,"global_properties All",0.380920314253648
+2024,"global_properties","UNK",327,"global_properties All",0.0367003367003367
+2024,"reachability",NA,55735,"reachability All",0.977395482603816
+2024,"reachability","UNK",1289,"reachability All",0.0226045173961841
+2024,"ltl","CEX",39330,"ltl All",0.689709595959596
+2024,"ltl","INV",15195,"ltl All",0.266466750841751
+2024,"ltl","UNK",2499,"ltl All",0.0438236531986532
+2025,"global_properties","CEX",5367,"global_properties All",0.578652291105121
+2025,"global_properties","INV",3532,"global_properties All",0.380808625336927
+2025,"global_properties","UNK",376,"global_properties All",0.0405390835579515
+2025,"reachability",NA,58010,"reachability All",0.977257412398922
+2025,"reachability","UNK",1350,"reachability All",0.0227425876010782
+2025,"ltl","CEX",42724,"ltl All",0.719743935309973
+2025,"ltl","INV",14609,"ltl All",0.246108490566038
+2025,"ltl","UNK",2027,"ltl All",0.0341475741239892
+2020,"global_properties","CEX",809,"Liveness",0.658258746948739
+2020,"global_properties","INV",137,"Liveness",0.111472742066721
+2020,"global_properties","CEX",592,"OneSafe",0.481692432872254
+2020,"global_properties","INV",560,"OneSafe",0.455655004068348
+2020,"global_properties","CEX",206,"QuasiLiveness",0.167615947925142
+2020,"global_properties","INV",785,"QuasiLiveness",0.63873067534581
+2020,"global_properties","CEX",729,"ReachabilityDeadlock",0.593165174938975
+2020,"global_properties","INV",459,"ReachabilityDeadlock",0.373474369406021
+2020,"global_properties","CEX",798,"StableMarking",0.649308380797396
+2020,"global_properties","INV",221,"StableMarking",0.179820992676973
+2020,"global_properties","UNK",283,"Liveness",0.23026851098454
+2020,"global_properties","UNK",77,"OneSafe",0.0626525630593979
+2020,"global_properties","UNK",238,"QuasiLiveness",0.193653376729048
+2020,"global_properties","UNK",41,"ReachabilityDeadlock",0.0333604556550041
+2020,"global_properties","UNK",210,"StableMarking",0.170870626525631
+2020,"reachability","CEX",10429,"ReachabilityCardinality",0.530360048820179
+2020,"reachability","INV",8914,"ReachabilityCardinality",0.453315703824247
+2020,"reachability","CEX",14421,"ReachabilityFireability",0.733370626525631
+2020,"reachability","INV",4727,"ReachabilityFireability",0.240388527257933
+2020,"reachability","UNK",321,"ReachabilityCardinality",0.0163242473555736
+2020,"reachability","UNK",516,"ReachabilityFireability",0.0262408462164361
+2020,"ltl","CEX",11562,"LTLCardinality",0.587978030919447
+2020,"ltl","INV",6591,"LTLCardinality",0.335181041497152
+2020,"ltl","CEX",13545,"LTLFireability",0.688822213181448
+2020,"ltl","INV",3958,"LTLFireability",0.201281529698942
+2020,"ltl","UNK",1511,"LTLCardinality",0.0768409275834011
+2020,"ltl","UNK",2161,"LTLFireability",0.109896257119609
+2021,"global_properties","CEX",1057,"Liveness",0.749114103472714
+2021,"global_properties","INV",287,"Liveness",0.203401842664777
+2021,"global_properties","CEX",766,"OneSafe",0.542877391920624
+2021,"global_properties","INV",644,"OneSafe",0.456413890857548
+2021,"global_properties","CEX",267,"QuasiLiveness",0.189227498228207
+2021,"global_properties","INV",1064,"QuasiLiveness",0.754075124025514
+2021,"global_properties","CEX",847,"ReachabilityDeadlock",0.600283486888731
+2021,"global_properties","INV",521,"ReachabilityDeadlock",0.369241672572644
+2021,"global_properties","CEX",1080,"StableMarking",0.76541459957477
+2021,"global_properties","INV",282,"StableMarking",0.199858256555634
+2021,"global_properties","UNK",67,"Liveness",0.0474840538625089
+2021,"global_properties","UNK",1,"OneSafe",0.00070871722182849
+2021,"global_properties","UNK",80,"QuasiLiveness",0.0566973777462792
+2021,"global_properties","UNK",43,"ReachabilityDeadlock",0.0304748405386251
+2021,"global_properties","UNK",49,"StableMarking",0.034727143869596
+2021,"reachability","CEX",12320,"ReachabilityCardinality",0.545712260807938
+2021,"reachability","INV",9989,"ReachabilityCardinality",0.442461020552799
+2021,"reachability","CEX",16445,"ReachabilityFireability",0.728428419560595
+2021,"reachability","INV",5568,"ReachabilityFireability",0.246633593196315
+2021,"reachability","UNK",267,"ReachabilityCardinality",0.0118267186392629
+2021,"reachability","UNK",563,"ReachabilityFireability",0.02493798724309
+2021,"ltl","CEX",14369,"LTLCardinality",0.636472360028349
+2021,"ltl","INV",7572,"LTLCardinality",0.335400425230333
+2021,"ltl","CEX",16823,"LTLFireability",0.745171863926293
+2021,"ltl","INV",4703,"LTLFireability",0.208318568391212
+2021,"ltl","UNK",635,"LTLCardinality",0.0281272147413182
+2021,"ltl","UNK",1050,"LTLFireability",0.0465095676824947
+2022,"global_properties","CEX",1251,"Liveness",0.773654916512059
+2022,"global_properties","INV",279,"Liveness",0.172541743970315
+2022,"global_properties","CEX",904,"OneSafe",0.559059987631416
+2022,"global_properties","INV",712,"OneSafe",0.440321583178726
+2022,"global_properties","CEX",370,"QuasiLiveness",0.228818800247372
+2022,"global_properties","INV",1155,"QuasiLiveness",0.714285714285714
+2022,"global_properties","CEX",1032,"ReachabilityDeadlock",0.63821892393321
+2022,"global_properties","INV",543,"ReachabilityDeadlock",0.335807050092764
+2022,"global_properties","CEX",1145,"StableMarking",0.708101422387137
+2022,"global_properties","INV",423,"StableMarking",0.261595547309833
+2022,"global_properties","UNK",87,"Liveness",0.0538033395176252
+2022,"global_properties","UNK",1,"OneSafe",0.000618429189857761
+2022,"global_properties","UNK",92,"QuasiLiveness",0.056895485466914
+2022,"global_properties","UNK",42,"ReachabilityDeadlock",0.025974025974026
+2022,"global_properties","UNK",49,"StableMarking",0.0303030303030303
+2022,"reachability","CEX",11575,"ReachabilityCardinality",0.447394867037724
+2022,"reachability","INV",13690,"ReachabilityCardinality",0.529143475572047
+2022,"reachability","CEX",18893,"ReachabilityFireability",0.730248917748918
+2022,"reachability","INV",6185,"ReachabilityFireability",0.239061533704391
+2022,"reachability","UNK",607,"ReachabilityCardinality",0.0234616573902288
+2022,"reachability","UNK",794,"ReachabilityFireability",0.0306895485466914
+2022,"ltl","CEX",16026,"LTLCardinality",0.61943413729128
+2022,"ltl","INV",9197,"LTLCardinality",0.355480828695114
+2022,"ltl","CEX",19258,"LTLFireability",0.744356833642548
+2022,"ltl","INV",5620,"LTLFireability",0.217223252937539
+2022,"ltl","UNK",649,"LTLCardinality",0.0250850340136054
+2022,"ltl","UNK",994,"LTLFireability",0.0384199134199134
+2023,"global_properties","CEX",1303,"Liveness",0.776519666269368
+2023,"global_properties","INV",299,"Liveness",0.17818831942789
+2023,"global_properties","CEX",948,"OneSafe",0.564958283671037
+2023,"global_properties","INV",730,"OneSafe",0.435041716328963
+2023,"global_properties","CEX",384,"QuasiLiveness",0.228843861740167
+2023,"global_properties","INV",1187,"QuasiLiveness",0.707389749702026
+2023,"global_properties","CEX",1058,"ReachabilityDeadlock",0.630512514898689
+2023,"global_properties","INV",579,"ReachabilityDeadlock",0.345053635280095
+2023,"global_properties","CEX",1197,"StableMarking",0.713349225268176
+2023,"global_properties","INV",425,"StableMarking",0.253277711561383
+2023,"global_properties","UNK",76,"Liveness",0.0452920143027414
+2023,"global_properties","UNK",0,"OneSafe",0
+2023,"global_properties","UNK",107,"QuasiLiveness",0.0637663885578069
+2023,"global_properties","UNK",41,"ReachabilityDeadlock",0.0244338498212157
+2023,"global_properties","UNK",56,"StableMarking",0.033373063170441
+2023,"reachability","CEX",13983,"ReachabilityCardinality",0.520820917759237
+2023,"reachability","INV",12394,"ReachabilityCardinality",0.461635876042908
+2023,"reachability","CEX",19965,"ReachabilityFireability",0.743630810488677
+2023,"reachability","INV",6337,"ReachabilityFireability",0.236032479141836
+2023,"reachability","UNK",471,"ReachabilityCardinality",0.0175432061978546
+2023,"reachability","UNK",546,"ReachabilityFireability",0.0203367103694875
+2023,"ltl","CEX",17681,"LTLCardinality",0.658559296781883
+2023,"ltl","INV",8436,"LTLCardinality",0.314213349225268
+2023,"ltl","CEX",19978,"LTLFireability",0.744115017878427
+2023,"ltl","INV",5917,"LTLFireability",0.220388855780691
+2023,"ltl","UNK",731,"LTLCardinality",0.0272273539928486
+2023,"ltl","UNK",953,"LTLFireability",0.035496126340882
+2024,"global_properties","CEX",1406,"Liveness",0.789001122334456
+2024,"global_properties","INV",296,"Liveness",0.166105499438833
+2024,"global_properties","CEX",947,"OneSafe",0.531425364758698
+2024,"global_properties","INV",819,"OneSafe",0.45959595959596
+2024,"global_properties","CEX",435,"QuasiLiveness",0.244107744107744
+2024,"global_properties","INV",1221,"QuasiLiveness",0.685185185185185
+2024,"global_properties","CEX",1139,"ReachabilityDeadlock",0.639169472502806
+2024,"global_properties","INV",596,"ReachabilityDeadlock",0.334455667789001
+2024,"global_properties","CEX",1262,"StableMarking",0.708193041526375
+2024,"global_properties","INV",462,"StableMarking",0.259259259259259
+2024,"global_properties","UNK",80,"Liveness",0.0448933782267116
+2024,"global_properties","UNK",16,"OneSafe",0.00897867564534231
+2024,"global_properties","UNK",126,"QuasiLiveness",0.0707070707070707
+2024,"global_properties","UNK",47,"ReachabilityDeadlock",0.026374859708193
+2024,"global_properties","UNK",58,"StableMarking",0.0325476992143659
+2024,"reachability",NA,27925,"ReachabilityCardinality",0.979412177328844
+2024,"reachability",NA,27810,"ReachabilityFireability",0.975378787878788
+2024,"reachability","UNK",587,"ReachabilityCardinality",0.020587822671156
+2024,"reachability","UNK",702,"ReachabilityFireability",0.0246212121212121
+2024,"ltl","CEX",18582,"LTLCardinality",0.651725589225589
+2024,"ltl","INV",8850,"LTLCardinality",0.310395622895623
+2024,"ltl","CEX",20748,"LTLFireability",0.727693602693603
+2024,"ltl","INV",6345,"LTLFireability",0.222537878787879
+2024,"ltl","UNK",1080,"LTLCardinality",0.0378787878787879
+2024,"ltl","UNK",1419,"LTLFireability",0.0497685185185185
+2025,"global_properties","CEX",1463,"Liveness",0.788679245283019
+2025,"global_properties","INV",278,"Liveness",0.149865229110512
+2025,"global_properties","CEX",966,"OneSafe",0.520754716981132
+2025,"global_properties","INV",889,"OneSafe",0.479245283018868
+2025,"global_properties","CEX",427,"QuasiLiveness",0.230188679245283
+2025,"global_properties","INV",1286,"QuasiLiveness",0.693261455525606
+2025,"global_properties","CEX",1175,"ReachabilityDeadlock",0.633423180592992
+2025,"global_properties","INV",627,"ReachabilityDeadlock",0.33800539083558
+2025,"global_properties","CEX",1336,"StableMarking",0.720215633423181
+2025,"global_properties","INV",452,"StableMarking",0.24366576819407
+2025,"global_properties","UNK",114,"Liveness",0.061455525606469
+2025,"global_properties","UNK",0,"OneSafe",0
+2025,"global_properties","UNK",142,"QuasiLiveness",0.0765498652291105
+2025,"global_properties","UNK",53,"ReachabilityDeadlock",0.0285714285714286
+2025,"global_properties","UNK",67,"StableMarking",0.0361185983827493
+2025,"reachability",NA,29071,"ReachabilityCardinality",0.979481132075472
+2025,"reachability",NA,28939,"ReachabilityFireability",0.975033692722372
+2025,"reachability","UNK",609,"ReachabilityCardinality",0.0205188679245283
+2025,"reachability","UNK",741,"ReachabilityFireability",0.024966307277628
+2025,"ltl","CEX",20027,"LTLCardinality",0.674764150943396
+2025,"ltl","INV",8783,"LTLCardinality",0.295923180592992
+2025,"ltl","CEX",22697,"LTLFireability",0.76472371967655
+2025,"ltl","INV",5826,"LTLFireability",0.196293800539084
+2025,"ltl","UNK",870,"LTLCardinality",0.0293126684636119
+2025,"ltl","UNK",1157,"LTLFireability",0.0389824797843666

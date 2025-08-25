@@ -1,0 +1,182 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+      <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+     </head>
+    <body>
+      <label><input type="checkbox" id="detailsToggle" checked> Show details</label>
+      <label><input type="checkbox" id="errorsToggle"> Show errors</label>
+      <table id="myTable" class="display dataTables_wrapper"><thead><tr><th class="tool">Tool</th><th class="total">answer_total</th><th class="total errors">error_total</th><th class="details">answer_Liveness</th><th class="details errors">error_Liveness</th><th class="details">answer_OneSafe</th><th class="details errors">error_OneSafe</th><th class="details">answer_QuasiLiveness</th><th class="details errors">error_QuasiLiveness</th><th class="details">answer_ReachabilityDeadlock</th><th class="details errors">error_ReachabilityDeadlock</th><th class="details">answer_StableMarking</th><th class="details errors">error_StableMarking</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>2023-gold</td>
+      <td>8436</td>
+      <td>22</td>
+      <td>1655</td>
+      <td>0</td>
+      <td>1760</td>
+      <td>20</td>
+      <td>1627</td>
+      <td>0</td>
+      <td>1706</td>
+      <td>2</td>
+      <td>1688</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>BVT</td>
+      <td>8583</td>
+      <td>0</td>
+      <td>1702</td>
+      <td>0</td>
+      <td>1766</td>
+      <td>0</td>
+      <td>1656</td>
+      <td>0</td>
+      <td>1735</td>
+      <td>0</td>
+      <td>1724</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>GreatSPN</td>
+      <td>4719</td>
+      <td>2</td>
+      <td>716</td>
+      <td>1</td>
+      <td>1011</td>
+      <td>1</td>
+      <td>976</td>
+      <td>0</td>
+      <td>1006</td>
+      <td>0</td>
+      <td>1010</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>GreatSPN+red</td>
+      <td>8327</td>
+      <td>21</td>
+      <td>1596</td>
+      <td>1</td>
+      <td>1760</td>
+      <td>20</td>
+      <td>1600</td>
+      <td>0</td>
+      <td>1701</td>
+      <td>0</td>
+      <td>1670</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ITS-Tools</td>
+      <td>8371</td>
+      <td>20</td>
+      <td>1629</td>
+      <td>0</td>
+      <td>1760</td>
+      <td>20</td>
+      <td>1599</td>
+      <td>0</td>
+      <td>1706</td>
+      <td>0</td>
+      <td>1677</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>LTSMin+red</td>
+      <td>8133</td>
+      <td>20</td>
+      <td>1469</td>
+      <td>0</td>
+      <td>1756</td>
+      <td>20</td>
+      <td>1567</td>
+      <td>0</td>
+      <td>1674</td>
+      <td>0</td>
+      <td>1667</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>LoLA</td>
+      <td>7317</td>
+      <td>23</td>
+      <td>1541</td>
+      <td>2</td>
+      <td>1663</td>
+      <td>8</td>
+      <td>1386</td>
+      <td>0</td>
+      <td>1422</td>
+      <td>0</td>
+      <td>1305</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <td>Tapaal</td>
+      <td>7434</td>
+      <td>14</td>
+      <td>1314</td>
+      <td>0</td>
+      <td>1710</td>
+      <td>13</td>
+      <td>1413</td>
+      <td>0</td>
+      <td>1551</td>
+      <td>1</td>
+      <td>1446</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Ideal Tool</td>
+      <td>8910</td>
+      <td>0</td>
+      <td>1782</td>
+      <td>0</td>
+      <td>1782</td>
+      <td>0</td>
+      <td>1782</td>
+      <td>0</td>
+      <td>1782</td>
+      <td>0</td>
+      <td>1782</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+      <script>
+        $(document).ready(function() {
+          let detailsVisible = true;
+          let errorsVisible = false;
+          let table = $('#myTable').DataTable({
+            "paging": false,
+            "order": [[1, "desc"]]
+          });
+
+          function updateVisibility() {
+            table.columns('.details:not(.errors)').visible(detailsVisible);
+            table.columns('.details.errors').visible(detailsVisible && errorsVisible);
+            table.columns('.total.errors').visible(errorsVisible);
+          }
+
+          updateVisibility();
+
+          $('#detailsToggle').on('change', function() {
+            detailsVisible = this.checked;
+            updateVisibility();
+          });
+
+          $('#errorsToggle').on('change', function() {
+            errorsVisible = this.checked;
+            updateVisibility();
+          });
+        });
+      </script>
+
+    </body>
+    </html>
+    

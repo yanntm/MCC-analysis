@@ -1,0 +1,152 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+      <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+     </head>
+    <body>
+      <label><input type="checkbox" id="detailsToggle" checked> Show details</label>
+      <label><input type="checkbox" id="errorsToggle"> Show errors</label>
+      <table id="myTable" class="display dataTables_wrapper"><thead><tr><th class="tool">Tool</th><th class="total">answer_total</th><th class="total errors">error_total</th><th class="details">answer_Liveness</th><th class="details errors">error_Liveness</th><th class="details">answer_OneSafe</th><th class="details errors">error_OneSafe</th><th class="details">answer_QuasiLiveness</th><th class="details errors">error_QuasiLiveness</th><th class="details">answer_ReachabilityDeadlock</th><th class="details errors">error_ReachabilityDeadlock</th><th class="details">answer_StableMarking</th><th class="details errors">error_StableMarking</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>BVT</td>
+      <td>5296</td>
+      <td>0</td>
+      <td>946.0</td>
+      <td>0.0</td>
+      <td>1152.0</td>
+      <td>0.0</td>
+      <td>991.0</td>
+      <td>0.0</td>
+      <td>1188</td>
+      <td>0</td>
+      <td>1019.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>GreatSPN</td>
+      <td>3303</td>
+      <td>8</td>
+      <td>469.0</td>
+      <td>8.0</td>
+      <td>723.0</td>
+      <td>0.0</td>
+      <td>692.0</td>
+      <td>0.0</td>
+      <td>695</td>
+      <td>0</td>
+      <td>724.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>ITS-LoLa</td>
+      <td>1162</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1162</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>ITS-Tools</td>
+      <td>1165</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1165</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Tapaal</td>
+      <td>4806</td>
+      <td>0</td>
+      <td>840.0</td>
+      <td>0.0</td>
+      <td>1140.0</td>
+      <td>0.0</td>
+      <td>893.0</td>
+      <td>0.0</td>
+      <td>1021</td>
+      <td>0</td>
+      <td>912.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>smart</td>
+      <td>1612</td>
+      <td>32</td>
+      <td>264.0</td>
+      <td>12.0</td>
+      <td>364.0</td>
+      <td>0.0</td>
+      <td>287.0</td>
+      <td>0.0</td>
+      <td>340</td>
+      <td>20</td>
+      <td>357.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>Ideal Tool</td>
+      <td>6145</td>
+      <td>0</td>
+      <td>1229.0</td>
+      <td>0.0</td>
+      <td>1229.0</td>
+      <td>0.0</td>
+      <td>1229.0</td>
+      <td>0.0</td>
+      <td>1229</td>
+      <td>0</td>
+      <td>1229.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+      <script>
+        $(document).ready(function() {
+          let detailsVisible = true;
+          let errorsVisible = false;
+          let table = $('#myTable').DataTable({
+            "paging": false,
+            "order": [[1, "desc"]]
+          });
+
+          function updateVisibility() {
+            table.columns('.details:not(.errors)').visible(detailsVisible);
+            table.columns('.details.errors').visible(detailsVisible && errorsVisible);
+            table.columns('.total.errors').visible(errorsVisible);
+          }
+
+          updateVisibility();
+
+          $('#detailsToggle').on('change', function() {
+            detailsVisible = this.checked;
+            updateVisibility();
+          });
+
+          $('#errorsToggle').on('change', function() {
+            errorsVisible = this.checked;
+            updateVisibility();
+          });
+        });
+      </script>
+
+    </body>
+    </html>
+    

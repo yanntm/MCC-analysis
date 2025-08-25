@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Time Plots</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            {% for image in images %}
+                <div class="col-md-4 col-sm-6 col-12 mb-4">
+                    <a href="{{ image }}" data-toggle="lightbox">
+                        <img class="venn-diagram img-fluid" src="{{ image }}" alt="{{ examination }} Time Diagram">
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

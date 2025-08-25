@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Hardness</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+    .row {
+        flex-wrap: wrap;
+    }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Model Hardness</h1>
+
+<!-- Filter controls -->
+<p>Show yearly data for 
+    <select class="form-control d-inline-block w-auto" id="yearSelect" onchange="filterImagesByYear(this.value);">
+        <option value="all">All years</option>
+        
+            <option value="2018" >2018</option>
+        
+            <option value="2019" >2019</option>
+        
+            <option value="2020" >2020</option>
+        
+            <option value="2021" >2021</option>
+        
+            <option value="2022" >2022</option>
+        
+            <option value="2023" >2023</option>
+        
+            <option value="2024" >2024</option>
+        
+            <option value="2025" selected>2025</option>
+        
+    </select>
+    or focus on examination 
+    <select class="form-control d-inline-block w-auto" id="examinationSelect" onchange="filterImagesByExamination(this.value);">
+        <option value="all">All examinations</option>
+        
+            <option value="Overall">Overall</option>
+        
+            <option value="ctl">ctl</option>
+        
+            <option value="global_properties">global_properties</option>
+        
+            <option value="ltl">ltl</option>
+        
+            <option value="reachability">reachability</option>
+        
+            <option value="state_space">state_space</option>
+        
+            <option value="upper_bounds">upper_bounds</option>
+        
+    </select>
+</p>
+
+
+<div class="row mt-4">
+    
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2018" data-examination="Overall" style="display: none">
+                    <a href="2018/OverallModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2018 - Overall</h5>
+                        <img class="diagram img-fluid" src="2018/OverallModelEase.png" alt="2018 - Overall Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2018" data-examination="ltl" style="display: none">
+                    <a href="2018/ltlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2018 - ltl</h5>
+                        <img class="diagram img-fluid" src="2018/ltlModelEase.png" alt="2018 - ltl Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2018" data-examination="reachability" style="display: none">
+                    <a href="2018/reachabilityModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2018 - reachability</h5>
+                        <img class="diagram img-fluid" src="2018/reachabilityModelEase.png" alt="2018 - reachability Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2018" data-examination="state_space" style="display: none">
+                    <a href="2018/state_spaceModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2018 - state_space</h5>
+                        <img class="diagram img-fluid" src="2018/state_spaceModelEase.png" alt="2018 - state_space Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2018" data-examination="upper_bounds" style="display: none">
+                    <a href="2018/upper_boundsModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2018 - upper_bounds</h5>
+                        <img class="diagram img-fluid" src="2018/upper_boundsModelEase.png" alt="2018 - upper_bounds Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2018" data-examination="global_properties" style="display: none">
+                    <a href="2018/global_propertiesModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2018 - global_properties</h5>
+                        <img class="diagram img-fluid" src="2018/global_propertiesModelEase.png" alt="2018 - global_properties Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2018" data-examination="ctl" style="display: none">
+                    <a href="2018/ctlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2018 - ctl</h5>
+                        <img class="diagram img-fluid" src="2018/ctlModelEase.png" alt="2018 - ctl Diagram">
+                    </a>
+                </div>
+            
+        
+    
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2019" data-examination="Overall" style="display: none">
+                    <a href="2019/OverallModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2019 - Overall</h5>
+                        <img class="diagram img-fluid" src="2019/OverallModelEase.png" alt="2019 - Overall Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2019" data-examination="ltl" style="display: none">
+                    <a href="2019/ltlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2019 - ltl</h5>
+                        <img class="diagram img-fluid" src="2019/ltlModelEase.png" alt="2019 - ltl Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2019" data-examination="reachability" style="display: none">
+                    <a href="2019/reachabilityModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2019 - reachability</h5>
+                        <img class="diagram img-fluid" src="2019/reachabilityModelEase.png" alt="2019 - reachability Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2019" data-examination="state_space" style="display: none">
+                    <a href="2019/state_spaceModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2019 - state_space</h5>
+                        <img class="diagram img-fluid" src="2019/state_spaceModelEase.png" alt="2019 - state_space Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2019" data-examination="upper_bounds" style="display: none">
+                    <a href="2019/upper_boundsModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2019 - upper_bounds</h5>
+                        <img class="diagram img-fluid" src="2019/upper_boundsModelEase.png" alt="2019 - upper_bounds Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2019" data-examination="global_properties" style="display: none">
+                    <a href="2019/global_propertiesModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2019 - global_properties</h5>
+                        <img class="diagram img-fluid" src="2019/global_propertiesModelEase.png" alt="2019 - global_properties Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2019" data-examination="ctl" style="display: none">
+                    <a href="2019/ctlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2019 - ctl</h5>
+                        <img class="diagram img-fluid" src="2019/ctlModelEase.png" alt="2019 - ctl Diagram">
+                    </a>
+                </div>
+            
+        
+    
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2020" data-examination="Overall" style="display: none">
+                    <a href="2020/OverallModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2020 - Overall</h5>
+                        <img class="diagram img-fluid" src="2020/OverallModelEase.png" alt="2020 - Overall Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2020" data-examination="ltl" style="display: none">
+                    <a href="2020/ltlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2020 - ltl</h5>
+                        <img class="diagram img-fluid" src="2020/ltlModelEase.png" alt="2020 - ltl Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2020" data-examination="reachability" style="display: none">
+                    <a href="2020/reachabilityModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2020 - reachability</h5>
+                        <img class="diagram img-fluid" src="2020/reachabilityModelEase.png" alt="2020 - reachability Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2020" data-examination="state_space" style="display: none">
+                    <a href="2020/state_spaceModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2020 - state_space</h5>
+                        <img class="diagram img-fluid" src="2020/state_spaceModelEase.png" alt="2020 - state_space Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2020" data-examination="upper_bounds" style="display: none">
+                    <a href="2020/upper_boundsModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2020 - upper_bounds</h5>
+                        <img class="diagram img-fluid" src="2020/upper_boundsModelEase.png" alt="2020 - upper_bounds Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2020" data-examination="global_properties" style="display: none">
+                    <a href="2020/global_propertiesModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2020 - global_properties</h5>
+                        <img class="diagram img-fluid" src="2020/global_propertiesModelEase.png" alt="2020 - global_properties Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2020" data-examination="ctl" style="display: none">
+                    <a href="2020/ctlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2020 - ctl</h5>
+                        <img class="diagram img-fluid" src="2020/ctlModelEase.png" alt="2020 - ctl Diagram">
+                    </a>
+                </div>
+            
+        
+    
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2021" data-examination="Overall" style="display: none">
+                    <a href="2021/OverallModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2021 - Overall</h5>
+                        <img class="diagram img-fluid" src="2021/OverallModelEase.png" alt="2021 - Overall Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2021" data-examination="ltl" style="display: none">
+                    <a href="2021/ltlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2021 - ltl</h5>
+                        <img class="diagram img-fluid" src="2021/ltlModelEase.png" alt="2021 - ltl Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2021" data-examination="reachability" style="display: none">
+                    <a href="2021/reachabilityModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2021 - reachability</h5>
+                        <img class="diagram img-fluid" src="2021/reachabilityModelEase.png" alt="2021 - reachability Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2021" data-examination="state_space" style="display: none">
+                    <a href="2021/state_spaceModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2021 - state_space</h5>
+                        <img class="diagram img-fluid" src="2021/state_spaceModelEase.png" alt="2021 - state_space Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2021" data-examination="upper_bounds" style="display: none">
+                    <a href="2021/upper_boundsModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2021 - upper_bounds</h5>
+                        <img class="diagram img-fluid" src="2021/upper_boundsModelEase.png" alt="2021 - upper_bounds Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2021" data-examination="global_properties" style="display: none">
+                    <a href="2021/global_propertiesModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2021 - global_properties</h5>
+                        <img class="diagram img-fluid" src="2021/global_propertiesModelEase.png" alt="2021 - global_properties Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2021" data-examination="ctl" style="display: none">
+                    <a href="2021/ctlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2021 - ctl</h5>
+                        <img class="diagram img-fluid" src="2021/ctlModelEase.png" alt="2021 - ctl Diagram">
+                    </a>
+                </div>
+            
+        
+    
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2022" data-examination="Overall" style="display: none">
+                    <a href="2022/OverallModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2022 - Overall</h5>
+                        <img class="diagram img-fluid" src="2022/OverallModelEase.png" alt="2022 - Overall Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2022" data-examination="ltl" style="display: none">
+                    <a href="2022/ltlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2022 - ltl</h5>
+                        <img class="diagram img-fluid" src="2022/ltlModelEase.png" alt="2022 - ltl Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2022" data-examination="reachability" style="display: none">
+                    <a href="2022/reachabilityModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2022 - reachability</h5>
+                        <img class="diagram img-fluid" src="2022/reachabilityModelEase.png" alt="2022 - reachability Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2022" data-examination="state_space" style="display: none">
+                    <a href="2022/state_spaceModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2022 - state_space</h5>
+                        <img class="diagram img-fluid" src="2022/state_spaceModelEase.png" alt="2022 - state_space Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2022" data-examination="upper_bounds" style="display: none">
+                    <a href="2022/upper_boundsModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2022 - upper_bounds</h5>
+                        <img class="diagram img-fluid" src="2022/upper_boundsModelEase.png" alt="2022 - upper_bounds Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2022" data-examination="global_properties" style="display: none">
+                    <a href="2022/global_propertiesModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2022 - global_properties</h5>
+                        <img class="diagram img-fluid" src="2022/global_propertiesModelEase.png" alt="2022 - global_properties Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2022" data-examination="ctl" style="display: none">
+                    <a href="2022/ctlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2022 - ctl</h5>
+                        <img class="diagram img-fluid" src="2022/ctlModelEase.png" alt="2022 - ctl Diagram">
+                    </a>
+                </div>
+            
+        
+    
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2023" data-examination="Overall" style="display: none">
+                    <a href="2023/OverallModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2023 - Overall</h5>
+                        <img class="diagram img-fluid" src="2023/OverallModelEase.png" alt="2023 - Overall Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2023" data-examination="ltl" style="display: none">
+                    <a href="2023/ltlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2023 - ltl</h5>
+                        <img class="diagram img-fluid" src="2023/ltlModelEase.png" alt="2023 - ltl Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2023" data-examination="reachability" style="display: none">
+                    <a href="2023/reachabilityModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2023 - reachability</h5>
+                        <img class="diagram img-fluid" src="2023/reachabilityModelEase.png" alt="2023 - reachability Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2023" data-examination="state_space" style="display: none">
+                    <a href="2023/state_spaceModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2023 - state_space</h5>
+                        <img class="diagram img-fluid" src="2023/state_spaceModelEase.png" alt="2023 - state_space Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2023" data-examination="upper_bounds" style="display: none">
+                    <a href="2023/upper_boundsModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2023 - upper_bounds</h5>
+                        <img class="diagram img-fluid" src="2023/upper_boundsModelEase.png" alt="2023 - upper_bounds Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2023" data-examination="global_properties" style="display: none">
+                    <a href="2023/global_propertiesModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2023 - global_properties</h5>
+                        <img class="diagram img-fluid" src="2023/global_propertiesModelEase.png" alt="2023 - global_properties Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2023" data-examination="ctl" style="display: none">
+                    <a href="2023/ctlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2023 - ctl</h5>
+                        <img class="diagram img-fluid" src="2023/ctlModelEase.png" alt="2023 - ctl Diagram">
+                    </a>
+                </div>
+            
+        
+    
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2024" data-examination="Overall" style="display: none">
+                    <a href="2024/OverallModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2024 - Overall</h5>
+                        <img class="diagram img-fluid" src="2024/OverallModelEase.png" alt="2024 - Overall Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2024" data-examination="ltl" style="display: none">
+                    <a href="2024/ltlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2024 - ltl</h5>
+                        <img class="diagram img-fluid" src="2024/ltlModelEase.png" alt="2024 - ltl Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2024" data-examination="reachability" style="display: none">
+                    <a href="2024/reachabilityModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2024 - reachability</h5>
+                        <img class="diagram img-fluid" src="2024/reachabilityModelEase.png" alt="2024 - reachability Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2024" data-examination="state_space" style="display: none">
+                    <a href="2024/state_spaceModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2024 - state_space</h5>
+                        <img class="diagram img-fluid" src="2024/state_spaceModelEase.png" alt="2024 - state_space Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2024" data-examination="upper_bounds" style="display: none">
+                    <a href="2024/upper_boundsModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2024 - upper_bounds</h5>
+                        <img class="diagram img-fluid" src="2024/upper_boundsModelEase.png" alt="2024 - upper_bounds Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2024" data-examination="global_properties" style="display: none">
+                    <a href="2024/global_propertiesModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2024 - global_properties</h5>
+                        <img class="diagram img-fluid" src="2024/global_propertiesModelEase.png" alt="2024 - global_properties Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2024" data-examination="ctl" style="display: none">
+                    <a href="2024/ctlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2024 - ctl</h5>
+                        <img class="diagram img-fluid" src="2024/ctlModelEase.png" alt="2024 - ctl Diagram">
+                    </a>
+                </div>
+            
+        
+    
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2025" data-examination="Overall" style="display: none">
+                    <a href="2025/OverallModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2025 - Overall</h5>
+                        <img class="diagram img-fluid" src="2025/OverallModelEase.png" alt="2025 - Overall Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2025" data-examination="ltl" style="display: none">
+                    <a href="2025/ltlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2025 - ltl</h5>
+                        <img class="diagram img-fluid" src="2025/ltlModelEase.png" alt="2025 - ltl Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2025" data-examination="reachability" style="display: none">
+                    <a href="2025/reachabilityModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2025 - reachability</h5>
+                        <img class="diagram img-fluid" src="2025/reachabilityModelEase.png" alt="2025 - reachability Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2025" data-examination="state_space" style="display: none">
+                    <a href="2025/state_spaceModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2025 - state_space</h5>
+                        <img class="diagram img-fluid" src="2025/state_spaceModelEase.png" alt="2025 - state_space Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2025" data-examination="upper_bounds" style="display: none">
+                    <a href="2025/upper_boundsModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2025 - upper_bounds</h5>
+                        <img class="diagram img-fluid" src="2025/upper_boundsModelEase.png" alt="2025 - upper_bounds Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2025" data-examination="global_properties" style="display: none">
+                    <a href="2025/global_propertiesModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2025 - global_properties</h5>
+                        <img class="diagram img-fluid" src="2025/global_propertiesModelEase.png" alt="2025 - global_properties Diagram">
+                    </a>
+                </div>
+            
+        
+            
+                <div class="col-md-4 col-sm-6 col-12 mb-4" data-year="2025" data-examination="ctl" style="display: none">
+                    <a href="2025/ctlModelEase.png" data-toggle="lightbox">
+                        <h5 class="text-center">2025 - ctl</h5>
+                        <img class="diagram img-fluid" src="2025/ctlModelEase.png" alt="2025 - ctl Diagram">
+                    </a>
+                </div>
+            
+        
+    
+</div>
+
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+function filterImagesByYear(year) {
+    year = Number(year);  // Convert the year string to a number.
+    $('.filter-btn').removeClass('active');
+    $(`button[data-year="${year}"]`).addClass('active');
+    $('#examinationSelect').val('all');
+    $('.col-md-4[data-year]').each(function() {
+        if ($(this).data('year') === year || year === 'all') {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    });
+}
+
+
+function filterImagesByExamination(examination) {
+    $('.filter-btn').removeClass('active');
+    $(`button[data-examination="${examination}"]`).addClass('active');
+    $('.filter-year').val('all');
+    $('.col-md-4[data-examination]').each(function() {
+        if ($(this).data('examination') === examination || examination === 'all') {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    });
+}
+
+$(document).ready(function() {
+    filterImagesByYear('2023');
+});
+</script>
+</body>
+</html>

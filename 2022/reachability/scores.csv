@@ -1,0 +1,8 @@
+"Tool","answer_total","error_total","answer_ReachabilityCardinality","error_ReachabilityCardinality","answer_ReachabilityFireability","error_ReachabilityFireability"
+"2021-gold",49266,4,24792,4,24474,0
+"BVT",50343,0,25265,0,25078,0
+"GreatSPN",22377,1,11551,0,10826,1
+"ITS-Tools",45846,0,23029,0,22817,0
+"Tapaal",48042,0,24603,0,23439,0
+"smpt",45643,0,23174,0,22469,0
+"Ideal Tool",51744,0,25872,0,25872,0

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reachability - MCC Analysis</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Reachability</h1>
+    <div>
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+      <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+     </head>
+    <body>
+      <label><input type="checkbox" id="detailsToggle" checked> Show details</label>
+      <label><input type="checkbox" id="errorsToggle"> Show errors</label>
+      <table id="myTable" class="display dataTables_wrapper"><thead><tr><th class="tool">Tool</th><th class="total">answer_total</th><th class="total errors">error_total</th><th class="details">answer_ReachabilityCardinality</th><th class="details errors">error_ReachabilityCardinality</th><th class="details">answer_ReachabilityFireability</th><th class="details errors">error_ReachabilityFireability</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>2020-gold</td>
+      <td>43359</td>
+      <td>239</td>
+      <td>21771</td>
+      <td>144</td>
+      <td>21588</td>
+      <td>95</td>
+    </tr>
+    <tr>
+      <td>BVT</td>
+      <td>44322</td>
+      <td>0</td>
+      <td>22309</td>
+      <td>0</td>
+      <td>22013</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>GreatSPN</td>
+      <td>19994</td>
+      <td>0</td>
+      <td>10357</td>
+      <td>0</td>
+      <td>9637</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ITS-Tools</td>
+      <td>43324</td>
+      <td>0</td>
+      <td>21820</td>
+      <td>0</td>
+      <td>21504</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>LoLA</td>
+      <td>38174</td>
+      <td>1</td>
+      <td>20010</td>
+      <td>0</td>
+      <td>18164</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>Tapaal</td>
+      <td>41894</td>
+      <td>0</td>
+      <td>21389</td>
+      <td>0</td>
+      <td>20505</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>smpt</td>
+      <td>23361</td>
+      <td>14</td>
+      <td>10886</td>
+      <td>1</td>
+      <td>12475</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <td>Ideal Tool</td>
+      <td>45152</td>
+      <td>0</td>
+      <td>22576</td>
+      <td>0</td>
+      <td>22576</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+      <script>
+        $(document).ready(function() {
+          let detailsVisible = true;
+          let errorsVisible = false;
+          let table = $('#myTable').DataTable({
+            "paging": false,
+            "order": [[1, "desc"]]
+          });
+
+          function updateVisibility() {
+            table.columns('.details:not(.errors)').visible(detailsVisible);
+            table.columns('.details.errors').visible(detailsVisible && errorsVisible);
+            table.columns('.total.errors').visible(errorsVisible);
+          }
+
+          updateVisibility();
+
+          $('#detailsToggle').on('change', function() {
+            detailsVisible = this.checked;
+            updateVisibility();
+          });
+
+          $('#errorsToggle').on('change', function() {
+            errorsVisible = this.checked;
+            updateVisibility();
+          });
+        });
+      </script>
+
+    </body>
+    </html>
+    </div>
+    <h2>Venn Diagrams</h2>
+    <div>
+        <iframe src="venn_dynamic.html" width="100%" height="600" frameborder="0" style="border:0" allowfullscreen></iframe>
+    </div>
+    <p><a href="index.html">Back to index</a></p>
+</body>
+</html>

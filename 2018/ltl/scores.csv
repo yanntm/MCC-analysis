@@ -1,0 +1,11 @@
+"Tool","answer_total","error_total","answer_LTLCardinality","error_LTLCardinality","answer_LTLFireability","error_LTLFireability"
+"BVT",28129,0,13967,0,14162,0
+"ITS-Tools",20694,2,10086,2,10608,0
+"ITS-Tools.L",20718,2,9939,2,10779,0
+"Irma.full",11910,0,5373,0,6537,0
+"Irma.struct",11967,0,5404,0,6563,0
+"LTSMin",21510,2,10601,2,10909,0
+"LoLA",27057,7,13330,5,13727,2
+"M4M.full",11366,0,5132,0,6234,0
+"M4M.struct",12028,0,5446,0,6582,0
+"Ideal Tool",30304,0,15152,0,15152,0

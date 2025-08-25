@@ -1,0 +1,14 @@
+"Tool","answer_total","error_total","answer_StateSpace","error_StateSpace"
+"2022-gold",4619,0,4619,0
+"BVT",4911,0,4911,0
+"GreatSPN",4003,6,4003,6
+"ITS-Tools",2950,4,2950,4
+"LTSMin",2239,0,2239,0
+"LTSMin+red",2098,0,2098,0
+"Marcie",2714,0,2714,0
+"Marcie+red",2866,0,2866,0
+"Smart",2498,34,2498,34
+"Smart+red",2586,8,2586,8
+"pnmc",1925,0,1925,0
+"tedd-c",4649,0,4649,0
+"Ideal Tool",6712,0,6712,0
