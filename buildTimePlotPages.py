@@ -48,7 +48,7 @@ for category, examinations in categories.items():
     plot_id = 'plot_' + category
 
     # Render the template with the CSV data
-    html = template.render(plot_id=plot_id, csv_files=csv_files)
+    html = template.render(plot_id=plot_id, csv_files=csv_files,min_year=2016,max_year=2025)
 
     # Write the rendered HTML to a file
     html_file = './' + category + '_annual.html'

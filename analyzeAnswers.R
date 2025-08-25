@@ -7,8 +7,8 @@ library(writexl)
 # Parse command line arguments
 args <- commandArgs(trailingOnly = TRUE)
 
-# Set the current year, default to 2023 if not provided
-current_year <- if (length(args) >= 1) as.integer(args[1]) else 2023
+# Set the current year, default to 2024 if not provided
+current_year <- if (length(args) >= 1) as.integer(args[1]) else 2025
 
 
 # Set default values for input file and output folder

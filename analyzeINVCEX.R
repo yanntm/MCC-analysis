@@ -5,7 +5,7 @@ library(ggplot2)
 library(jsonlite)
 
 # Define the years and categories
-years <- 2020:2023
+years <- 2020:2025
 categories <- c("global_properties", "reachability", "ltl")
 multipliers <- c(5, 32, 32)  # Multipliers for each category respectively
 # List of main tools

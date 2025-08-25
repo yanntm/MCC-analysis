@@ -40,7 +40,7 @@ combined_data$Tool <- case_when(
   combined_data$Tool == "Tapaal(SEQ)" ~ "Tapaal",
   grepl("^RBVT-", combined_data$Tool) ~ "RBVT",
   grepl("^BVT-", combined_data$Tool) ~ "BVT",
-  combined_data$Tool %in% c("2018-Gold", "2019-Gold", "2020-gold", "2021-gold", "2022-gold") ~ "LastYear-gold",
+  combined_data$Tool %in% c("2018-Gold", "2019-Gold", "2020-gold", "2021-gold", "2022-gold", "2023-gold", "2024-gold", "2025-gold") ~ "LastYear-gold",
   TRUE ~ combined_data$Tool
 )
 

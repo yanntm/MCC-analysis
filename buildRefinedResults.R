@@ -261,7 +261,7 @@ add_hardness_metric <- function(resolution, tool_query_matrix, tool_family_dict)
     solution_tools <- colnames(tool_query_matrix)[solution_indices]
     
     # Filter out the virtual tools
-    solution_tools <- solution_tools[!(solution_tools %in% c("BVT", "GoldLastYear"))]
+    solution_tools <- solution_tools[!(solution_tools %in% c("BVT", "LastYear-gold"))]
     
     # Check if any solution_tool is not in tool_family_dict
     for(tool in solution_tools) {
