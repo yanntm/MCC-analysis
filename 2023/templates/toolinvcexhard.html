@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tool Performance</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        .plot-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .plot-grid > div {
+            flex: 0 0 calc(33% - 20px); /* or any other percentage less than 50% to leave some space between */
+        }
+    </style>
+
+</head>
+<body>
+    <div class="plot-grid" id="plots">
+    <!-- Plots will be inserted here -->
+    </div>
+
+    <script>
+    // Read CSV data
+    d3.csv("tools_hard.csv").then(function(data) {
+        var plotGrid = document.querySelector('.plot-grid');
+
+        
+        // Group data by Year and Category
+        var groups = d3.group(data, d => d.Year, d => d.Category);
+
+        let color = d3.scaleOrdinal()
+             .domain(['INV', 'HardINV', 'CEX', 'HardCEX'])
+             .range(['#1f77b4', '#2ca02c', '#ff7f0e', '#d62728']); 
+
+        // Create a plot for each year and category
+        groups.forEach(function(yearGroup, year) {
+            yearGroup.forEach(function(categoryData, category) {
+                var layout = {
+                    title: `${category} - ${year}`,
+                    barmode: 'group',
+                    xaxis: { title: 'Tool' },
+                    yaxis: { title: 'Proportion of Successful Results' },
+                    autosize: true
+                };
+
+                var traces = [];
+                var tools = Array.from(new Set(categoryData.map(function(d) { return d.Tool; })));
+				var traces = [];
+
+// Create an array for 'INV' and 'CEX' bars for each tool
+var toolDataINV = tools.map(function(tool) {
+    var data = categoryData.find(function(d) { return d.Tool == tool && d.FormulaType == 'INV' && d.Difficulty == 'Other'; });
+    return data ? data.Proportion : 0;
+});
+var toolDataINVH = tools.map(function(tool) {
+    var data = categoryData.find(function(d) { return d.Tool == tool && d.FormulaType == 'INV' && d.Difficulty == 'Hard'; });
+    return data ? data.Proportion : 0;
+});
+var toolDataCEX = tools.map(function(tool) {
+    var data = categoryData.find(function(d) { return d.Tool == tool && d.FormulaType == 'CEX' && d.Difficulty == 'Other'; });
+    return data ? data.Proportion : 0;
+});
+var toolDataCEXH = tools.map(function(tool) {
+    var data = categoryData.find(function(d) { return d.Tool == tool && d.FormulaType == 'CEX' && d.Difficulty == 'Hard'; });
+    return data ? data.Proportion : 0;
+});
+
+// Create a trace for 'INVH'
+traces.push({
+    x: tools,
+    y: toolDataINVH,
+    name: 'INVHard',
+    type: 'bar',
+    marker: { color: color('HardINV') },
+    width: 0.2
+});
+
+
+// Create a trace for 'INV'
+traces.push({
+    x: tools,
+    y: toolDataINV,
+    name: 'INV',
+    type: 'bar',
+    marker: { color: color('INV') },
+    width: 0.4
+});
+// Create a trace for 'CEXH'
+traces.push({
+    x: tools,
+    y: toolDataCEXH,
+    name: 'CEXHard',
+    type: 'bar',
+    marker: { color: color('HardCEX') },
+    width: 0.2
+});
+
+// Create a trace for 'CEX'
+traces.push({
+    x: tools,
+    y: toolDataCEX,
+    name: 'CEX',
+    type: 'bar',
+    marker: { color: color('CEX') },
+    width: 0.4
+});
+
+ 
+                var div = document.createElement('div');
+                document.getElementById('plots').appendChild(div);
+                Plotly.newPlot(div, traces, layout);
+            });
+        });
+    });
+    </script>
+
+</body>
+</html>

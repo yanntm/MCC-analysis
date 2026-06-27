@@ -1,0 +1,7 @@
+"Tool","answer_total","error_total","answer_LTLCardinality","error_LTLCardinality","answer_LTLFireability","error_LTLFireability"
+"2024-gold",55030,0,27835,0,27195,0
+"BVT",57333,0,28810,0,28523,0
+"EnPac",52520,44,26583,25,25937,19
+"ITS-Tools",54509,2,27627,1,26882,1
+"Tapaal",55033,2,27848,0,27185,2
+"Ideal Tool",59360,0,29680,0,29680,0

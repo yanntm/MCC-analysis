@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <div id="plotDiv"></div>
+
+  <h3>Select data source:</h3>
+  <div id="dataSourceSelection"></div>
+
+  <h3>Select normalization mode:</h3>
+  <div>
+    <input type="radio" id="rawAnswer" name="answerType" value="answer" checked>
+    <label for="rawAnswer">Raw Answer Count</label><br>
+    <input type="radio" id="idealAnswer" name="answerType" value="answer_ideal">
+    <label for="idealAnswer">Normalized Answer Count (Ideal Tool)</label><br>
+    <input type="radio" id="bvtAnswer" name="answerType" value="answer_bvt">
+    <label for="bvtAnswer">Normalized Answer Count (RBVT)</label>
+  </div>
+<script>
+  // Initial Tools to display
+  const initialTools = ["Ideal Tool", "BVT", "ITS-Tools", "Tapaal", "LoLA", "enPAC", "GreatSPN", "smpt", "tedd"];
+  
+  const csvFiles = ["csv/answer_reachability_time.csv", "csv/answer_ReachabilityCardinality_time.csv", "csv/answer_ReachabilityFireability_time.csv"];  // List of CSV files
+
+  const allData = {};  // Object to store data from all CSV files
+
+  // Load data from all CSV files
+  const loadAllData = () => {
+    const promises = csvFiles.map(csvFile => {
+      return new Promise((resolve, reject) => {
+        Plotly.d3.csv(csvFile, function(error, data) {
+          if (error) {
+            reject(error);
+          } else {
+            const fileName = csvFile.split('/').pop().split('_')[1];  // Extract category/examination name from file name
+            allData[fileName] = data;  // Store data in the allData object with category/examination name as key
+            resolve();
+          }
+        });
+      });
+    });
+
+    return Promise.all(promises);
+  };
+
+  const generateDataSourceSelection = () => {
+	  const dataSourceDiv = document.getElementById('dataSourceSelection');
+	  Object.keys(allData).forEach((dataSource, index) => {
+	    const radioButton = document.createElement('input');
+	    radioButton.type = 'radio';
+	    radioButton.id = dataSource;
+	    radioButton.name = 'dataSource';
+	    radioButton.value = dataSource;
+	    if (index === 0) radioButton.checked = true;
+
+	    const label = document.createElement('label');
+	    label.htmlFor = dataSource;
+	    label.innerText = dataSource;
+
+	    dataSourceDiv.appendChild(radioButton);
+	    dataSourceDiv.appendChild(label);
+	    dataSourceDiv.appendChild(document.createElement('br'));
+	  });
+	};
+
+  
+  // Function to update plot with selected data source and answer normalization mode
+  const updatePlot = (dataSource, answerType) => {
+	    // Initialize shownTools to be the same as initialTools
+	    let shownTools = initialTools.slice();
+
+	    // If the plot already exists, collect the currently visible tools
+	    if (typeof plotDiv.data !== "undefined") {
+	      shownTools = [];
+	      for(let i = 0; i < plotDiv.data.length; i++){
+	        if(plotDiv.data[i].visible === true){
+	          shownTools.push(plotDiv.data[i].name);
+	        }
+	      }
+	    }  
+	  
+    const data = allData[dataSource];
+    //const ToolNames = [...new Set(data.map(row => row.Tool))].sort();
+    const traces = [];
+    // Count the number of points for each Tool
+    const ToolCounts = data.reduce((counts, row) => {
+      counts[row.Tool] = (counts[row.Tool] || 0) + 1;
+      return counts;
+    }, {});
+
+    // Sort the Tools first by the number of points (in descending order) and then alphabetically
+    const ToolNames = Object.entries(ToolCounts)
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(entry => entry[0]);
+    
+    ToolNames.forEach(function(ToolName) {
+      var ToolData = data.filter(row => row.Tool === ToolName);
+      ToolData.sort((a, b) => a.year - b.year);
+
+      var trace = {
+        x: ToolData.map(row => row.year),
+        y: ToolData.map(row => parseFloat(row[answerType])),
+        mode: 'lines+markers',
+        name: ToolName,
+        line: {
+          shape: 'linear'
+        },
+        visible: shownTools.includes(ToolName) ? true : 'legendonly'  // Show initial Tools
+      };
+      traces.push(trace);
+    });
+       // Plot layout
+      var layout = {
+        title: 'plot_reachability',
+        height: 600,
+        xaxis: {
+          title: 'Year',
+          type: 'category'
+        },
+        yaxis: {
+          title: 'Answers'
+        },
+        legend: {
+          orientation: 'h',
+          y: -0.5  // Position the legend below the plot
+        },
+        colorway: [
+            "rgb(229, 134, 6)","rgb(93, 105, 177)","rgb(82, 188, 163)","rgb(153, 201, 69)",
+            "rgb(204, 97, 176)","rgb(36, 121, 108)","rgb(218, 165, 27)","rgb(47, 138, 196)",
+            "rgb(118, 78, 159)","rgb(237, 100, 90)","rgb(165, 170, 153)","rgb(136, 204, 238)",
+            "rgb(204, 102, 119)","rgb(221, 204, 119)","rgb(17, 119, 51)","rgb(51, 34, 136)",
+            "rgb(170, 68, 153)","rgb(68, 170, 153)","rgb(153, 153, 51)","rgb(136, 34, 85)",
+            "rgb(102, 17, 0)","rgb(136, 136, 136)","rgb(95, 70, 144)","rgb(29, 105, 150)",
+            "rgb(56, 166, 165)","rgb(15, 133, 84)","rgb(115, 175, 72)","rgb(237, 173, 8)",
+            "rgb(225, 124, 5)","rgb(204, 80, 62)","rgb(148, 52, 110)","rgb(111, 64, 112)",
+            "rgb(102, 102, 102)"
+          ] 
+      };
+    Plotly.newPlot('plotDiv', traces, layout);
+  };
+
+  loadAllData().then(() => {
+    // After all data is loaded, add radio button listeners and initialize plot
+	generateDataSourceSelection();
+    // Add radio button listener for data source selection
+    document.querySelectorAll('input[name="dataSource"]').forEach((elem) => {
+      elem.addEventListener("change", function(event) {
+        const dataSource = event.target.value;
+        const answerType = document.querySelector('input[name="answerType"]:checked').value;
+        updatePlot(dataSource, answerType);
+      });
+    });
+
+    // Add radio button listener for answer normalization mode selection
+    document.querySelectorAll('input[name="answerType"]').forEach((elem) => {
+      elem.addEventListener("change", function(event) {
+        const answerType = event.target.value;
+        const dataSource = document.querySelector('input[name="dataSource"]:checked').value;
+        updatePlot(dataSource, answerType);
+      });
+    });
+
+    // Initialize plot with first data source and raw answer
+    updatePlot(Object.keys(allData)[0], 'answer');
+  });
+</script>
+</body>
+</html>

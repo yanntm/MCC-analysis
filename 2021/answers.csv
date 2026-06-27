@@ -1,0 +1,11 @@
+"Tool","answer_StateSpace","error_StateSpace","answer_Liveness","error_Liveness","answer_OneSafe","error_OneSafe","answer_QuasiLiveness","error_QuasiLiveness","answer_ReachabilityDeadlock","error_ReachabilityDeadlock","answer_StableMarking","error_StableMarking","answer_ReachabilityCardinality","error_ReachabilityCardinality","answer_ReachabilityFireability","error_ReachabilityFireability","answer_CTLCardinality","error_CTLCardinality","answer_CTLFireability","error_CTLFireability","answer_LTLCardinality","error_LTLCardinality","answer_LTLFireability","error_LTLFireability","answer_UpperBounds","error_UpperBounds"
+"2020-gold",3712,0,904,0,1237,0,948,0,1178,0,958,0,21771,144,21588,95,17075,2,13174,16,18971,120,16013,74,11760,525
+"BVT",4010,0,1344,0,1410,0,1331,0,1368,0,1362,0,22309,0,22013,0,19831,0,18562,0,21941,0,21526,0,21695,0
+"GreatSPN",3374,6,548,1,808,0,782,0,806,0,809,0,10357,0,9637,0,8684,2,8147,1,9580,143,9550,188,12824,0
+"ITS-Tools",2469,0,1289,0,1392,0,1289,0,1339,0,1321,0,21820,0,21504,0,12900,2,8923,2,20302,1,19462,2,21202,0
+"Tapaal",951,9,988,1,1345,0,1041,15,1211,0,1079,0,21389,0,20505,0,18220,1,14750,5,20958,0,19792,3,19489,0
+"tedd",3775,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+"Ideal Tool",5644,0,1411,0,1411,0,1411,0,1411,0,1411,0,22576,0,22576,0,22576,0,22576,0,22576,0,22576,0,22576,0
+"LoLA",0,0,1244,0,1379,0,1188,0,1162,0,1178,12,20010,0,18164,1,10360,76,12097,582,17312,3,15825,8,19238,0
+"smpt",0,0,0,0,0,0,0,0,0,0,0,0,10886,1,12475,13,0,0,0,0,0,0,0,0,0,0
+"enPAC",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18732,7,18515,3,0,0

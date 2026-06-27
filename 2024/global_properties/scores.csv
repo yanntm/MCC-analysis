@@ -1,0 +1,10 @@
+"Tool","answer_total","error_total","answer_Liveness","error_Liveness","answer_OneSafe","error_OneSafe","answer_QuasiLiveness","error_QuasiLiveness","answer_ReachabilityDeadlock","error_ReachabilityDeadlock","answer_StableMarking","error_StableMarking"
+"2023-gold",8436,22,1655,0,1760,20,1627,0,1706,2,1688,0
+"BVT",8583,0,1702,0,1766,0,1656,0,1735,0,1724,0
+"GreatSPN",4719,2,716,1,1011,1,976,0,1006,0,1010,0
+"GreatSPN+red",8327,21,1596,1,1760,20,1600,0,1701,0,1670,0
+"ITS-Tools",8371,20,1629,0,1760,20,1599,0,1706,0,1677,0
+"LTSMin+red",8133,20,1469,0,1756,20,1567,0,1674,0,1667,0
+"LoLA",7317,23,1541,2,1663,8,1386,0,1422,0,1305,13
+"Tapaal",7434,14,1314,0,1710,13,1413,0,1551,1,1446,0
+"Ideal Tool",8910,0,1782,0,1782,0,1782,0,1782,0,1782,0

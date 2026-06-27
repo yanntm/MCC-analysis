@@ -1,0 +1,9 @@
+"Tool","answer_total","error_total","answer_CTLCardinality","error_CTLCardinality","answer_CTLFireability","error_CTLFireability"
+"2018-Gold",26995,1,14262,1,12733,0
+"BVT",29185,0,14990,0,14195,0
+"GreatSPN",10495,0,5222,0,5273,0
+"ITS-Tools",11244,0,5622,0,5622,0
+"ITS-Tools.M",12113,4,5877,3,6236,1
+"LoLA",23730,3,12751,2,10979,1
+"Tapaal",27067,1,14306,1,12761,0
+"Ideal Tool",32576,0,16288,0,16288,0

@@ -1,0 +1,8 @@
+"Tool","answer_total","error_total","answer_CTLCardinality","error_CTLCardinality","answer_CTLFireability","error_CTLFireability"
+"2020-gold",30249,18,17075,2,13174,16
+"BVT",38393,0,19831,0,18562,0
+"GreatSPN",16831,3,8684,2,8147,1
+"ITS-Tools",21823,4,12900,2,8923,2
+"LoLA",22457,658,10360,76,12097,582
+"Tapaal",32970,6,18220,1,14750,5
+"Ideal Tool",45152,0,22576,0,22576,0

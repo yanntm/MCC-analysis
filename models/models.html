@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCC Model Size Analysis - 2023 Edition</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>    
+</head>
+<body>
+    <h1>MCC 2023 Model Size Analysis</h1>
+	<p>We provide analysis for three categories: Petri Net (PT), Colored Petri Net (COL), and All. The 'All' category contains all models.</p>
+   	<p>The MCC '23 models contained 1678 model instances coming from 132 model families, of which 27 are COL model families. In total there are 1426 PT model instances and 252 COL model instances in this dataset.
+   	Out of these 1426 PT model instances, 218 are instances produced from COL models by unfolding.</p>
+
+<div id="chartContainer" style="display:none;">
+    <div id="pieChart"></div>
+</div>
+
+<button id="showPlotButton">Show as plot ▼</button>
+
+<script>
+var data = [{
+  values: [252, 218, 1208],
+  labels: ['COL','PT from Unfolding', 'PT'],
+  type: 'pie'
+}];
+
+var layout = {
+  width: 500,
+  height: 500,
+  title: 'Decomposition of 1678 Model Instances',
+};
+
+$('#showPlotButton').click(function() {
+    var container = $('#chartContainer');
+    var button = $('#showPlotButton');
+
+    if (container.is(':visible')) {
+        container.hide();
+        button.html('Show as plot ▼');
+    } else {
+        container.show();
+        Plotly.newPlot('pieChart', data, layout);
+        button.html('Hide plot ▲');
+    }
+});
+</script>
+   	
+	<p>Both visualizations of the <a href="ModelDescriptions.html">raw data</a> <a href="ModelDescriptions.csv">(download as CSV)</a> show the distribution of model sizes across the various models analyzed in this study. The raw data gives the precise sizes of different model attributes, while the visualizations provide a more holistic and comprehensive view of the distribution and spread of these attributes.</p>
+	
+    <!-- Filter buttons -->
+    <div class="btn-group" role="group" aria-label="Filter">
+        
+        <button type="button" class="btn btn-primary" onclick="filterImages('All')">All</button>
+        
+        <button type="button" class="btn btn-primary" onclick="filterImages('COL')">COL</button>
+        
+        <button type="button" class="btn btn-primary" onclick="filterImages('PTAll')">PTAll</button>
+        
+        <button type="button" class="btn btn-primary" onclick="filterImages('PT')">PT</button>
+        
+        <button type="button" class="btn btn-primary" onclick="filterImages('PTUnfolding')">PTUnfolding</button>
+        
+    </div>
+
+    
+    <div class="row mt-4" data-category="All" >
+        <div class="col-12">
+            <h2>All</h2>
+        </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="Places_density_plot_All.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="Places_density_plot_All.png" alt="All Diagram">
+                </a>
+            </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="Transitions_density_plot_All.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="Transitions_density_plot_All.png" alt="All Diagram">
+                </a>
+            </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="Arcs_density_plot_All.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="Arcs_density_plot_All.png" alt="All Diagram">
+                </a>
+            </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="box_plot_All.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="box_plot_All.png" alt="All Diagram">
+                </a>
+            </div>
+        
+    </div>
+    
+    <div class="row mt-4" data-category="COL" style="display:none">
+        <div class="col-12">
+            <h2>COL</h2>
+        </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="Places_density_plot_COL.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="Places_density_plot_COL.png" alt="COL Diagram">
+                </a>
+            </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="Transitions_density_plot_COL.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="Transitions_density_plot_COL.png" alt="COL Diagram">
+                </a>
+            </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="Arcs_density_plot_COL.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="Arcs_density_plot_COL.png" alt="COL Diagram">
+                </a>
+            </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="box_plot_COL.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="box_plot_COL.png" alt="COL Diagram">
+                </a>
+            </div>
+        
+    </div>
+    
+    <div class="row mt-4" data-category="PTAll" style="display:none">
+        <div class="col-12">
+            <h2>PTAll</h2>
+        </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="Places_density_plot_PTAll.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="Places_density_plot_PTAll.png" alt="PTAll Diagram">
+                </a>
+            </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="Transitions_density_plot_PTAll.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="Transitions_density_plot_PTAll.png" alt="PTAll Diagram">
+                </a>
+            </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="Arcs_density_plot_PTAll.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="Arcs_density_plot_PTAll.png" alt="PTAll Diagram">
+                </a>
+            </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="box_plot_PTAll.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="box_plot_PTAll.png" alt="PTAll Diagram">
+                </a>
+            </div>
+        
+    </div>
+    
+    <div class="row mt-4" data-category="PT" style="display:none">
+        <div class="col-12">
+            <h2>PT</h2>
+        </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="Places_density_plot_PT.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="Places_density_plot_PT.png" alt="PT Diagram">
+                </a>
+            </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="Transitions_density_plot_PT.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="Transitions_density_plot_PT.png" alt="PT Diagram">
+                </a>
+            </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="Arcs_density_plot_PT.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="Arcs_density_plot_PT.png" alt="PT Diagram">
+                </a>
+            </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="box_plot_PT.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="box_plot_PT.png" alt="PT Diagram">
+                </a>
+            </div>
+        
+    </div>
+    
+    <div class="row mt-4" data-category="PTUnfolding" style="display:none">
+        <div class="col-12">
+            <h2>PTUnfolding</h2>
+        </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="Places_density_plot_PTUnfolding.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="Places_density_plot_PTUnfolding.png" alt="PTUnfolding Diagram">
+                </a>
+            </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="Transitions_density_plot_PTUnfolding.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="Transitions_density_plot_PTUnfolding.png" alt="PTUnfolding Diagram">
+                </a>
+            </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="Arcs_density_plot_PTUnfolding.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="Arcs_density_plot_PTUnfolding.png" alt="PTUnfolding Diagram">
+                </a>
+            </div>
+        
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
+                <a href="box_plot_PTUnfolding.png" data-toggle="lightbox">
+                    <img class="diagram img-fluid" src="box_plot_PTUnfolding.png" alt="PTUnfolding Diagram">
+                </a>
+            </div>
+        
+    </div>
+    
+
+
+    <h2>Reading the plots.</h2>	
+	<p>The data is presented in two forms: density plots and box plots.</p> 
+    <p>Density plots are useful to visualize the distribution of model sizes. Each plot is a variation of a histogram that uses 'kernels' to estimate the probability density function of the model sizes. The peaks of a density plot help to locate where values are concentrated over the interval.</p>
+    <p>In our case, we have separate density plots for places, transitions, and arcs. These plots can help us understand how these attributes are distributed across different models and provide us with insights on the common patterns and divergences among models.</p>
+    <p>Box plots, on the other hand, provide a graphical representation of the five-number summary of a dataset: the minimum, first quartile, median, third quartile, and maximum. In a box plot, a box is created from the first quartile to the third quartile, a vertical line is also there which goes through the box at the median. Here whiskers are drawn above and below the box to summarize the spread of the data. Hence, box plots help us to understand the distribution and spread of the data more precisely.</p>
+
+
+    <p><a href="../index.html">Back to summary</a></p>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+    function filterImages(category) {
+        $('.btn-primary').removeClass('active');
+        $(`button[onclick="filterImages('${category}')"]`).addClass('active');
+        $('.row[data-category]').each(function() {
+            if ($(this).data('category') === category) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
+    </script>
+</body>
+</html>

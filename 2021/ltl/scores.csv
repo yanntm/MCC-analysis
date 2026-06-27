@@ -1,0 +1,9 @@
+"Tool","answer_total","error_total","answer_LTLCardinality","error_LTLCardinality","answer_LTLFireability","error_LTLFireability"
+"2020-gold",34984,194,18971,120,16013,74
+"BVT",43467,0,21941,0,21526,0
+"GreatSPN",19130,331,9580,143,9550,188
+"ITS-Tools",39764,3,20302,1,19462,2
+"LoLA",33137,11,17312,3,15825,8
+"Tapaal",40750,3,20958,0,19792,3
+"enPAC",37247,10,18732,7,18515,3
+"Ideal Tool",45152,0,22576,0,22576,0

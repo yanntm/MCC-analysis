@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pluriannual Dynamic Plots</title>
+</head>
+<body>
+  <h1>Pluriannual Dynamic Plots</h1>
+  <p>The plots present pluri-annual data as nice dynamic plots.</p>
+  <ul>
+    {% for score_col, html_file in plot_links %}
+    <li><a href="{{ html_file }}">{{ score_col }}</a></li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

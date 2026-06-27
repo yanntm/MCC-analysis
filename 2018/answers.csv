@@ -1,0 +1,15 @@
+"Tool","answer_StateSpace","error_StateSpace","answer_ReachabilityDeadlock","error_ReachabilityDeadlock","answer_ReachabilityCardinality","error_ReachabilityCardinality","answer_ReachabilityFireability","error_ReachabilityFireability","answer_CTLCardinality","error_CTLCardinality","answer_CTLFireability","error_CTLFireability","answer_LTLCardinality","error_LTLCardinality","answer_LTLFireability","error_LTLFireability","answer_UpperBounds","error_UpperBounds"
+"BVT",2647,0,888,0,14503,0,14048,0,14023,0,13262,0,13967,0,14162,0,13226,0
+"GreatSPN",2300,0,429,0,4896,0,5073,0,4943,0,5094,0,0,0,0,0,8768,0
+"ITS-Tools",1569,0,697,0,10019,0,9896,0,5686,0,5785,0,10086,2,10608,0,8258,0
+"ITS-Tools.L",1494,0,739,0,9868,0,9488,0,5414,0,5350,0,9939,2,10779,0,7545,0
+"Irma.full",1027,0,401,0,7110,0,6489,0,3847,0,3387,0,5373,0,6537,0,4934,0
+"Irma.struct",1024,0,401,0,7147,0,6432,0,3874,0,3392,0,5404,0,6563,0,4913,0
+"LTSMin",951,3,332,0,6423,0,6725,10,4453,0,4290,1,10601,2,10909,0,5360,0
+"M4M.full",909,0,316,0,6062,0,6182,0,2745,9,2139,0,5132,0,6234,0,3788,1
+"M4M.struct",894,0,256,0,6761,0,6047,0,2651,3,2499,1,5446,0,6582,0,3857,1
+"TINA.tedd",2368,12,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+"Tapaal",645,0,812,0,14186,0,13476,0,13411,0,11916,1,0,0,0,0,8483,3
+"smart",1236,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4940,0
+"Ideal Tool",3788,0,947,0,15152,0,15152,0,15152,0,15152,0,15152,0,15152,0,15152,0
+"LoLA",0,0,755,0,13588,1,12410,0,12006,6,9607,1,13330,5,13727,2,11983,0
