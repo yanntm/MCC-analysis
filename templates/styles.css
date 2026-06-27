@@ -25,3 +25,8 @@ table {
 th, td {
     white-space: nowrap;
 }
+
+.slider {
+  width: 50%;
+  display: inline-block;
+}
