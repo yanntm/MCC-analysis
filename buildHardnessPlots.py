@@ -10,7 +10,7 @@ ideal_scores = {'ctl': 32, 'global_properties': 5, 'ltl': 32, 'reachability': 32
 
 # List all examination categories and years
 categories = ['ctl', 'global_properties', 'ltl', 'reachability', 'state_space', 'upper_bounds']
-years = list(range(2016, 2025))
+years = list(range(2016, 2027))
 
 # Create a new column 'ModelKey' as a concatenation of 'ModelFamily' and 'ModelType'
 df['ModelKey'] = df['ModelFamily'] + "_" + df['ModelType']
@@ -49,7 +49,7 @@ for category in categories:
         # Add normalized scores to normalized_scores_list
         normalized_scores_list.extend(scores / ideal_scores[category])
         # If year is latest, update hardest_models_latest dictionary
-        if year == 2025:
+        if year == 2026:
             for key, score in df_year.values:
                 if key not in hardest_models_latest or score < hardest_models_latest[key]:
                     hardest_models_latest[key] = score

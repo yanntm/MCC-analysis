@@ -8,8 +8,8 @@ df <- read_csv("ModelDescriptions.csv")
 # Rename 'Model' column to 'ModelKey'
 df <- df %>% rename(ModelKey = Model)
 
-# List of years from 2016 to 2023
-years <- as.character(2016:2025)
+# List of years from 2016 to 2026
+years <- as.character(2016:2026)
 
 # Initialize empty list to hold all resolution data
 resolution_data <- list()
