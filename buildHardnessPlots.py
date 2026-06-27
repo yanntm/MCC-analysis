@@ -10,7 +10,8 @@ ideal_scores = {'ctl': 32, 'global_properties': 5, 'ltl': 32, 'reachability': 32
 
 # List all examination categories and years
 categories = ['ctl', 'global_properties', 'ltl', 'reachability', 'state_space', 'upper_bounds']
-years = list(range(2016, 2027))
+# Data only exists from 2018 onward (the pipeline builds year dirs > 2017).
+years = list(range(2018, 2027))
 
 # Create a new column 'ModelKey' as a concatenation of 'ModelFamily' and 'ModelType'
 df['ModelKey'] = df['ModelFamily'] + "_" + df['ModelType']
