@@ -70,7 +70,8 @@ def main():
         resultsets.backing_from_raw(oracle, config["raw"])
         print("oracle files name no tools: backing read from the raw results", file=sys.stderr)
     sets = load_sets(config, oracle)
-    exams = sorted({e for rs in sets for e in rs.examinations()})
+    # the total examinations have their own pages below; a run of one is not a crossref row
+    exams = sorted({e for rs in sets for e in rs.examinations()} - set(totals.EXAMS))
     env = Environment(loader=FileSystemLoader(os.path.join(HERE, "templates")), autoescape=False)
     with open(os.path.join(HERE, "static", "app.js")) as f:
         app_js = f.read()

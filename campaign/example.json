@@ -3,18 +3,52 @@
   "raw": "/home/ythierry/git/pnmcc-models-2026/website/raw-result-analysis.csv",
   "out": "/data/ythierry/MCC26run/pages",
   "sets": [
-    {"name": "ITS-Tools latest", "extractors": "itstools",
-     "logs": ["/data/ythierry/MCC26run/2026-09-06/*"]},
-    {"name": "ITS-Tools 2026-09-05", "extractors": "itstools",
-     "logs": ["/data/ythierry/MCC26run/L", "/data/ythierry/MCC26run/OS", "/data/ythierry/MCC26run/QL",
-              "/data/ythierry/MCC26run/RD", "/data/ythierry/MCC26run/SM", "/data/ythierry/MCC26run/UB",
-              "/data/ythierry/MCC26run/QLA", "/data/ythierry/MCC26run/SMA", "/data/ythierry/MCC26run/UBA"]},
-    {"name": "ITS-Tools 2026", "contest": "ITS-Tools"},
-    {"name": "Tapaal 2026", "contest": "Tapaal"},
-    {"name": "smpt 2026", "contest": "smpt"},
-    {"name": "2025-gold", "contest": "2025-gold"},
-    {"name": "tedd 2026", "contest": "tedd"},
-    {"name": "TY 2026", "contest": "TY"},
-    {"name": "petrivet 2026", "contest": "petrivet"}
+    {
+      "name": "ITS-Tools latest",
+      "extractors": "itstools",
+      "logs": [
+        "/data/ythierry/MCC26run/2026-09-06/*"
+      ]
+    },
+    {
+      "name": "ITS-Tools 2026-09-05",
+      "extractors": "itstools",
+      "logs": [
+        "/data/ythierry/MCC26run/L",
+        "/data/ythierry/MCC26run/OS",
+        "/data/ythierry/MCC26run/QL",
+        "/data/ythierry/MCC26run/RD",
+        "/data/ythierry/MCC26run/SM",
+        "/data/ythierry/MCC26run/UB"
+      ]
+    },
+    {
+      "name": "ITS-Tools 2026",
+      "contest": "ITS-Tools"
+    },
+    {
+      "name": "Tapaal 2026",
+      "contest": "Tapaal"
+    },
+    {
+      "name": "smpt 2026",
+      "contest": "smpt"
+    },
+    {
+      "name": "2025-gold",
+      "contest": "2025-gold"
+    },
+    {
+      "name": "tedd 2026",
+      "contest": "tedd"
+    },
+    {
+      "name": "TY 2026",
+      "contest": "TY"
+    },
+    {
+      "name": "petrivet 2026",
+      "contest": "petrivet"
+    }
   ]
 }
