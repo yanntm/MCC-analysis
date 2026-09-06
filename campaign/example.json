@@ -1,12 +1,13 @@
 {
-  "oracle": "/home/ythierry/git/MCC-drivers/oracle",
+  "oracle": "/data/ythierry/MCC26run/oracle-2026/oracle",
   "raw": "/home/ythierry/git/pnmcc-models-2026/website/raw-result-analysis.csv",
   "out": "/data/ythierry/MCC26run/pages",
   "sets": [
-    {"name": "petrispot 2026-09-06", "extractors": "itstools",
-     "logs": ["/data/ythierry/MCC26run/2026-09-06/RD", "/data/ythierry/MCC26run/2026-09-06/RC"]},
-    {"name": "petrispot 2026-09-05", "extractors": "itstools",
-     "logs": ["/data/ythierry/MCC26run/RD"]},
+    {"name": "ITS-Tools latest", "extractors": "itstools",
+     "logs": ["/data/ythierry/MCC26run/2026-09-06/*"]},
+    {"name": "ITS-Tools 2026-09-05", "extractors": "itstools",
+     "logs": ["/data/ythierry/MCC26run/L", "/data/ythierry/MCC26run/OS", "/data/ythierry/MCC26run/QL",
+              "/data/ythierry/MCC26run/RD", "/data/ythierry/MCC26run/SM", "/data/ythierry/MCC26run/UB"]},
     {"name": "ITS-Tools 2026", "contest": "ITS-Tools"},
     {"name": "Tapaal 2026", "contest": "Tapaal"},
     {"name": "smpt 2026", "contest": "smpt"},

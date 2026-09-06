@@ -12,7 +12,12 @@ A result set is one tool configuration's answers over the benchmark, a
 `(model instance, examination, formula)` to verdict map, with the wall time of
 every run and, for our own runs, the log. Two kinds:
 
-* **logs**: a list of directories of `run_test.pl` logs (`OAR.<id>.stdout`).
+* **logs**: a list of directories of `run_test.pl` logs (`OAR.<id>.stdout`),
+  or globs: `"/data/ythierry/MCC26run/2026-09-06/*"` names a whole campaign
+  folder as it comes off the cluster rsync, directories without logs (the
+  warmup, the vector oracles) being skipped. The convention of
+  `example.json`: the set `ITS-Tools latest` is that glob on the newest
+  campaign folder, so after an rsync a rebuild shows the newest data.
   Tool agnostic: the `Control values :` block names the formulas in order, the
   `FORMULA` / `STATE_SPACE` lines are the answers, the teamcity `all` marker
   the duration; a failure signature or a missing trailer gives the run status.
@@ -27,8 +32,9 @@ formula names in order, the value or `?`, and in TECHNIQUES the tools that
 produced it. The contest's positional tokens are mapped onto those names, as
 `csv_to_control.pl` does when it fills the oracles. When the oracle copy
 predates the tool naming, the backing is recomputed from the raw file. The
-raw file shortens large numbers, so numeric verdicts (StateSpace, bounds) are
-compared within a relative 1e-3. The consensus gives the vocabulary: a value
+raw file shortens large numbers and prints the largest as `+Inf********`:
+numbers compare within a relative 1e-3 and starred tokens count as no
+answer, a limit of the raw file, not of the tool. The consensus gives the vocabulary: a value
 is `ok`, `wrong` or `bonus`, a silence is `missed` or `none`. Comparing to the field
 is the main use case and gets the first table of every page; comparing two
 arbitrary sets (two versions of a tool, two flag settings, a tool against a

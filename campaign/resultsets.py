@@ -23,6 +23,7 @@ against. Every key is (model, examination, formula name).
 
 import collections
 import csv
+import glob
 import os
 import re
 
@@ -33,6 +34,7 @@ RE_TIMEOUT = re.compile(r"^Timeout set at :(\d+) seconds")
 RE_TITLE = re.compile(r"^Running test : (\S+)")
 
 NO_ANSWER = {"DNC", "DNF", "CC", "?", ""}
+VECTOR_EXAMS = {"QuasiLivenessAll", "StableMarkingAll", "UpperBoundsAll"}
 VIRTUAL = {"BVT-2026", "BVT-2025", "BVT-2024"}
 
 # the first pattern found names the failure of a run that produced nothing
@@ -43,6 +45,11 @@ FAILURES = [
     ("out_of_memory", "OutOfMemoryError"),
     ("its_abort", "terminate called"),
 ]
+
+
+def unreadable(v):
+    """A contest token the raw file could not carry: a huge count printed as `+Inf********`."""
+    return "*" in v
 
 
 def normalize(v):
@@ -157,14 +164,25 @@ def parse_log(path, extractors=()):
     return model, exam, names, answers, run
 
 
-def load_logs(name, dirs, extractors=()):
-    """A result set from directories of harness logs (files ending in `out` or `log`)."""
+def load_logs(name, patterns, extractors=()):
+    """A result set from directories of harness logs (files ending in `out` or `log`).
+
+    Each pattern is a directory, a file, or a glob such as `/data/run/2026-09-06/*`;
+    directories without logs are skipped, so a campaign folder can be named whole.
+    Runs of the total examinations (vector oracles) are not read here.
+    """
+    dirs = sorted(p for pat in patterns for p in (glob.glob(pat) or [pat]))
     rs = ResultSet(name, {"logs": [os.path.abspath(d) for d in dirs]})
     for d in dirs:
-        files = [d] if os.path.isfile(d) else sorted(os.path.join(d, f) for f in os.listdir(d) if f.endswith("out") or f.endswith(".log"))
+        if os.path.isfile(d):
+            files = [d]
+        elif os.path.isdir(d):
+            files = sorted(os.path.join(d, f) for f in os.listdir(d) if f.endswith("out") or f.endswith(".log"))
+        else:
+            continue
         for path in files:
             model, exam, names, answers, run = parse_log(path, extractors)
-            if not model:
+            if not model or exam in VECTOR_EXAMS:
                 continue
             rs.runs[(model, exam)] = run
             rs.names[(model, exam)] = names
@@ -198,14 +216,13 @@ def load_contest(name, raw_csv, tool, oracle):
                         "log": None, "extra": {}, "timeout": 3600}
         rs.names[key] = names
         for i, v in enumerate(split_results(r["results"], r["exam"])):
-            if v not in NO_ANSWER and i < len(names):
+            if v not in NO_ANSWER and not unreadable(v) and i < len(names):
                 rs.verdicts[(r["model"], r["exam"], names[i])] = normalize(v)
     return rs
 
 
-# the abbreviations of the oracle file names, and the marker words that are not tools
+# the marker words of an oracle TECHNIQUES field that are not tools
 ORACLE_MARKERS = {"TECHNIQUES", "ORACLE2026", "ORACLE2025", "ORACLE2024", "TEDD2026", "TEDD2025", "TEDD2024"}
-VECTOR_EXAMS = {"QuasiLivenessAll", "StableMarkingAll", "UpperBoundsAll"}
 
 
 class Oracle:
