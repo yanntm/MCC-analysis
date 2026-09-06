@@ -27,25 +27,15 @@ import glob
 import os
 import re
 
-RE_SYSCALL = re.compile(r"^syscalling : (.*)$")
+import harness
+import totals
+
 RE_VERDICT = re.compile(r"^(?:FORMULA|STATE_SPACE)\s+(\S+)\s+(\S+)")
 RE_TC_ALL = re.compile(r"##teamcity\[testFinished name='all'.*?duration='(\d+)'")
-RE_TIMEOUT = re.compile(r"^Timeout set at :(\d+) seconds")
-RE_TITLE = re.compile(r"^Running test : (\S+)")
 
 NO_ANSWER = {"DNC", "DNF", "CC", "?", ""}
 VECTOR_EXAMS = {"QuasiLivenessAll", "StableMarkingAll", "UpperBoundsAll"}
 VIRTUAL = {"BVT-2026", "BVT-2025", "BVT-2024"}
-
-# the first pattern found names the failure of a run that produced nothing
-FAILURES = [
-    ("no_input", "Cannot open file"),
-    ("overlarge_marking", "OverlargeMarkingException"),
-    ("eclipse_fatal", "An error has occurred. See the log file"),
-    ("out_of_memory", "OutOfMemoryError"),
-    ("its_abort", "terminate called"),
-]
-
 
 def unreadable(v):
     """A contest token the raw file could not carry: a huge count printed as `+Inf********`."""
@@ -87,10 +77,6 @@ def split_results(field, exam):
     return [field]
 
 
-def family(model):
-    return re.sub(r"-(PT|COL)-.*$", "", model)
-
-
 class ResultSet:
     """Verdicts, run records and formula names of one tool configuration."""
 
@@ -100,9 +86,10 @@ class ResultSet:
         self.verdicts = {}     # (model, exam, name) -> value
         self.runs = {}         # (model, exam) -> {"time": s, "status": ..., "log": path, "extra": {}}
         self.names = {}        # (model, exam) -> [formula names in order]
+        self.totals = {}       # (model, exam) -> record of a total examination run (totals.py)
 
     def examinations(self):
-        return sorted({e for _, e in self.runs})
+        return sorted({e for _, e in self.runs} | {e for _, e in self.totals})
 
     def instances(self, exam):
         return sorted(m for m, e in self.runs if e == exam)
@@ -127,14 +114,14 @@ def parse_log(path, extractors=()):
             if line.startswith("Control values :"):
                 in_control = True
                 continue
-            m = RE_SYSCALL.match(line)
+            m = harness.RE_SYSCALL.match(line)
             if m:
                 seen_syscall = True
                 words = m.group(1).split()
                 if len(words) >= 3:
                     model, exam = words[1], words[2]
                 continue
-            m = RE_TIMEOUT.match(line)
+            m = harness.RE_TIMEOUT.match(line)
             if m:
                 run["timeout"] = int(m.group(1))
                 continue
@@ -147,21 +134,20 @@ def parse_log(path, extractors=()):
             if m:
                 run["time"] = int(m.group(1)) / 1000
             if not failure:
-                for fname, pattern in FAILURES:
-                    if pattern in line:
-                        failure = fname
-                        break
+                failure = harness.failure_of(line)
             for e, s in zip(extractors, state):
                 e.line(line, s)
     for e, s in zip(extractors, state):
         run["extra"].update(e.finish(s))
-    if failure:
-        run["status"] = failure
-    elif run["time"] is None:
-        run["status"] = "truncated"
-    elif run["timeout"] and run["time"] > run["timeout"] - 50:
-        run["status"] = "timeout"
+    run["status"] = harness.status_of(failure, run["time"], run["timeout"])
     return model, exam, names, answers, run
+
+
+def is_total_log(path):
+    """The harness names the total examination in the first lines of the log."""
+    with open(path, errors="replace") as f:
+        head = f.read(2000)
+    return any(f"-{abbrev}-" in head or f"-{abbrev}\n" in head or f"-{abbrev} " in head for abbrev in ("QLA", "SMA", "UBA")) and "total examination" in head
 
 
 def load_logs(name, patterns, extractors=()):
@@ -169,7 +155,7 @@ def load_logs(name, patterns, extractors=()):
 
     Each pattern is a directory, a file, or a glob such as `/data/run/2026-09-06/*`;
     directories without logs are skipped, so a campaign folder can be named whole.
-    Runs of the total examinations (vector oracles) are not read here.
+    Runs of the total examinations go to `totals`, the others to `runs`.
     """
     dirs = sorted(p for pat in patterns for p in (glob.glob(pat) or [pat]))
     rs = ResultSet(name, {"logs": [os.path.abspath(d) for d in dirs]})
@@ -181,6 +167,11 @@ def load_logs(name, patterns, extractors=()):
         else:
             continue
         for path in files:
+            if is_total_log(path):
+                model, exam, rec = totals.parse(path, extractors)
+                if model:
+                    rs.totals[(model, exam)] = rec
+                continue
             model, exam, names, answers, run = parse_log(path, extractors)
             if not model or exam in VECTOR_EXAMS:
                 continue

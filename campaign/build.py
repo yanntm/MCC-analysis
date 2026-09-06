@@ -33,6 +33,7 @@ from jinja2 import Environment, FileSystemLoader
 
 import crossref
 import resultsets
+import totals
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -50,7 +51,7 @@ def load_sets(config, oracle):
             rs = resultsets.load_contest(s["name"], config["raw"], s["contest"], oracle)
         else:
             raise ValueError(f"set {s.get('name')} has neither logs nor contest")
-        print(f"{rs.name}: {len(rs.runs)} runs, {len(rs.verdicts)} verdicts, examinations {rs.examinations()}", file=sys.stderr)
+        print(f"{rs.name}: {len(rs.runs)} runs, {len(rs.verdicts)} verdicts, {len(rs.totals)} total runs, examinations {rs.examinations()}", file=sys.stderr)
         sets.append(rs)
     return sets
 
@@ -73,18 +74,30 @@ def main():
     env = Environment(loader=FileSystemLoader(os.path.join(HERE, "templates")), autoescape=False)
     with open(os.path.join(HERE, "static", "app.js")) as f:
         app_js = f.read()
+    with open(os.path.join(HERE, "static", "total.js")) as f:
+        total_js = f.read()
     with open(os.path.join(HERE, "static", "campaign.css")) as f:
         css = f.read()
     stamp = time.strftime("%Y-%m-%d %H:%M")
+    total_exams = [e for e in totals.EXAMS if any(x == e for rs in sets for (_, x) in rs.totals)]
+    all_exams = exams + total_exams
     pages = []
     for exam in exams:
         data = crossref.crossref(sets, exam, oracle)
         page = f"{exam}.html"
-        html = env.get_template("exam.html").render(exam=exam, data=json.dumps(data), css=css, app_js=app_js, stamp=stamp, pages=[f"{e}.html" for e in exams], exams=exams)
+        html = env.get_template("exam.html").render(exam=exam, data=json.dumps(data), css=css, app_js=app_js, stamp=stamp, exams=all_exams)
         with open(os.path.join(out, page), "w") as f:
             f.write(html)
         pages.append({"exam": exam, "page": page, "summary": data["summary"]})
         print(f"{page}: {len(data['instances'])} instances, {len(data['values'])} values, {os.path.getsize(os.path.join(out, page)) // 1024} kB", file=sys.stderr)
+    for exam in total_exams:
+        data = totals.page_data(sets, exam, oracle)
+        page = f"{exam}.html"
+        html = env.get_template("total.html").render(exam=exam, data=json.dumps(data), css=css, app_js=total_js, stamp=stamp, exams=all_exams)
+        with open(os.path.join(out, page), "w") as f:
+            f.write(html)
+        pages.append({"exam": exam, "page": page, "summary": data["summary"], "total": True})
+        print(f"{page}: {len(data['runs'])} instances, {os.path.getsize(os.path.join(out, page)) // 1024} kB", file=sys.stderr)
     html = env.get_template("index.html").render(pages=pages, sets=[{"name": rs.name, "source": json.dumps(rs.source)} for rs in sets], css=css, stamp=stamp)
     with open(os.path.join(out, "index.html"), "w") as f:
         f.write(html)

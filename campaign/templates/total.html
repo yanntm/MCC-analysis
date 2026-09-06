@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>{{ exam }}</title>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>{{ css }}</style></head>
+<body>
+<nav><a href="index.html">index</a> {% for e in exams %}| <a href="{{ e }}.html">{{ e }}</a> {% endfor %}</nav>
+<h1>{{ exam }}</h1>
+<p class="muted">Generated {{ stamp }}. One atom per {{ 'transition' if exam == 'QuasiLivenessAll' else 'place' }}; a run's <b>completion</b> is the share of atoms it settled. <b>Witnessed</b> atoms are shown by a firing sequence (QLIVE TRUE, STABLE FALSE), <b>proved</b> ones need an argument. There is no contest reference; the vector of a run implies the global {{ 'QuasiLiveness' if exam == 'QuasiLivenessAll' else 'StableMarking' if exam == 'StableMarkingAll' else '' }} verdict{{ ', which the consensus confirms or contradicts' if exam != 'UpperBoundsAll' else '' }}.</p>
+
+<h2>Sets</h2>
+<table id="summary" class="display compact"></table>
+
+<h2>Sets against each other, atom by atom over shared instances</h2>
+<p class="muted">Row A against column B: shared runs; atoms both settled and agree on / A only / B only / <span class="wrong">disagree</span>. A disagreement is a contradiction between two runs.</p>
+<div id="pairs"></div>
+
+<h2>Progression along a family</h2>
+<div class="controls">
+  family <select id="family"></select>
+  y <select id="yaxis"><option value="completion">completion</option><option value="time">wall time (s)</option><option value="answered">atoms answered</option><option value="walk s">walker seconds</option></select>
+</div>
+<div id="progression" style="height:480px"></div>
+
+<h2>Completion against wall time</h2>
+<div class="controls">set <select id="setA"></select> <span class="muted">size: atoms; colour: green the walker was called, red it never was</span></div>
+<div id="scatter" style="height:480px"></div>
+
+<h2>Runs</h2>
+<div class="controls">
+  family <input id="famFilter" placeholder="regex, e.g. ^Erlangen">
+  show <select id="runMode">
+    <option value="all">all runs</option>
+    <option value="incomplete">incomplete</option>
+    <option value="wall">at the wall</option>
+    <option value="nowalk">at the wall, walker never called</option>
+    <option value="contradiction">contradicting the consensus</option>
+    <option value="early">ended early, incomplete</option>
+  </select>
+</div>
+<table id="runs" class="display compact"></table>
+
+<script>const DATA = {{ data }};</script>
+<script>{{ app_js }}</script>
+</body></html>

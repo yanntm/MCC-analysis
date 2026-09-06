@@ -11,8 +11,14 @@
 <h2>Examinations</h2>
 {% for p in pages %}
 <h3><a href="{{ p.page }}">{{ p.exam }}</a></h3>
+{% if p.total %}
+<table class="plain"><tr><th>set</th><th>runs</th><th>atoms</th><th>answered</th><th>completion</th><th>complete runs</th><th>timeouts</th><th>witnessed</th><th>proved</th><th>open bounds</th><th>confirmed</th><th>contradicted</th><th>total h</th></tr>
+{% for s in p.summary %}<tr><td>{{ s.set }}</td><td>{{ s.runs }}</td><td>{{ s.atoms }}</td><td>{{ s.answered }}</td><td>{{ s.completion }}</td><td>{{ s.complete }}</td><td>{{ s.timeouts }}</td><td>{{ s.witnessed }}</td><td>{{ s.proved }}</td><td>{{ s['open bounds'] }}</td><td>{{ s.confirmed }}</td><td class="{{ 'bad' if s.contradicted else '' }}">{{ s.contradicted }}</td><td>{{ s['total h'] }}</td></tr>{% endfor %}
+</table>
+{% else %}
 <table class="plain"><tr><th>set</th><th>runs</th><th>answered</th><th>ok</th><th>wrong</th><th>missed</th><th>bonus</th><th>timeouts</th><th>failures</th><th>median s</th><th>total h</th></tr>
 {% for s in p.summary %}<tr><td>{{ s.set }}</td><td>{{ s.runs }}</td><td>{{ s.answered }}</td><td>{{ s.ok }}</td><td class="{{ 'bad' if s.wrong else '' }}">{{ s.wrong }}</td><td>{{ s.missed }}</td><td>{{ s.bonus }}</td><td>{{ s.timeouts }}</td><td>{{ s.failures }}</td><td>{{ s['median s'] }}</td><td>{{ s['total h'] }}</td></tr>{% endfor %}
 </table>
+{% endif %}
 {% endfor %}
 </body></html>

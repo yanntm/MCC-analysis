@@ -63,6 +63,33 @@ their CDNs as the rest of this site does; the data is embedded in the page as
 JSON, so the page is one file. `example.json` is the configuration of the
 2026-09-06 PetriSpot campaigns against four contest tools.
 
+A set that answered nothing on an examination did not compete in it and is
+left off that page.
+
+## The total examinations
+
+`QuasiLivenessAll`, `StableMarkingAll` and `UpperBoundsAll` ask one question
+per transition or per place (PetriSpot `TOTAL_QUERIES.md`); their logs are
+recognised in the same directories and read by `totals.py`: completion,
+witnessed against proved atoms, the engine per atom, the time at which a
+quarter, half, three quarters and all were closed, the walker's share, the
+last line before the kill. There is no contest reference, so their pages
+show:
+
+1. every set: completion, complete runs, timeouts, witnessed / proved or open
+   bounds, the engine census, and the vectors' implied global QuasiLiveness or
+   StableMarking verdict against the consensus (confirmed / contradicted);
+2. every pair of sets atom by atom over the instances both ran: agree / A
+   only / B only / disagree, a disagreement being a contradiction between two
+   runs of our own tool;
+3. the progression along a family: one line per set over the instances of a
+   family in natural order, completion or wall time or atoms answered or
+   walker seconds on y, family chosen from a dropdown;
+4. completion against wall time, one point per run, sized by atoms, coloured
+   by whether the walker was ever called;
+5. the runs table, filtered by family and by mode (incomplete, at the wall,
+   at the wall without a walk, contradicting the consensus, ended early).
+
 ## Serving, locally and through a tunnel
 
 `serve.py /data/ythierry/MCC26run/pages --port 8080` serves the pages and
@@ -77,13 +104,18 @@ the campaign and are read through the tunnel.
 
 ## Files
 
+* `harness.py` — what every `run_test.pl` log carries (regexes, failure
+  signatures, run status, families, natural order).
 * `resultsets.py` — the `ResultSet` class and the two loaders, and the
   `Oracle` reader of the oracle files.
+* `totals.py` — the total examinations: log parser, implied global verdict,
+  pairwise agreement, page data.
 * `itstools.py` — the extractors specific to ITS-Tools logs.
 * `crossref.py` — the field census, the pairwise split, the instance and
   value rows of a page.
 * `build.py` — config to pages, through `templates/` (Jinja2) with
-  `static/app.js` and `static/campaign.css` inlined.
+  `static/app.js` (classic pages), `static/total.js` (total pages) and
+  `static/campaign.css` inlined.
 * `serve.py` — the localhost server for the pages and the logs.
 
 Python 3 with jinja2; no R, no pandas.

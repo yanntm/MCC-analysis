@@ -10,7 +10,7 @@ over the union of formulas either set knows of.
 import collections
 import statistics
 
-from resultsets import family
+from harness import family
 
 
 def keys_of(sets, oracle, exam):
@@ -125,7 +125,8 @@ def value_rows(sets, exam, consensus, backing, keys):
 def crossref(sets, exam, oracle):
     consensus, backing = oracle.values, oracle.backing
     keys = keys_of(sets, oracle, exam)
-    present = [rs for rs in sets if any(e == exam for _, e in rs.runs)]
+    # a set with runs but no verdict on this examination did not compete in it
+    present = [rs for rs in sets if any(e == exam for _, e in rs.runs) and any(e == exam for (_, e, _) in rs.verdicts)]
     return {
         "examination": exam,
         "sets": [rs.name for rs in present],
