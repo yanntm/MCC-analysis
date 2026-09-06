@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>{{ exam }}</title>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>{{ css }}</style></head>
+<body>
+<nav><a href="index.html">index</a> {% for e in exams %}| <a href="{{ e }}.html">{{ e }}</a> {% endfor %}</nav>
+<h1>{{ exam }}</h1>
+<p class="muted">Generated {{ stamp }}. Vocabulary against the consensus: <b>ok</b> equals it, <b>wrong</b> differs from a known value, <b>missed</b> the consensus has a value the set lacks, <b>bonus</b> the set has a value the consensus lacks.</p>
+
+<h2>Sets against the field</h2>
+<table id="summary" class="display compact"></table>
+
+<h2>Sets against each other</h2>
+<p class="muted">Row A against column B: values both have and agree on / A only / B only / disagree. Click a cell to filter the values table to that pair.</p>
+<div id="pairs"></div>
+
+<h2>Instances</h2>
+<div class="controls">
+  family <input id="famFilter" placeholder="regex, e.g. ^Shield">
+  show <select id="instMode">
+    <option value="all">all instances</option>
+    <option value="lt">where A answered fewer than B</option>
+    <option value="gt">where A answered more than B</option>
+    <option value="wrong">where some set is wrong</option>
+    <option value="timeout">where A hit the wall</option>
+  </select>
+  A <select id="setA"></select> B <select id="setB"></select>
+</div>
+<table id="instances" class="display compact"></table>
+
+<h2>Time: A against B</h2>
+<div id="scatter" style="height:520px"></div>
+
+<h2>Values</h2>
+<div class="controls">
+  show <select id="valMode">
+    <option value="all">all values</option>
+    <option value="disagree">A and B disagree</option>
+    <option value="onlyA">A only</option>
+    <option value="onlyB">B only</option>
+    <option value="wrongA">A wrong</option>
+    <option value="missedA">A missed</option>
+    <option value="bonusA">A bonus</option>
+  </select>
+</div>
+<table id="values" class="display compact"></table>
+
+<script>const DATA = {{ data }};</script>
+<script>{{ app_js }}</script>
+</body></html>

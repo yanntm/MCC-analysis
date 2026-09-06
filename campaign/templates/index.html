@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Campaign pages</title>
+<style>{{ css }}</style></head>
+<body>
+<h1>Campaign pages</h1>
+<p>Generated {{ stamp }}. One page per examination; each cross-references the result sets below against each other and against the contest consensus.</p>
+<h2>Result sets</h2>
+<table class="plain"><tr><th>set</th><th>source</th></tr>
+{% for s in sets %}<tr><td>{{ s.name }}</td><td><code>{{ s.source }}</code></td></tr>{% endfor %}
+</table>
+<h2>Examinations</h2>
+{% for p in pages %}
+<h3><a href="{{ p.page }}">{{ p.exam }}</a></h3>
+<table class="plain"><tr><th>set</th><th>runs</th><th>answered</th><th>ok</th><th>wrong</th><th>missed</th><th>bonus</th><th>timeouts</th><th>failures</th><th>median s</th><th>total h</th></tr>
+{% for s in p.summary %}<tr><td>{{ s.set }}</td><td>{{ s.runs }}</td><td>{{ s.answered }}</td><td>{{ s.ok }}</td><td class="{{ 'bad' if s.wrong else '' }}">{{ s.wrong }}</td><td>{{ s.missed }}</td><td>{{ s.bonus }}</td><td>{{ s.timeouts }}</td><td>{{ s.failures }}</td><td>{{ s['median s'] }}</td><td>{{ s['total h'] }}</td></tr>{% endfor %}
+</table>
+{% endfor %}
+</body></html>

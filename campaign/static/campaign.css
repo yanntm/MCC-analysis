@@ -1,0 +1,15 @@
+body { font-family: system-ui, sans-serif; margin: 1em 2em; color: #222; }
+nav a { margin-right: .3em; }
+.muted { color: #666; }
+.controls { margin: .5em 0; }
+.controls select, .controls input { margin: 0 .6em 0 .2em; }
+table.plain { border-collapse: collapse; }
+table.plain th, table.plain td { border: 1px solid #ccc; padding: 2px 8px; text-align: right; }
+table.plain td:first-child, table.plain th:first-child { text-align: left; }
+td.bad, .wrong { background: #f8c8c8; }
+.missed { background: #fde9b8; }
+.bonus { background: #cdeccd; }
+.none { color: #999; }
+#pairs table td { cursor: pointer; }
+#pairs table td:hover { background: #eef; }
+a.log { font-size: 85%; }
