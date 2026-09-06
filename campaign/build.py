@@ -3,10 +3,13 @@
 
     build.py config.json
 
-The config names the result sets and where they come from, the contest raw
-results file for the consensus, and the output directory:
+The config names the result sets and where they come from, the oracle
+directory of pnmcc-models-2026 (the consensus, the formula names, the backing
+tools), the contest raw results file (per tool verdicts), and the output
+directory:
 
-    {"raw": "website/2026/raw-result-analysis.csv",
+    {"oracle": "/data/ythierry/MCC26run/oracle-2026/oracle",
+     "raw": "website/2026/raw-result-analysis.csv",
      "out": "/data/ythierry/MCC26run/pages",
      "sets": [
         {"name": "petrispot 2026-09-06", "logs": ["/data/ythierry/MCC26run/2026-09-06/RD", "..."], "extractors": "itstools"},
@@ -34,7 +37,7 @@ import resultsets
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
-def load_sets(config):
+def load_sets(config, oracle):
     sets = []
     for s in config["sets"]:
         if "logs" in s:
@@ -44,7 +47,7 @@ def load_sets(config):
                 extractors = itstools.EXTRACTORS
             rs = resultsets.load_logs(s["name"], s["logs"], extractors)
         elif "contest" in s:
-            rs = resultsets.load_contest(s["name"], config["raw"], s["contest"])
+            rs = resultsets.load_contest(s["name"], config["raw"], s["contest"], oracle)
         else:
             raise ValueError(f"set {s.get('name')} has neither logs nor contest")
         print(f"{rs.name}: {len(rs.runs)} runs, {len(rs.verdicts)} verdicts, examinations {rs.examinations()}", file=sys.stderr)
@@ -60,8 +63,12 @@ def main():
         config = json.load(f)
     out = config["out"]
     os.makedirs(out, exist_ok=True)
-    sets = load_sets(config)
-    consensus, backing = resultsets.load_consensus(config["raw"]) if config.get("raw") else ({}, {})
+    oracle = resultsets.load_oracle(config["oracle"])
+    print(f"oracle: {len(oracle.names)} (instance, examination) pairs, {len(oracle.values)} values", file=sys.stderr)
+    if config.get("raw") and not any(oracle.backing.values()):
+        resultsets.backing_from_raw(oracle, config["raw"])
+        print("oracle files name no tools: backing read from the raw results", file=sys.stderr)
+    sets = load_sets(config, oracle)
     exams = sorted({e for rs in sets for e in rs.examinations()})
     env = Environment(loader=FileSystemLoader(os.path.join(HERE, "templates")), autoescape=False)
     with open(os.path.join(HERE, "static", "app.js")) as f:
@@ -71,7 +78,7 @@ def main():
     stamp = time.strftime("%Y-%m-%d %H:%M")
     pages = []
     for exam in exams:
-        data = crossref.crossref(sets, exam, consensus, backing)
+        data = crossref.crossref(sets, exam, oracle)
         page = f"{exam}.html"
         html = env.get_template("exam.html").render(exam=exam, data=json.dumps(data), css=css, app_js=app_js, stamp=stamp, pages=[f"{e}.html" for e in exams], exams=exams)
         with open(os.path.join(out, page), "w") as f:

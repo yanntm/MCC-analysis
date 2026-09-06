@@ -13,9 +13,12 @@ Two loaders build the same object:
 * `load_contest(name, raw_csv, tool)` reads one tool out of the contest's
   `raw-result-analysis.csv` (positional tokens per formula, time, status).
 
-`load_consensus(raw_csv)` is the field's estimated result, with the tools
-backing each value, the reference the "missed / bonus / wrong" vocabulary is
-defined against.
+`load_oracle(dir)` reads the oracle files of `pnmcc-models-2026`
+(`<model>-<ABBREV>.out`, one FORMULA or STATE_SPACE line per formula with the
+consensus value and, in TECHNIQUES, the tools that produced it): the formula
+names in their order, which is what the contest's positional tokens are
+mapped onto, and the field the "missed / bonus / wrong" vocabulary is defined
+against. Every key is (model, examination, formula name).
 """
 
 import collections
@@ -23,7 +26,6 @@ import csv
 import os
 import re
 
-RE_INDEX = re.compile(r"-(\d\d)$")
 RE_SYSCALL = re.compile(r"^syscalling : (.*)$")
 RE_VERDICT = re.compile(r"^(?:FORMULA|STATE_SPACE)\s+(\S+)\s+(\S+)")
 RE_TC_ALL = re.compile(r"##teamcity\[testFinished name='all'.*?duration='(\d+)'")
@@ -78,11 +80,6 @@ def split_results(field, exam):
     return [field]
 
 
-def formula_index(name):
-    m = RE_INDEX.search(name)
-    return int(m.group(1)) if m else 0
-
-
 def family(model):
     return re.sub(r"-(PT|COL)-.*$", "", model)
 
@@ -93,9 +90,9 @@ class ResultSet:
     def __init__(self, name, source):
         self.name = name
         self.source = source
-        self.verdicts = {}     # (model, exam, idx) -> value
+        self.verdicts = {}     # (model, exam, name) -> value
         self.runs = {}         # (model, exam) -> {"time": s, "status": ..., "log": path, "extra": {}}
-        self.names = {}        # (model, exam, idx) -> formula name
+        self.names = {}        # (model, exam) -> [formula names in order]
 
     def examinations(self):
         return sorted({e for _, e in self.runs})
@@ -170,11 +167,10 @@ def load_logs(name, dirs, extractors=()):
             if not model:
                 continue
             rs.runs[(model, exam)] = run
+            rs.names[(model, exam)] = names
             for fname in names:
-                idx = formula_index(fname)
-                rs.names[(model, exam, idx)] = fname
                 if fname in answers:
-                    rs.verdicts[(model, exam, idx)] = answers[fname]
+                    rs.verdicts[(model, exam, fname)] = answers[fname]
     return rs
 
 
@@ -188,37 +184,78 @@ def read_raw(raw_csv):
                    "time": row[10], "status": row[12], "estimated": row[15], "backing": row[16]}
 
 
-def load_contest(name, raw_csv, tool):
-    """A result set for one contest tool."""
+def load_contest(name, raw_csv, tool, oracle):
+    """A result set for one contest tool; its positional tokens are named through the oracle."""
     rs = ResultSet(name, {"contest": tool, "raw": os.path.abspath(raw_csv)})
     for r in read_raw(raw_csv):
         if r["tool"] != tool:
             continue
         key = (r["model"], r["exam"])
+        names = oracle.names.get(key)
+        if names is None:
+            continue
         rs.runs[key] = {"time": float(r["time"] or 0) / 1000, "status": "timeout" if r["status"] == "timeout" else "finished",
                         "log": None, "extra": {}, "timeout": 3600}
+        rs.names[key] = names
         for i, v in enumerate(split_results(r["results"], r["exam"])):
-            if v not in NO_ANSWER:
-                rs.verdicts[(r["model"], r["exam"], i)] = normalize(v)
+            if v not in NO_ANSWER and i < len(names):
+                rs.verdicts[(r["model"], r["exam"], names[i])] = normalize(v)
     return rs
 
 
-def load_consensus(raw_csv):
-    """The field: {(model, exam, idx): value} and {(model, exam, idx): [tools backing it]}."""
-    consensus, backing = {}, collections.defaultdict(list)
-    tokens = {}
+# the abbreviations of the oracle file names, and the marker words that are not tools
+ORACLE_MARKERS = {"TECHNIQUES", "ORACLE2026", "ORACLE2025", "ORACLE2024", "TEDD2026", "TEDD2025", "TEDD2024"}
+VECTOR_EXAMS = {"QuasiLivenessAll", "StableMarkingAll", "UpperBoundsAll"}
+
+
+class Oracle:
+    """The consensus: formula names in order, values (None for `?`), backing tools."""
+
+    def __init__(self, path):
+        self.path = os.path.abspath(path)
+        self.names = {}        # (model, exam) -> [formula names]
+        self.values = {}       # (model, exam, name) -> value, absent when `?`
+        self.backing = {}      # (model, exam, name) -> [tool tokens]
+
+    def value(self, model, exam, name):
+        return self.values.get((model, exam, name))
+
+
+def load_oracle(path):
+    """Every `<model>-<ABBREV>.out` of a directory; the vector oracles of the total examinations are skipped."""
+    oracle = Oracle(path)
+    for fname in sorted(os.listdir(path)):
+        if not fname.endswith(".out"):
+            continue
+        with open(os.path.join(path, fname)) as f:
+            header = f.readline().split()
+            if len(header) < 2 or header[1] in VECTOR_EXAMS:
+                continue
+            model, exam = header[0], header[1]
+            names = []
+            for line in f:
+                words = line.split()
+                if len(words) < 3 or words[0] not in ("FORMULA", "STATE_SPACE"):
+                    continue
+                name, value = words[1], words[2]
+                names.append(name)
+                if value != "?":
+                    oracle.values[(model, exam, name)] = normalize(value)
+                oracle.backing[(model, exam, name)] = [w for w in words[3:] if w not in ORACLE_MARKERS]
+            oracle.names[(model, exam)] = names
+    return oracle
+
+
+def backing_from_raw(oracle, raw_csv):
+    """Fill the backing tools from the raw results when the oracle files do not name them."""
     for r in read_raw(raw_csv):
-        key = (r["model"], r["exam"])
-        if key not in tokens:
-            for i, v in enumerate(split_results(r["estimated"], r["exam"])):
-                if v not in NO_ANSWER:
-                    consensus[(r["model"], r["exam"], i)] = normalize(v)
-            tokens[key] = True
         if r["tool"] in VIRTUAL:
             continue
+        names = oracle.names.get((r["model"], r["exam"]))
+        if names is None:
+            continue
         for i, v in enumerate(split_results(r["results"], r["exam"])):
-            if v not in NO_ANSWER:
-                c = consensus.get((r["model"], r["exam"], i))
-                if c is not None and normalize(v) == c:
-                    backing[(r["model"], r["exam"], i)].append(r["tool"])
-    return consensus, backing
+            if v not in NO_ANSWER and i < len(names):
+                key = (r["model"], r["exam"], names[i])
+                if key in oracle.values and normalize(v) == oracle.values[key] and r["tool"] not in oracle.backing[key]:
+                    oracle.backing[key].append(r["tool"])

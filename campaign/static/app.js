@@ -93,7 +93,7 @@ function valueRows() {
   const re = new RegExp(document.getElementById("famFilter").value || ".", "i");
   return DATA.values.filter(r => re.test(r.model)).filter(r => {
     const a = r.vals[A] || [null, "none"], b = r.vals[B] || [null, "none"];
-    if (mode === "disagree") return a[0] !== null && b[0] !== null && a[0] !== b[0];
+    if (mode === "disagree") return a[0] !== null && b[0] !== null && a[0] !== b[0] && !(Math.abs(a[0] - b[0]) <= 1e-3 * Math.max(Math.abs(a[0]), Math.abs(b[0])));
     if (mode === "onlyA") return a[0] !== null && b[0] === null;
     if (mode === "onlyB") return a[0] === null && b[0] !== null;
     if (mode === "wrongA") return a[1] === "wrong";

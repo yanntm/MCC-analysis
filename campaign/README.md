@@ -21,9 +21,15 @@ every run and, for our own runs, the log. Two kinds:
 * **contest**: one tool of `raw-result-analysis.csv` (positional tokens, time,
   status). Any tool of the edition, `2025-gold` included.
 
-The **consensus** (the `estimated result` of the raw file, with the tools
-backing each value) is the field, and gives the vocabulary: a value is `ok`,
-`wrong` or `bonus`, a silence is `missed` or `none`. Comparing to the field
+The **consensus** is read from the oracle files of `pnmcc-models-2026`
+(`<model>-<ABBREV>.out`, the same files the harness checks against): the
+formula names in order, the value or `?`, and in TECHNIQUES the tools that
+produced it. The contest's positional tokens are mapped onto those names, as
+`csv_to_control.pl` does when it fills the oracles. When the oracle copy
+predates the tool naming, the backing is recomputed from the raw file. The
+raw file shortens large numbers, so numeric verdicts (StateSpace, bounds) are
+compared within a relative 1e-3. The consensus gives the vocabulary: a value
+is `ok`, `wrong` or `bonus`, a silence is `missed` or `none`. Comparing to the field
 is the main use case and gets the first table of every page; comparing two
 arbitrary sets (two versions of a tool, two flag settings, a tool against a
 competitor) is the second.
@@ -65,8 +71,8 @@ the campaign and are read through the tunnel.
 
 ## Files
 
-* `resultsets.py` — the `ResultSet` class and the two loaders, plus the
-  consensus reader.
+* `resultsets.py` — the `ResultSet` class and the two loaders, and the
+  `Oracle` reader of the oracle files.
 * `itstools.py` — the extractors specific to ITS-Tools logs.
 * `crossref.py` — the field census, the pairwise split, the instance and
   value rows of a page.

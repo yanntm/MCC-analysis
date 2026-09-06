@@ -1,6 +1,6 @@
 """Cross-references between result sets on one examination.
 
-Against the field: every value of a set is `ok` (equals the consensus),
+Against the field (the oracle files): every value of a set is `ok` (equals the consensus),
 `wrong` (differs from a known consensus), `bonus` (the consensus has none);
 every consensus value a set lacks is `missed`. Between two sets: values
 `both` have and agree on, `disagree` on, `onlyA`, `onlyB`, and `neither`
@@ -13,14 +13,35 @@ import statistics
 from resultsets import family
 
 
-def keys_of(sets, consensus, exam):
-    """Every (model, idx) any set or the consensus has a formula for, per instance."""
-    keys = set()
+def keys_of(sets, oracle, exam):
+    """Every (model, formula name) the oracle or any set has, in the oracle's order."""
+    keys = []
+    seen = set()
+    for src in [oracle] + sets:
+        for (m, e), names in src.names.items():
+            if e != exam:
+                continue
+            for n in names:
+                if (m, n) not in seen:
+                    seen.add((m, n))
+                    keys.append((m, n))
     for rs in sets:
-        keys |= {(m, i) for (m, e, i) in rs.names if e == exam}
-        keys |= {(m, i) for (m, e, i) in rs.verdicts if e == exam}
-    keys |= {(m, i) for (m, e, i) in consensus if e == exam}
+        for (m, e, n) in rs.verdicts:
+            if e == exam and (m, n) not in seen:
+                seen.add((m, n))
+                keys.append((m, n))
     return sorted(keys)
+
+
+def same(a, b):
+    """Equal verdicts; numbers within a relative 1e-3, the raw results shorten large ones (StateSpace)."""
+    if a == b:
+        return True
+    try:
+        x, y = float(a), float(b)
+    except ValueError:
+        return False
+    return abs(x - y) <= 1e-3 * max(abs(x), abs(y))
 
 
 def status(value, cons):
@@ -28,14 +49,14 @@ def status(value, cons):
         return "missed" if cons is not None else "none"
     if cons is None:
         return "bonus"
-    return "ok" if value == cons else "wrong"
+    return "ok" if same(value, cons) else "wrong"
 
 
 def summary(rs, exam, consensus, keys):
     """The field census of one set on one examination."""
     c = collections.Counter()
-    for m, i in keys:
-        c[status(rs.verdicts.get((m, exam, i)), consensus.get((m, exam, i)))] += 1
+    for m, n in keys:
+        c[status(rs.verdicts.get((m, exam, n)), consensus.get((m, exam, n)))] += 1
     runs = [r for (m, e), r in rs.runs.items() if e == exam]
     times = [r["time"] for r in runs if r["time"] is not None]
     st = collections.Counter(r["status"] for r in runs)
@@ -49,15 +70,15 @@ def summary(rs, exam, consensus, keys):
 def pair(a, b, exam, keys):
     """The five way split of two sets' values."""
     c = collections.Counter()
-    for m, i in keys:
-        va, vb = a.verdicts.get((m, exam, i)), b.verdicts.get((m, exam, i))
+    for m, n in keys:
+        va, vb = a.verdicts.get((m, exam, n)), b.verdicts.get((m, exam, n))
         if va is None and vb is None:
             c["neither"] += 1
         elif va is None:
             c["onlyB"] += 1
         elif vb is None:
             c["onlyA"] += 1
-        elif va == vb:
+        elif same(va, vb):
             c["both"] += 1
         else:
             c["disagree"] += 1
@@ -67,17 +88,18 @@ def pair(a, b, exam, keys):
 def instance_rows(sets, exam, consensus, keys):
     """One row per instance: per set the answered count, ok count, time, status, log."""
     by_model = collections.defaultdict(list)
-    for m, i in keys:
-        by_model[m].append(i)
+    for m, n in keys:
+        by_model[m].append(n)
     rows = []
-    for m, idxs in sorted(by_model.items()):
-        row = {"model": m, "family": family(m), "formulas": len(idxs),
-               "known": sum(1 for i in idxs if (m, exam, i) in consensus), "sets": {}}
+    for m, names in sorted(by_model.items()):
+        row = {"model": m, "family": family(m), "formulas": len(names),
+               "known": sum(1 for n in names if (m, exam, n) in consensus), "sets": {}}
         for rs in sets:
             run = rs.runs.get((m, exam))
-            answered = sum(1 for i in idxs if (m, exam, i) in rs.verdicts)
-            ok = sum(1 for i in idxs if rs.verdicts.get((m, exam, i)) is not None and rs.verdicts.get((m, exam, i)) == consensus.get((m, exam, i)))
-            wrong = sum(1 for i in idxs if rs.verdicts.get((m, exam, i)) is not None and consensus.get((m, exam, i)) is not None and rs.verdicts.get((m, exam, i)) != consensus.get((m, exam, i)))
+            st = [status(rs.verdicts.get((m, exam, n)), consensus.get((m, exam, n))) for n in names]
+            answered = sum(1 for x in st if x in ("ok", "wrong", "bonus"))
+            ok = st.count("ok")
+            wrong = st.count("wrong")
             row["sets"][rs.name] = {"answered": answered, "ok": ok, "wrong": wrong,
                                     "time": None if run is None else run["time"],
                                     "status": None if run is None else run["status"],
@@ -90,19 +112,19 @@ def instance_rows(sets, exam, consensus, keys):
 def value_rows(sets, exam, consensus, backing, keys):
     """One row per formula: the consensus, who backs it, and every set's value."""
     rows = []
-    for m, i in keys:
-        name = next((rs.names.get((m, exam, i)) for rs in sets if (m, exam, i) in rs.names), None) or f"{m}-{exam}-{i:02d}"
-        cons = consensus.get((m, exam, i))
-        row = {"model": m, "idx": i, "name": name, "cons": cons, "who": backing.get((m, exam, i), []), "vals": {}}
+    for m, n in keys:
+        cons = consensus.get((m, exam, n))
+        row = {"model": m, "name": n, "cons": cons, "who": backing.get((m, exam, n), []), "vals": {}}
         for rs in sets:
-            v = rs.verdicts.get((m, exam, i))
+            v = rs.verdicts.get((m, exam, n))
             row["vals"][rs.name] = [v, status(v, cons)]
         rows.append(row)
     return rows
 
 
-def crossref(sets, exam, consensus, backing):
-    keys = keys_of(sets, consensus, exam)
+def crossref(sets, exam, oracle):
+    consensus, backing = oracle.values, oracle.backing
+    keys = keys_of(sets, oracle, exam)
     present = [rs for rs in sets if any(e == exam for _, e in rs.runs)]
     return {
         "examination": exam,
