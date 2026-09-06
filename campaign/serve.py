@@ -9,7 +9,8 @@ which is the only way the pages, and through them the log files, leave the
 disk. `/` and `/<page>.html` come from PAGES_DIR; `/logs/<absolute path>`
 returns a log as plain text, provided the path lies under one of the
 directories listed in PAGES_DIR/roots.json (written by build.py from the
-result sets' log directories). Anything else is 404.
+result sets' log directories, re-read at every request so a rebuild needs no
+restart). Anything else is 404.
 """
 
 import argparse
@@ -20,7 +21,7 @@ import urllib.parse
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
-    roots = []
+    roots_file = "roots.json"
 
     def do_GET(self):
         path = urllib.parse.unquote(urllib.parse.urlparse(self.path).path)
@@ -28,8 +29,16 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             return self.send_log(os.path.abspath(path[len("/logs"):]))
         return super().do_GET()
 
+    def roots(self):
+        """Read at every request: a rebuild may add log directories while the server runs."""
+        try:
+            with open(self.roots_file) as f:
+                return [os.path.abspath(r) for r in json.load(f)]
+        except (OSError, ValueError):
+            return []
+
     def send_log(self, path):
-        if not any(path.startswith(r.rstrip("/") + "/") for r in self.roots) or not os.path.isfile(path):
+        if not any(path.startswith(r.rstrip("/") + "/") for r in self.roots()) or not os.path.isfile(path):
             self.send_error(404, "not a log under the configured roots")
             return
         size = os.path.getsize(path)
@@ -50,12 +59,9 @@ def main():
     ap.add_argument("pages")
     ap.add_argument("--port", type=int, default=8080)
     args = ap.parse_args()
-    roots_file = os.path.join(args.pages, "roots.json")
-    if os.path.exists(roots_file):
-        with open(roots_file) as f:
-            Handler.roots = [os.path.abspath(r) for r in json.load(f)]
+    Handler.roots_file = os.path.abspath(os.path.join(args.pages, "roots.json"))
     os.chdir(args.pages)
-    print(f"serving {args.pages} on http://127.0.0.1:{args.port}/ ; logs from {Handler.roots}")
+    print(f"serving {args.pages} on http://127.0.0.1:{args.port}/ ; log roots re-read from {Handler.roots_file} at each request")
     http.server.ThreadingHTTPServer(("127.0.0.1", args.port), Handler).serve_forever()
 
 
