@@ -158,8 +158,9 @@ def load_logs(name, patterns, extractors=()):
     Runs of the total examinations go to `totals`, the others to `runs`.
     """
     dirs = sorted(p for pat in patterns for p in (glob.glob(pat) or [pat]))
-    rs = ResultSet(name, {"logs": [os.path.abspath(d) for d in dirs]})
+    rs = ResultSet(name, {"logs": []})
     for d in dirs:
+        before = len(rs.runs) + len(rs.totals)
         if os.path.isfile(d):
             files = [d]
         elif os.path.isdir(d):
@@ -180,6 +181,9 @@ def load_logs(name, patterns, extractors=()):
             for fname in names:
                 if fname in answers:
                     rs.verdicts[(model, exam, fname)] = answers[fname]
+        if len(rs.runs) + len(rs.totals) > before:
+            # only the directories that held runs are log roots for serve.py
+            rs.source["logs"].append(os.path.abspath(d))
     return rs
 
 
