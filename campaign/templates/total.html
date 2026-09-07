@@ -17,22 +17,33 @@
 <p class="muted">Row A against column B: shared runs; atoms both settled and agree on / A only / B only / <span class="wrong">disagree</span>. A disagreement is a contradiction between two runs.</p>
 <div id="pairs"></div>
 
+<h2>Two sets against each other</h2>
+<div class="controls">A <select id="setA"></select> B <select id="setB"></select> <span class="muted">or click a cell of the table above</span></div>
+<h3>Wall time, A against B</h3>
+<div id="timeScatter" style="height:480px"></div>
+<h3>Atoms answered, A against B</h3>
+<div id="answeredScatter" style="height:480px"></div>
+
 <h2>Progression along a family</h2>
 <div class="controls">
   family <select id="family"></select>
-  y <select id="yaxis"><option value="completion">completion</option><option value="time">wall time (s)</option><option value="answered">atoms answered</option><option value="walk s">walker seconds</option></select>
+  y <select id="yaxis"><option value="time">wall time (s)</option><option value="answered">atoms answered</option><option value="completion">completion</option><option value="walk s">walker seconds</option></select>
+  <span class="muted">one line per set; on completion two complete runs coincide, wall time always tells them apart</span>
 </div>
 <div id="progression" style="height:480px"></div>
 
-<h2>Completion against wall time</h2>
-<div class="controls">set <select id="setA"></select> <span class="muted">size: atoms; colour: green the walker was called, red it never was</span></div>
-<div id="scatter" style="height:480px"></div>
+<h2>Answered against atoms, set A</h2>
+<p class="muted">The diagonal is completion; the distance below it is what a run left open. Colour: red the run ended at the wall, green before it, grey it failed.</p>
+<div id="completion" style="height:480px"></div>
 
 <h2>Runs</h2>
 <div class="controls">
   family <input id="famFilter" placeholder="regex, e.g. ^Erlangen">
   show <select id="runMode">
     <option value="all">all runs</option>
+    <option value="differ">A and B differ</option>
+    <option value="aBetter">A answered more</option>
+    <option value="bBetter">B answered more</option>
     <option value="incomplete">incomplete</option>
     <option value="wall">at the wall</option>
     <option value="nowalk">at the wall, walker never called</option>
