@@ -3,6 +3,19 @@
   "raw": "/home/ythierry/git/pnmcc-models-2026/website/raw-result-analysis.csv",
   "out": "/data/ythierry/MCC26run/pages",
   "sets": [
+  {
+   "name": "libHSC 20260908 SS",
+   "logs": [
+    "/data/ythierry/MCC26run/20260908-hsc/*"
+   ]
+  },
+  {
+   "name": "ITS-Tools 20260908 SS 300s",
+   "extractors": "itstools",
+   "logs": [
+    "/data/ythierry/MCC26run/20260908-its/*"
+   ]
+  },
     {
       "name": "ITS-Tools 202609080313",
       "extractors": "itstools",
