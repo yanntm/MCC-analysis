@@ -60,7 +60,13 @@ def summary(rs, exam, consensus, keys):
     runs = [r for (m, e), r in rs.runs.items() if e == exam]
     times = [r["time"] for r in runs if r["time"] is not None]
     st = collections.Counter(r["status"] for r in runs)
-    return {"set": rs.name, "runs": len(runs), "answered": c["ok"] + c["wrong"] + c["bonus"],
+    # the budget the runs were given: sets that ran under different ones are
+    # not comparable, so say which, and flag a set that mixes several
+    budgets = collections.Counter(r["timeout"] for r in runs if r.get("timeout"))
+    budget = budgets.most_common(1)[0][0] if budgets else None
+    return {"set": rs.name, "runs": len(runs),
+            "timeout s": f"{budget}*" if len(budgets) > 1 else budget,
+            "answered": c["ok"] + c["wrong"] + c["bonus"],
             "ok": c["ok"], "wrong": c["wrong"], "missed": c["missed"], "bonus": c["bonus"],
             "timeouts": st["timeout"], "failures": sum(v for k, v in st.items() if k not in ("finished", "timeout")),
             "median s": round(statistics.median(times), 1) if times else None,

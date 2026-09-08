@@ -164,7 +164,11 @@ def summary(rs, exam, oracle):
         eng.update(r["engines"])
     check = collections.Counter(consistency(exam, m, r, oracle) for m, r in runs)
     times = [r["time"] for _, r in runs if r["time"] is not None]
-    return {"set": rs.name, "runs": len(runs), "atoms": atoms, "answered": answered,
+    budgets = collections.Counter(r["timeout"] for _, r in runs if r.get("timeout"))
+    budget = budgets.most_common(1)[0][0] if budgets else None
+    return {"set": rs.name, "runs": len(runs),
+            "timeout s": f"{budget}*" if len(budgets) > 1 else budget,
+            "atoms": atoms, "answered": answered,
             "completion": round(answered / atoms, 4) if atoms else 0,
             "complete": sum(1 for _, r in runs if r["atoms"] and r["answered"] == r["atoms"]),
             "timeouts": sum(1 for _, r in runs if r["status"] == "timeout"),
