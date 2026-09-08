@@ -304,22 +304,85 @@ def read_raw(raw_csv):
                    "time": row[10], "status": row[12], "estimated": row[15], "backing": row[16]}
 
 
+CONTEST_CACHE_VERSION = "1"
+CONTEST_FIELDS = ["model", "exam", "time", "status", "values"]
+
+
+def contest_cache_path(raw_csv, tool):
+    safe = re.sub(r"[^A-Za-z0-9_.-]", "_", tool)
+    return f"{os.path.abspath(raw_csv)}.{safe}.cache.csv"
+
+
+def contest_signature(raw_csv, tool):
+    st = os.stat(raw_csv)
+    return f"{CONTEST_CACHE_VERSION}|{tool}|{st.st_mtime!r}|{st.st_size}"
+
+
+def read_contest_cache(raw_csv, tool):
+    """One tool's rows, already split and normalised, or None to parse again.
+
+    The contest table is one 50 MB file of loose text that every contest set
+    reads whole and cleans field by field, which costs minutes over a handful
+    of sets. What comes out of that cleaning is small and regular, so it is
+    kept beside the table and reread instead, keyed on the table's own mtime
+    and size.
+    """
+    path = contest_cache_path(raw_csv, tool)
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, newline="") as f:
+            reader = csv.reader(f)
+            head = next(reader, None)
+            if not head or head[0] != contest_signature(raw_csv, tool):
+                return None
+            return [dict(zip(CONTEST_FIELDS, row)) for row in reader if len(row) == len(CONTEST_FIELDS)]
+    except (OSError, csv.Error):
+        return None
+
+
+def write_contest_cache(raw_csv, tool, rows):
+    try:
+        with open(contest_cache_path(raw_csv, tool), "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow([contest_signature(raw_csv, tool)] + CONTEST_FIELDS[1:])
+            for r in rows:
+                w.writerow([r[k] for k in CONTEST_FIELDS])
+    except OSError:
+        pass
+
+
 def load_contest(name, raw_csv, tool, oracle):
     """A result set for one contest tool; its positional tokens are named through the oracle."""
     rs = ResultSet(name, {"contest": tool, "raw": os.path.abspath(raw_csv)})
-    for r in read_raw(raw_csv):
-        if r["tool"] != tool:
-            continue
+    rows = read_contest_cache(raw_csv, tool)
+    if rows is None:
+        rows = []
+        for r in read_raw(raw_csv):
+            if r["tool"] != tool:
+                continue
+            values = []
+            for v in split_results(r["results"], r["exam"]):
+                out = "?" if (v in NO_ANSWER or unreadable(v)) else normalize(v)
+                values.append(out if " " not in str(out) else "?")
+            rows.append({"model": r["model"], "exam": r["exam"],
+                         "time": r["time"] or "0",
+                         "status": "timeout" if r["status"] == "timeout" else "finished",
+                         "values": " ".join(values)})
+        write_contest_cache(raw_csv, tool, rows)
+    # the names come from the oracle, never from the cache, so a changed oracle
+    # is picked up without touching it
+    for r in rows:
         key = (r["model"], r["exam"])
         names = oracle.names.get(key)
         if names is None:
             continue
-        rs.runs[key] = {"time": float(r["time"] or 0) / 1000, "status": "timeout" if r["status"] == "timeout" else "finished",
+        rs.runs[key] = {"time": float(r["time"] or 0) / 1000, "status": r["status"],
                         "log": None, "extra": {}, "timeout": 3600}
         rs.names[key] = names
-        for i, v in enumerate(split_results(r["results"], r["exam"])):
-            if v not in NO_ANSWER and not unreadable(v) and i < len(names):
-                rs.verdicts[(r["model"], r["exam"], names[i])] = normalize(v)
+        for i, v in enumerate(r["values"].split()):
+            if v != "?" and i < len(names):
+                rs.verdicts[(r["model"], r["exam"], names[i])] = v
     return rs
 
 
