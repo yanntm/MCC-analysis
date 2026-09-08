@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 """Build the local campaign pages from a config of result sets.
 
-    build.py config.json
+    build.py config.json            # only the pages whose logs have moved
+    build.py config.json --force    # every page, whatever the timestamps
+
+A page is rebuilt when it is older than a log of its examination or than this
+generator, so adding logs to one examination costs that examination alone.
+**This assumes logs are only ever added.** A log that is deleted or replaced
+in place leaves the others untouched, so nothing looks stale and the page
+keeps its stale numbers: after removing logs, rebuild with --force (or empty
+the output directory, which is the clean build).
 
 The config names the result sets and where they come from, the oracle
 directory of pnmcc-models-2026 (the consensus, the formula names, the backing
@@ -56,11 +64,71 @@ def load_sets(config, oracle):
     return sets
 
 
+def code_stamp():
+    """When this generator last changed: a page older than that is stale."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    newest = 0.0
+    for root in (here, os.path.join(here, "templates"), os.path.join(here, "static")):
+        if not os.path.isdir(root):
+            continue
+        for name in os.listdir(root):
+            path = os.path.join(root, name)
+            if os.path.isfile(path):
+                newest = max(newest, os.path.getmtime(path))
+    return newest
+
+
+def input_stamp(sets, exam, floor):
+    """When the logs behind one examination last changed, `floor` included."""
+    newest = floor
+    for rs in sets:
+        for (_, e), r in rs.runs.items():
+            if e == exam and r.get("log"):
+                try:
+                    newest = max(newest, os.path.getmtime(r["log"]))
+                except OSError:
+                    pass
+        for (_, e), r in rs.totals.items():
+            if e == exam and r.get("log"):
+                try:
+                    newest = max(newest, os.path.getmtime(r["log"]))
+                except OSError:
+                    pass
+    return newest
+
+
+def cached_summary(out, page, stamp, force):
+    """The summary of a page that needs no rebuild, or None to rebuild it.
+
+    A page is up to date when it and its summary are younger than every log
+    behind it and than this generator: adding logs to one examination then
+    costs that examination only, not the whole site. `--force` ignores all of
+    it, and removing the output directory is the clean build.
+    """
+    if force:
+        return None
+    html = os.path.join(out, page)
+    side = os.path.join(out, page + ".summary.json")
+    if not (os.path.exists(html) and os.path.exists(side)):
+        return None
+    if os.path.getmtime(html) <= stamp or os.path.getmtime(side) <= stamp:
+        return None
+    with open(side) as f:
+        return json.load(f)
+
+
+def save_summary(out, page, summary):
+    with open(os.path.join(out, page + ".summary.json"), "w") as f:
+        json.dump(summary, f)
+
+
 def main():
-    if len(sys.argv) != 2:
+    args = [a for a in sys.argv[1:] if a != "--force"]
+    force = "--force" in sys.argv[1:]
+    if len(args) != 1:
         print(__doc__, file=sys.stderr)
         sys.exit(1)
-    with open(sys.argv[1]) as f:
+    with open(args[0]) as f:
         config = json.load(f)
     out = config["out"]
     os.makedirs(out, exist_ok=True)
@@ -83,21 +151,34 @@ def main():
     total_exams = [e for e in totals.EXAMS if any(x == e for rs in sets for (_, x) in rs.totals)]
     all_exams = exams + total_exams
     pages = []
+    floor = code_stamp()
     for exam in exams:
-        data = crossref.crossref(sets, exam, oracle)
         page = f"{exam}.html"
+        keep = cached_summary(out, page, input_stamp(sets, exam, floor), force)
+        if keep is not None:
+            pages.append({"exam": exam, "page": page, "summary": keep})
+            print(f"{page}: up to date", file=sys.stderr)
+            continue
+        data = crossref.crossref(sets, exam, oracle)
         html = env.get_template("exam.html").render(exam=exam, data=json.dumps(data), css=css, app_js=app_js, stamp=stamp, exams=all_exams)
         with open(os.path.join(out, page), "w") as f:
             f.write(html)
         pages.append({"exam": exam, "page": page, "summary": data["summary"]})
+        save_summary(out, page, data["summary"])
         print(f"{page}: {len(data['instances'])} instances, {len(data['values'])} values, {os.path.getsize(os.path.join(out, page)) // 1024} kB", file=sys.stderr)
     for exam in total_exams:
-        data = totals.page_data(sets, exam, oracle)
         page = f"{exam}.html"
+        keep = cached_summary(out, page, input_stamp(sets, exam, floor), force)
+        if keep is not None:
+            pages.append({"exam": exam, "page": page, "summary": keep, "total": True})
+            print(f"{page}: up to date", file=sys.stderr)
+            continue
+        data = totals.page_data(sets, exam, oracle)
         html = env.get_template("total.html").render(exam=exam, data=json.dumps(data), css=css, app_js=total_js, stamp=stamp, exams=all_exams)
         with open(os.path.join(out, page), "w") as f:
             f.write(html)
         pages.append({"exam": exam, "page": page, "summary": data["summary"], "total": True})
+        save_summary(out, page, data["summary"])
         print(f"{page}: {len(data['runs'])} instances, {os.path.getsize(os.path.join(out, page)) // 1024} kB", file=sys.stderr)
     html = env.get_template("index.html").render(pages=pages, sets=[{"name": rs.name, "source": json.dumps(rs.source)} for rs in sets], css=css, stamp=stamp)
     with open(os.path.join(out, "index.html"), "w") as f:

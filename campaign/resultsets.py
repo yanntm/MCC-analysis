@@ -24,6 +24,7 @@ against. Every key is (model, examination, formula name).
 import collections
 import csv
 import glob
+import json
 import os
 import re
 
@@ -150,6 +151,97 @@ def is_total_log(path):
     return any(f"-{abbrev}-" in head or f"-{abbrev}\n" in head or f"-{abbrev} " in head for abbrev in ("QLA", "SMA", "UBA")) and "total examination" in head
 
 
+CACHE_NAME = ".campaign-cache.csv"
+CACHE_VERSION = "1"
+CACHE_FIELDS = ["log", "mtime", "size", "kind", "model", "exam", "names", "answers",
+                "time", "status", "timeout", "extra"]
+
+
+def cache_signature(extractors):
+    """What the cache was written with: a parser change or a different set of
+    extractors invalidates it."""
+    return CACHE_VERSION + "|" + ",".join(sorted(type(e).__name__ for e in extractors))
+
+
+def read_cache(directory, signature):
+    """Cached rows of a log directory, by absolute path, dropping any whose
+    file has changed. Logs are only ever added, so an untouched file's row
+    stands; a deleted one simply never gets asked for."""
+    path = os.path.join(directory, CACHE_NAME)
+    if not os.path.exists(path):
+        return {}
+    rows = {}
+    try:
+        with open(path, newline="") as f:
+            reader = csv.reader(f)
+            head = next(reader, None)
+            if not head or head[0] != signature:
+                return {}
+            for row in reader:
+                if len(row) != len(CACHE_FIELDS):
+                    continue
+                r = dict(zip(CACHE_FIELDS, row))
+                try:
+                    if os.path.getmtime(r["log"]) != float(r["mtime"]) or os.path.getsize(r["log"]) != int(r["size"]):
+                        continue
+                except OSError:
+                    continue
+                rows[r["log"]] = r
+    except (OSError, csv.Error):
+        return {}
+    return rows
+
+
+def write_cache(directory, signature, rows):
+    """Rewrite a directory's cache; failure is not fatal, it only costs a
+    reparse next time."""
+    path = os.path.join(directory, CACHE_NAME)
+    try:
+        with open(path, "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow([signature] + CACHE_FIELDS[1:])
+            for r in rows.values():
+                w.writerow([r[k] for k in CACHE_FIELDS])
+    except OSError:
+        pass
+
+
+def cacheable(names, answers):
+    """A verdict round-trips through the cache only if it has no whitespace or
+    separator of ours; MCC names and verdicts never do, but do not assume it."""
+    for n in names:
+        if not n or any(c in n for c in " \t=") :
+            return False
+    for k, v in answers.items():
+        if any(c in str(k) + str(v) for c in " \t="):
+            return False
+    return True
+
+
+def row_of(path, kind, model, exam, names, answers, run):
+    return {"log": os.path.abspath(path), "mtime": repr(os.path.getmtime(path)),
+            "size": str(os.path.getsize(path)), "kind": kind, "model": model, "exam": exam,
+            "names": " ".join(names), "answers": " ".join(f"{k}={v}" for k, v in answers.items()),
+            "time": "" if run.get("time") is None else repr(run["time"]),
+            "status": run.get("status", "finished"),
+            "timeout": "" if run.get("timeout") is None else str(run["timeout"]),
+            "extra": json.dumps(run.get("extra", {}), sort_keys=True)}
+
+
+def parsed_of(row):
+    """(model, exam, names, answers, run) back from a cached row."""
+    names = row["names"].split() if row["names"] else []
+    answers = {}
+    for token in row["answers"].split():
+        k, _, v = token.partition("=")
+        answers[k] = v
+    run = {"time": float(row["time"]) if row["time"] else None,
+           "status": row["status"], "log": row["log"],
+           "extra": json.loads(row["extra"]) if row["extra"] else {},
+           "timeout": int(row["timeout"]) if row["timeout"] else None}
+    return row["model"], row["exam"], names, answers, run
+
+
 def load_logs(name, patterns, extractors=()):
     """A result set from directories of harness logs (files ending in `out` or `log`).
 
@@ -167,13 +259,26 @@ def load_logs(name, patterns, extractors=()):
             files = sorted(os.path.join(d, f) for f in os.listdir(d) if f.endswith("out") or f.endswith(".log"))
         else:
             continue
+        signature = cache_signature(extractors)
+        cache = read_cache(d, signature) if os.path.isdir(d) else {}
+        fresh = dict(cache)
+        added = 0
         for path in files:
             if is_total_log(path):
+                # the total examinations keep their own record shape; they are
+                # few and are not cached here
                 model, exam, rec = totals.parse(path, extractors)
                 if model:
                     rs.totals[(model, exam)] = rec
                 continue
-            model, exam, names, answers, run = parse_log(path, extractors)
+            hit = cache.get(os.path.abspath(path))
+            if hit is not None and hit["kind"] == "run":
+                model, exam, names, answers, run = parsed_of(hit)
+            else:
+                model, exam, names, answers, run = parse_log(path, extractors)
+                if model and cacheable(names, answers):
+                    fresh[os.path.abspath(path)] = row_of(path, "run", model, exam, names, answers, run)
+                    added += 1
             if not model or exam in VECTOR_EXAMS:
                 continue
             rs.runs[(model, exam)] = run
@@ -181,6 +286,8 @@ def load_logs(name, patterns, extractors=()):
             for fname in names:
                 if fname in answers:
                     rs.verdicts[(model, exam, fname)] = answers[fname]
+        if added and os.path.isdir(d):
+            write_cache(d, signature, fresh)
         if len(rs.runs) + len(rs.totals) > before:
             # only the directories that held runs are log roots for serve.py
             rs.source["logs"].append(os.path.abspath(d))

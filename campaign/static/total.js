@@ -13,8 +13,36 @@ function fillSelect(id, value) {
 }
 
 function summaryTable() {
-  const cols = ["set", "runs", "atoms", "answered", "completion", "complete", "timeouts", "failures", "witnessed", "proved", "open bounds", "confirmed", "contradicted", "engines", "total h", "walker h"];
+  // three measures lead: how many models were answered whole, the median
+  // model's completion, and only then the atom share, which a handful of huge
+  // nets otherwise speaks for
+  const cols = ["set", "runs", "complete", "median completion", "completion", "models below half", "atoms", "answered", "timeouts", "failures", "witnessed", "proved", "open bounds", "confirmed", "contradicted", "engines", "total h", "walker h"];
   $("#summary").DataTable({ data: DATA.summary.map(r => cols.map(c => fmt(r[c]))), columns: cols.map(c => ({ title: c })), paging: false, searching: false, info: false, ordering: false });
+}
+
+// Completion by model size: the atom share and the models answered whole, per
+// band. This is where the wall shows, since the bands differ by orders of
+// magnitude in atoms per model.
+function bandTable() {
+  const bands = ["under 1k", "1k to 10k", "10k to 100k", "over 100k"];
+  const head = ["set"].concat(bands.map(b => b + " (models)")).concat(bands.map(b => b + " (atoms known)"));
+  const rows = DATA.summary.map(r => [r.set]
+    .concat(bands.map(b => r.bands && r.bands[b] ? `${r.bands[b].full}/${r.bands[b].models}` : ""))
+    .concat(bands.map(b => r.bands && r.bands[b] ? (100 * r.bands[b].completion).toFixed(1) + "%" : "")));
+  $("#bands").DataTable({ data: rows, columns: head.map(c => ({ title: c })), paging: false, searching: false, info: false, ordering: false });
+}
+
+// How per-model completion is distributed: ten buckets, so progress reads as
+// mass moving between them rather than as a moving average.
+function completionHistogram() {
+  const labels = Array.from({ length: 10 }, (_, i) => `${i * 10}-${i * 10 + 10}%`);
+  const traces = DATA.summary.filter(r => r.deciles).map(r => ({
+    type: "bar", name: r.set, x: labels, y: r.deciles,
+  }));
+  if (!traces.length) return;
+  Plotly.newPlot("completionHistogram", traces,
+    { barmode: "group", xaxis: { title: "per-model completion" }, yaxis: { title: "models" },
+      margin: { t: 20, b: 60 }, legend: { orientation: "h" } });
 }
 
 function pairsTable() {
@@ -131,3 +159,5 @@ function fillSelects() {
 }
 
 fillSelects(); summaryTable(); pairsTable(); progression(); redraw();
+bandTable();
+completionHistogram();

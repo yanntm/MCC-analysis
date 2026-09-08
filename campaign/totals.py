@@ -13,6 +13,7 @@ consensus oracle can confirm or contradict.
 """
 
 import collections
+import statistics
 import os
 import re
 
@@ -155,6 +156,44 @@ def pair(a, b):
     return c
 
 
+BANDS = (("under 1k", 0, 1000), ("1k to 10k", 1000, 10000),
+         ("10k to 100k", 10000, 100000), ("over 100k", 100000, None))
+
+
+def band_of(atoms):
+    """Which size band a model falls in; the atom count decides everything here."""
+    for name, lo, hi in BANDS:
+        if atoms >= lo and (hi is None or atoms < hi):
+            return name
+    return BANDS[-1][0]
+
+
+def spread(runs):
+    """How completion is distributed over models, which one average cannot say.
+
+    A few nets hold most of the atoms, so the atom-weighted completion
+    describes them and not the tool: bands by model size and a decile
+    histogram of per-model completion say what a single figure hides.
+    """
+    shares = sorted(r["completion"] for _, r in runs if r["atoms"])
+    deciles = [0] * 10
+    for x in shares:
+        deciles[min(int(x * 10), 9)] += 1
+    bands = {}
+    for name, _, _ in BANDS:
+        group = [r for _, r in runs if r["atoms"] and band_of(r["atoms"]) == name]
+        if not group:
+            continue
+        atoms = sum(r["atoms"] for r in group)
+        answered = sum(r["answered"] for r in group)
+        bands[name] = {"models": len(group), "atoms": atoms,
+                       "completion": round(answered / atoms, 4) if atoms else 0,
+                       "full": sum(1 for r in group if r["answered"] == r["atoms"])}
+    median = statistics.median(shares) if shares else 0
+    return {"bands": bands, "deciles": deciles, "median completion": round(median, 4),
+            "models below half": sum(1 for x in shares if x < 0.5)}
+
+
 def summary(rs, exam, oracle):
     runs = [(m, r) for (m, e), r in rs.totals.items() if e == exam]
     atoms = sum(r["atoms"] for _, r in runs)
@@ -171,6 +210,7 @@ def summary(rs, exam, oracle):
             "atoms": atoms, "answered": answered,
             "completion": round(answered / atoms, 4) if atoms else 0,
             "complete": sum(1 for _, r in runs if r["atoms"] and r["answered"] == r["atoms"]),
+            **spread(runs),
             "timeouts": sum(1 for _, r in runs if r["status"] == "timeout"),
             "failures": sum(1 for _, r in runs if r["status"] not in ("finished", "timeout")),
             "witnessed": sum(r["witnessed"] for _, r in runs), "proved": sum(r["proved"] for _, r in runs),

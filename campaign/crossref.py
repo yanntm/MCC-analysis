@@ -91,6 +91,39 @@ def pair(a, b, exam, keys):
     return dict(c)
 
 
+def pairs_of(present, exam, keys):
+    """Every ordered pair's five way split, computed once per unordered pair.
+
+    The split is symmetric but for `onlyA` and `onlyB`, so half the pairs are
+    mirrored rather than recomputed, and each set's verdicts are read once
+    into a list aligned with `keys` instead of being looked up per pair.
+    """
+    columns = {rs.name: [rs.verdicts.get((m, exam, n)) for m, n in keys] for rs in present}
+    out = {}
+    for i, a in enumerate(present):
+        va = columns[a.name]
+        for b in present[i + 1:]:
+            vb = columns[b.name]
+            c = collections.Counter()
+            for x, y in zip(va, vb):
+                if x is None and y is None:
+                    c["neither"] += 1
+                elif x is None:
+                    c["onlyB"] += 1
+                elif y is None:
+                    c["onlyA"] += 1
+                elif same(x, y):
+                    c["both"] += 1
+                else:
+                    c["disagree"] += 1
+            forward = dict(c)
+            out[f"{a.name}|{b.name}"] = forward
+            mirror = dict(forward)
+            mirror["onlyA"], mirror["onlyB"] = forward.get("onlyB", 0), forward.get("onlyA", 0)
+            out[f"{b.name}|{a.name}"] = mirror
+    return out
+
+
 def instance_rows(sets, exam, consensus, keys):
     """One row per instance: per set the answered count, ok count, time, status, log."""
     by_model = collections.defaultdict(list)
@@ -137,7 +170,7 @@ def crossref(sets, exam, oracle):
         "examination": exam,
         "sets": [rs.name for rs in present],
         "summary": [summary(rs, exam, consensus, keys) for rs in present],
-        "pairs": {f"{a.name}|{b.name}": pair(a, b, exam, keys) for a in present for b in present if a is not b},
+        "pairs": pairs_of(present, exam, keys),
         "instances": instance_rows(present, exam, consensus, keys),
         "values": value_rows(present, exam, consensus, backing, keys),
     }

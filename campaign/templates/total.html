@@ -13,6 +13,13 @@
 <h2>Sets</h2>
 <table id="summary" class="display compact"></table>
 
+<h3>Completion by model size</h3>
+<p class="muted">Models answered whole out of models in the band, then the share of that band's atoms. A handful of nets hold most of the atoms, so the overall atom share describes them rather than the tool.</p>
+<table id="bands" class="display compact"></table>
+
+<h3>How per-model completion is spread</h3>
+<div id="completionHistogram" style="height:420px"></div>
+
 <h2>Sets against each other, atom by atom over shared instances</h2>
 <p class="muted">Row A against column B: shared runs; atoms both settled and agree on / A only / B only / <span class="wrong">disagree</span>. A disagreement is a contradiction between two runs.</p>
 <div id="pairs"></div>

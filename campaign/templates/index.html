@@ -12,8 +12,8 @@
 {% for p in pages %}
 <h3><a href="{{ p.page }}">{{ p.exam }}</a></h3>
 {% if p.total %}
-<table class="plain"><tr><th>set</th><th>runs</th><th>timeout s</th><th>atoms</th><th>answered</th><th>completion</th><th>complete runs</th><th>timeouts</th><th>witnessed</th><th>proved</th><th>open bounds</th><th>confirmed</th><th>contradicted</th><th>total h</th></tr>
-{% for s in p.summary %}<tr><td>{{ s.set }}</td><td>{{ s.runs }}</td><td>{{ s['timeout s'] }}</td><td>{{ s.atoms }}</td><td>{{ s.answered }}</td><td>{{ s.completion }}</td><td>{{ s.complete }}</td><td>{{ s.timeouts }}</td><td>{{ s.witnessed }}</td><td>{{ s.proved }}</td><td>{{ s['open bounds'] }}</td><td>{{ s.confirmed }}</td><td class="{{ 'bad' if s.contradicted else '' }}">{{ s.contradicted }}</td><td>{{ s['total h'] }}</td></tr>{% endfor %}
+<table class="plain"><tr><th>set</th><th>runs</th><th>timeout s</th><th>models whole</th><th>median completion</th><th>atoms known</th><th>atoms</th><th>answered</th><th>timeouts</th><th>witnessed</th><th>proved</th><th>open bounds</th><th>confirmed</th><th>contradicted</th><th>total h</th></tr>
+{% for s in p.summary %}<tr><td>{{ s.set }}</td><td>{{ s.runs }}</td><td>{{ s['timeout s'] }}</td><td>{{ s.complete }}</td><td>{{ s['median completion'] }}</td><td>{{ s.completion }}</td><td>{{ s.atoms }}</td><td>{{ s.answered }}</td><td>{{ s.timeouts }}</td><td>{{ s.witnessed }}</td><td>{{ s.proved }}</td><td>{{ s['open bounds'] }}</td><td>{{ s.confirmed }}</td><td class="{{ 'bad' if s.contradicted else '' }}">{{ s.contradicted }}</td><td>{{ s['total h'] }}</td></tr>{% endfor %}
 </table>
 {% else %}
 <table class="plain"><tr><th>set</th><th>runs</th><th>timeout s</th><th>answered</th><th>ok</th><th>wrong</th><th>missed</th><th>bonus</th><th>timeouts</th><th>failures</th><th>median s</th><th>total h</th></tr>
