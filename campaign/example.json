@@ -1,59 +1,59 @@
 {
-  "oracle": "/data/ythierry/MCC26run/oracle-2026/oracle",
+  "oracle": "/data/ythierry/MCC26logs/_shared/oracle-2026/oracle",
   "raw": "/home/ythierry/git/pnmcc-models-2026/website/raw-result-analysis.csv",
-  "out": "/data/ythierry/MCC26run/pages",
+  "out": "/data/ythierry/MCC26logs/_shared/pages",
   "sets": [
   {
    "name": "libHSC 20260908 SS",
    "logs": [
-    "/data/ythierry/MCC26run/20260908-hsc/*"
+    "/data/ythierry/MCC26logs/hsc/20260908/*"
    ]
   },
   {
    "name": "ITS-Tools 20260908 SS 300s",
    "extractors": "itstools",
    "logs": [
-    "/data/ythierry/MCC26run/20260908-its/*"
+    "/data/ythierry/MCC26logs/itstools/2026090817/*"
    ]
   },
     {
       "name": "ITS-Tools 202609080313",
       "extractors": "itstools",
       "logs": [
-        "/data/ythierry/MCC26run/202609080313/*"
+        "/data/ythierry/MCC26logs/itstools/202609080313/*"
       ]
     },
     {
       "name": "ITS-Tools 2026-09-07",
       "extractors": "itstools",
       "logs": [
-        "/data/ythierry/MCC26archive/2026-09-07/*"
+        "/data/ythierry/MCC26logs/itstools/202609071104/*"
       ]
     },
     {
       "name": "ITS-Tools 2026-09-06c",
       "extractors": "itstools",
       "logs": [
-        "/data/ythierry/MCC26run/2026-09-06c/*"
+        "/data/ythierry/MCC26logs/itstools/2026090616/*"
       ]
     },
     {
       "name": "ITS-Tools 2026-09-06",
       "extractors": "itstools",
       "logs": [
-        "/data/ythierry/MCC26run/2026-09-06/*"
+        "/data/ythierry/MCC26logs/itstools/2026090600/*"
       ]
     },
     {
       "name": "ITS-Tools 2026-09-05",
       "extractors": "itstools",
       "logs": [
-        "/data/ythierry/MCC26run/L",
-        "/data/ythierry/MCC26run/OS",
-        "/data/ythierry/MCC26run/QL",
-        "/data/ythierry/MCC26run/RD",
-        "/data/ythierry/MCC26run/SM",
-        "/data/ythierry/MCC26run/UB"
+        "/data/ythierry/MCC26logs/itstools/2026090513/L",
+        "/data/ythierry/MCC26logs/itstools/202609051237/OS",
+        "/data/ythierry/MCC26logs/itstools/2026090513/QL",
+        "/data/ythierry/MCC26logs/itstools/202609052009/RD",
+        "/data/ythierry/MCC26logs/itstools/202609051349/SM",
+        "/data/ythierry/MCC26logs/itstools/2026090513/UB"
       ]
     },
     {
