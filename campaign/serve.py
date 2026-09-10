@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
-"""Serve the campaign pages and the logs they link to, on localhost only.
+"""Serve the generated pages and the logs they link to, on localhost only.
 
-    serve.py PAGES_DIR [--port 8080]
+    serve.py [PAGES_DIR] [--port 8080]
 
-Binds 127.0.0.1: nobody but this machine reaches it, and a remote reader
-gets in through an SSH tunnel (`ssh -N -L 8080:localhost:8080 <host>`),
-which is the only way the pages, and through them the log files, leave the
-disk. `/` and `/<page>.html` come from PAGES_DIR; `/logs/<absolute path>`
-returns a log as plain text, provided the path lies under one of the
-directories listed in PAGES_DIR/roots.json (written by build.py from the
-result sets' log directories, re-read at every request so a rebuild needs no
+PAGES_DIR defaults to /data/ythierry/MCC26logs/web, the folder that holds one
+page set per subfolder (`campaign/` from build.py, `order-sweep/` from
+libHSC's sweep_pages.py); its index.html lists them. Binds 127.0.0.1: nobody
+but this machine reaches it, and a remote reader gets in through an SSH
+tunnel (`ssh -N -L 8080:localhost:8080 <host>`), which is the only way the
+pages, and through them the log files, leave the disk. Pages are served from
+PAGES_DIR; `/logs/<absolute path>` returns a log as plain text, provided the
+path lies under one of the directories listed in a `roots.json` of PAGES_DIR
+or of one of its subfolders (written by the page builders from the result
+sets' log directories, re-read at every request so a rebuild needs no
 restart). Anything else is 404.
 """
 
@@ -21,7 +24,7 @@ import urllib.parse
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
-    roots_file = "roots.json"
+    pages_dir = "."
 
     def do_GET(self):
         path = urllib.parse.unquote(urllib.parse.urlparse(self.path).path)
@@ -31,11 +34,20 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
     def roots(self):
         """Read at every request: a rebuild may add log directories while the server runs."""
+        files = [os.path.join(self.pages_dir, "roots.json")]
         try:
-            with open(self.roots_file) as f:
-                return [os.path.abspath(r) for r in json.load(f)]
-        except (OSError, ValueError):
-            return []
+            files += [os.path.join(self.pages_dir, d, "roots.json") for d in sorted(os.listdir(self.pages_dir))
+                      if os.path.isdir(os.path.join(self.pages_dir, d))]
+        except OSError:
+            pass
+        roots = []
+        for rf in files:
+            try:
+                with open(rf) as f:
+                    roots += [os.path.abspath(r) for r in json.load(f)]
+            except (OSError, ValueError):
+                continue
+        return roots
 
     def send_log(self, path):
         if not any(path.startswith(r.rstrip("/") + "/") for r in self.roots()) or not os.path.isfile(path):
@@ -56,12 +68,12 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("pages")
+    ap.add_argument("pages", nargs="?", default="/data/ythierry/MCC26logs/web")
     ap.add_argument("--port", type=int, default=8080)
     args = ap.parse_args()
-    Handler.roots_file = os.path.abspath(os.path.join(args.pages, "roots.json"))
+    Handler.pages_dir = os.path.abspath(args.pages)
     os.chdir(args.pages)
-    print(f"serving {args.pages} on http://127.0.0.1:{args.port}/ ; log roots re-read from {Handler.roots_file} at each request")
+    print(f"serving {args.pages} on http://127.0.0.1:{args.port}/ ; log roots re-read from its roots.json files at each request")
     http.server.ThreadingHTTPServer(("127.0.0.1", args.port), Handler).serve_forever()
 
 

@@ -13,7 +13,7 @@ A result set is one tool configuration's answers over the benchmark, a
 every run and, for our own runs, the log. Two kinds:
 
 * **logs**: a list of directories of `run_test.pl` logs (`OAR.<id>.stdout`),
-  or globs: `"/data/ythierry/MCC26run/2026-09-06/*"` names a whole campaign
+  or globs: `"/data/ythierry/MCC26logs/itstools/<build>/*"` names a whole campaign
   folder as it comes off the cluster rsync, directories without logs (the
   warmup, the vector oracles) being skipped. The convention of
   `example.json`: the set `ITS-Tools latest` is that glob on the newest
@@ -92,7 +92,9 @@ show:
 
 ## Serving, locally and through a tunnel
 
-`serve.py /data/ythierry/MCC26run/pages --port 8080` serves the pages and
+`serve.py` (default `/data/ythierry/MCC26logs/web`, one page set per
+subfolder: `campaign/` from `build.py`, `order-sweep/` from libHSC's
+`sweep_pages.py`; `--port 8080`) serves the pages and
 answers `logs/<absolute path>` from the disk, for paths under the log
 directories of the config (`roots.json`, written by `build.py`). It binds
 `127.0.0.1` only. From another machine, an SSH tunnel is the door:

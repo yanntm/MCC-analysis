@@ -20,7 +20,7 @@ directory:
      "raw": "website/2026/raw-result-analysis.csv",
      "out": "/data/ythierry/MCC26logs/web/campaign",
      "sets": [
-        {"name": "petrispot 2026-09-06", "logs": ["/data/ythierry/MCC26run/2026-09-06/RD", "..."], "extractors": "itstools"},
+        {"name": "petrispot 2026-09-06", "logs": ["/data/ythierry/MCC26logs/itstools/<build>/RD", "..."], "extractors": "itstools"},
         {"name": "ITS-Tools 2026", "contest": "ITS-Tools"},
         {"name": "Tapaal 2026", "contest": "Tapaal"}]}
 
