@@ -16,9 +16,9 @@ directory of pnmcc-models-2026 (the consensus, the formula names, the backing
 tools), the contest raw results file (per tool verdicts), and the output
 directory:
 
-    {"oracle": "/data/ythierry/MCC26run/oracle-2026/oracle",
+    {"oracle": "/data/ythierry/MCC26deploy/MCC-drivers/oracle",
      "raw": "website/2026/raw-result-analysis.csv",
-     "out": "/data/ythierry/MCC26run/pages",
+     "out": "/data/ythierry/MCC26logs/web/campaign",
      "sets": [
         {"name": "petrispot 2026-09-06", "logs": ["/data/ythierry/MCC26run/2026-09-06/RD", "..."], "extractors": "itstools"},
         {"name": "ITS-Tools 2026", "contest": "ITS-Tools"},

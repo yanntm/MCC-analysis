@@ -1,7 +1,7 @@
 {
   "oracle": "/data/ythierry/MCC26deploy/MCC-drivers/oracle",
   "raw": "/home/ythierry/git/pnmcc-models-2026/website/raw-result-analysis.csv",
-  "out": "/data/ythierry/MCC26logs/_shared/pages",
+  "out": "/data/ythierry/MCC26logs/web/campaign",
   "sets": [
   {
    "name": "libHSC 20260908 SS",
