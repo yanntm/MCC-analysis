@@ -1,5 +1,5 @@
 {
-  "oracle": "/data/ythierry/MCC26logs/_shared/oracle-2026/oracle",
+  "oracle": "/data/ythierry/MCC26deploy/MCC-drivers/oracle",
   "raw": "/home/ythierry/git/pnmcc-models-2026/website/raw-result-analysis.csv",
   "out": "/data/ythierry/MCC26logs/_shared/pages",
   "sets": [
