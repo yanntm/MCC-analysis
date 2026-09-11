@@ -4,6 +4,13 @@
   "out": "/data/ythierry/MCC26logs/web/campaign",
   "sets": [
   {
+   "name": "libHSC 20260910 CTL 600s",
+   "logs": [
+    "/data/ythierry/MCC26logs/hsc/20260910/CTLC.hsc",
+    "/data/ythierry/MCC26logs/hsc/20260910/CTLF.hsc"
+   ]
+  },
+  {
    "name": "libHSC 20260908 SS",
    "logs": [
     "/data/ythierry/MCC26logs/hsc/20260908/*"
