@@ -26,8 +26,12 @@ import urllib.parse
 class Handler(http.server.SimpleHTTPRequestHandler):
     pages_dir = "."
 
-    def do_GET(self):
+    def do_GET(self) -> None:
         path = urllib.parse.unquote(urllib.parse.urlparse(self.path).path)
+        parts = path.split("/", 3)
+        if len(parts) == 4 and parts[2] == "logs":
+            # Generated pages use relative links from their page-set folder.
+            path = "/logs/" + parts[3]
         if path.startswith("/logs/"):
             return self.send_log(os.path.abspath(path[len("/logs"):]))
         return super().do_GET()

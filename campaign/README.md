@@ -95,7 +95,8 @@ show:
 `serve.py` (default `/data/ythierry/MCC26logs/web`, one page set per
 subfolder: `campaign/` from `build.py`, `order-sweep/` from libHSC's
 `sweep_pages.py`; `--port 8080`) serves the pages and
-answers `logs/<absolute path>` from the disk, for paths under the log
+answers `/logs/<absolute path>` and `/<page-set>/logs/<absolute path>`
+(the relative links emitted by the pages) from the disk, for paths under the log
 directories of the config (`roots.json`, written by `build.py`). It binds
 `127.0.0.1` only. From another machine, an SSH tunnel is the door:
 
