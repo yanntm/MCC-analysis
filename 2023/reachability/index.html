@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reachability - MCC Analysis</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Reachability</h1>
+    <div>
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+      <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+     </head>
+    <body>
+      <label><input type="checkbox" id="detailsToggle" checked> Show details</label>
+      <label><input type="checkbox" id="errorsToggle"> Show errors</label>
+      <table id="myTable" class="display dataTables_wrapper"><thead><tr><th class="tool">Tool</th><th class="total">answer_total</th><th class="total errors">error_total</th><th class="details">answer_ReachabilityCardinality</th><th class="details errors">error_ReachabilityCardinality</th><th class="details">answer_ReachabilityFireability</th><th class="details errors">error_ReachabilityFireability</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>2022-gold</td>
+      <td>50228</td>
+      <td>0</td>
+      <td>25659</td>
+      <td>0</td>
+      <td>24569</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>BVT</td>
+      <td>52679</td>
+      <td>0</td>
+      <td>26377</td>
+      <td>0</td>
+      <td>26302</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>GreatSPN</td>
+      <td>22951</td>
+      <td>0</td>
+      <td>11586</td>
+      <td>0</td>
+      <td>11365</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ITS-Tools</td>
+      <td>50781</td>
+      <td>2</td>
+      <td>25615</td>
+      <td>2</td>
+      <td>25166</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>LTSMin</td>
+      <td>24872</td>
+      <td>0</td>
+      <td>11775</td>
+      <td>0</td>
+      <td>13097</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>LTSMin+red</td>
+      <td>50252</td>
+      <td>0</td>
+      <td>25443</td>
+      <td>0</td>
+      <td>24809</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>LoLA</td>
+      <td>44041</td>
+      <td>10</td>
+      <td>23091</td>
+      <td>10</td>
+      <td>20950</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>LoLa+red</td>
+      <td>51432</td>
+      <td>0</td>
+      <td>25958</td>
+      <td>0</td>
+      <td>25474</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Marcie</td>
+      <td>18507</td>
+      <td>0</td>
+      <td>8886</td>
+      <td>0</td>
+      <td>9621</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Marcie+red</td>
+      <td>50353</td>
+      <td>0</td>
+      <td>25466</td>
+      <td>0</td>
+      <td>24887</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Smart</td>
+      <td>17973</td>
+      <td>32</td>
+      <td>8280</td>
+      <td>11</td>
+      <td>9693</td>
+      <td>21</td>
+    </tr>
+    <tr>
+      <td>Smart+red</td>
+      <td>49988</td>
+      <td>80</td>
+      <td>25400</td>
+      <td>23</td>
+      <td>24588</td>
+      <td>57</td>
+    </tr>
+    <tr>
+      <td>Tapaal</td>
+      <td>50628</td>
+      <td>0</td>
+      <td>25890</td>
+      <td>0</td>
+      <td>24738</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>smpt</td>
+      <td>50240</td>
+      <td>4</td>
+      <td>25365</td>
+      <td>3</td>
+      <td>24875</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>Ideal Tool</td>
+      <td>53696</td>
+      <td>0</td>
+      <td>26848</td>
+      <td>0</td>
+      <td>26848</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+      <script>
+        $(document).ready(function() {
+          let detailsVisible = true;
+          let errorsVisible = false;
+          let table = $('#myTable').DataTable({
+            "paging": false,
+            "order": [[1, "desc"]]
+          });
+
+          function updateVisibility() {
+            table.columns('.details:not(.errors)').visible(detailsVisible);
+            table.columns('.details.errors').visible(detailsVisible && errorsVisible);
+            table.columns('.total.errors').visible(errorsVisible);
+          }
+
+          updateVisibility();
+
+          $('#detailsToggle').on('change', function() {
+            detailsVisible = this.checked;
+            updateVisibility();
+          });
+
+          $('#errorsToggle').on('change', function() {
+            errorsVisible = this.checked;
+            updateVisibility();
+          });
+        });
+      </script>
+
+    </body>
+    </html>
+    </div>
+    <h2>Venn Diagrams</h2>
+    <div>
+        <iframe src="venn_dynamic.html" width="100%" height="600" frameborder="0" style="border:0" allowfullscreen></iframe>
+    </div>
+    <p><a href="index.html">Back to index</a></p>
+</body>
+</html>

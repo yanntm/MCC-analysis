@@ -1,0 +1,15 @@
+"Tool","answer_total","error_total","answer_UpperBounds","error_UpperBounds"
+"2022-gold",24880,3,24880,3
+"BVT",25483,0,25483,0
+"GreatSPN",14976,0,14976,0
+"ITS-Tools",25128,2,25128,2
+"LTSMin",11888,0,11888,0
+"LTSMin+red",24893,0,24893,0
+"LoLA",22644,0,22644,0
+"LoLa+red",24920,0,24920,0
+"Marcie",10922,0,10922,0
+"Marcie+red",25060,0,25060,0
+"Smart",9830,60,9830,60
+"Smart+red",24980,20,24980,20
+"Tapaal",23357,0,23357,0
+"Ideal Tool",26848,0,26848,0

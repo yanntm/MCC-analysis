@@ -1,0 +1,152 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+      <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+     </head>
+    <body>
+      <label><input type="checkbox" id="detailsToggle" checked> Show details</label>
+      <label><input type="checkbox" id="errorsToggle"> Show errors</label>
+      <table id="myTable" class="display dataTables_wrapper"><thead><tr><th class="tool">Tool</th><th class="total">answer_total</th><th class="total errors">error_total</th><th class="details">answer_Liveness</th><th class="details errors">error_Liveness</th><th class="details">answer_OneSafe</th><th class="details errors">error_OneSafe</th><th class="details">answer_QuasiLiveness</th><th class="details errors">error_QuasiLiveness</th><th class="details">answer_ReachabilityDeadlock</th><th class="details errors">error_ReachabilityDeadlock</th><th class="details">answer_StableMarking</th><th class="details errors">error_StableMarking</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>2020-gold</td>
+      <td>5225</td>
+      <td>0</td>
+      <td>904</td>
+      <td>0</td>
+      <td>1237</td>
+      <td>0</td>
+      <td>948</td>
+      <td>0</td>
+      <td>1178</td>
+      <td>0</td>
+      <td>958</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>BVT</td>
+      <td>6815</td>
+      <td>0</td>
+      <td>1344</td>
+      <td>0</td>
+      <td>1410</td>
+      <td>0</td>
+      <td>1331</td>
+      <td>0</td>
+      <td>1368</td>
+      <td>0</td>
+      <td>1362</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>GreatSPN</td>
+      <td>3753</td>
+      <td>1</td>
+      <td>548</td>
+      <td>1</td>
+      <td>808</td>
+      <td>0</td>
+      <td>782</td>
+      <td>0</td>
+      <td>806</td>
+      <td>0</td>
+      <td>809</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ITS-Tools</td>
+      <td>6630</td>
+      <td>0</td>
+      <td>1289</td>
+      <td>0</td>
+      <td>1392</td>
+      <td>0</td>
+      <td>1289</td>
+      <td>0</td>
+      <td>1339</td>
+      <td>0</td>
+      <td>1321</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>LoLA</td>
+      <td>6151</td>
+      <td>12</td>
+      <td>1244</td>
+      <td>0</td>
+      <td>1379</td>
+      <td>0</td>
+      <td>1188</td>
+      <td>0</td>
+      <td>1162</td>
+      <td>0</td>
+      <td>1178</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <td>Tapaal</td>
+      <td>5664</td>
+      <td>16</td>
+      <td>988</td>
+      <td>1</td>
+      <td>1345</td>
+      <td>0</td>
+      <td>1041</td>
+      <td>15</td>
+      <td>1211</td>
+      <td>0</td>
+      <td>1079</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Ideal Tool</td>
+      <td>7055</td>
+      <td>0</td>
+      <td>1411</td>
+      <td>0</td>
+      <td>1411</td>
+      <td>0</td>
+      <td>1411</td>
+      <td>0</td>
+      <td>1411</td>
+      <td>0</td>
+      <td>1411</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+      <script>
+        $(document).ready(function() {
+          let detailsVisible = true;
+          let errorsVisible = false;
+          let table = $('#myTable').DataTable({
+            "paging": false,
+            "order": [[1, "desc"]]
+          });
+
+          function updateVisibility() {
+            table.columns('.details:not(.errors)').visible(detailsVisible);
+            table.columns('.details.errors').visible(detailsVisible && errorsVisible);
+            table.columns('.total.errors').visible(errorsVisible);
+          }
+
+          updateVisibility();
+
+          $('#detailsToggle').on('change', function() {
+            detailsVisible = this.checked;
+            updateVisibility();
+          });
+
+          $('#errorsToggle').on('change', function() {
+            errorsVisible = this.checked;
+            updateVisibility();
+          });
+        });
+      </script>
+
+    </body>
+    </html>
+    

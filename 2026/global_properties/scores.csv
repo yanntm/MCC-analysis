@@ -1,0 +1,8 @@
+"Tool","answer_total","error_total","answer_Liveness","error_Liveness","answer_OneSafe","error_OneSafe","answer_QuasiLiveness","error_QuasiLiveness","answer_ReachabilityDeadlock","error_ReachabilityDeadlock","answer_StableMarking","error_StableMarking"
+"2025-gold",9190,9,1805,0,1922,9,1752,0,1862,0,1849,0
+"BVT",9338,0,1833,0,1943,0,1783,0,1893,0,1886,0
+"ITS-Tools",9187,9,1805,0,1923,9,1747,0,1862,0,1850,0
+"TY",2408,15,462,1,762,0,684,0,89,1,411,13
+"Tapaal",8053,0,1434,0,1885,0,1488,0,1688,0,1558,0
+"petrivet",1399,17,153,2,681,2,104,5,352,4,109,4
+"Ideal Tool",9765,0,1953,0,1953,0,1953,0,1953,0,1953,0

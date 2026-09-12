@@ -1,0 +1,7 @@
+"Tool","answer_total","error_total","answer_ReachabilityCardinality","error_ReachabilityCardinality","answer_ReachabilityFireability","error_ReachabilityFireability"
+"2024-gold",55754,0,28459,0,27295,0
+"BVT",58010,0,29071,0,28939,0
+"ITS-Tools",56247,1,28352,0,27895,1
+"Tapaal",56483,0,28668,0,27815,0
+"smpt",52032,0,26298,0,25734,0
+"Ideal Tool",59360,0,29680,0,29680,0

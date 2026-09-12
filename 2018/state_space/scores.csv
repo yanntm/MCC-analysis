@@ -1,0 +1,14 @@
+"Tool","answer_total","error_total","answer_StateSpace","error_StateSpace"
+"BVT",2647,0,2647,0
+"GreatSPN",2300,0,2300,0
+"ITS-Tools",1569,0,1569,0
+"ITS-Tools.L",1494,0,1494,0
+"Irma.full",1027,0,1027,0
+"Irma.struct",1024,0,1024,0
+"LTSMin",951,3,951,3
+"M4M.full",909,0,909,0
+"M4M.struct",894,0,894,0
+"TINA.tedd",2368,12,2368,12
+"Tapaal",645,0,645,0
+"smart",1236,0,1236,0
+"Ideal Tool",3788,0,3788,0

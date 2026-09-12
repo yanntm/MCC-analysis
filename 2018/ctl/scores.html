@@ -1,0 +1,155 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+      <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+     </head>
+    <body>
+      <label><input type="checkbox" id="detailsToggle" checked> Show details</label>
+      <label><input type="checkbox" id="errorsToggle"> Show errors</label>
+      <table id="myTable" class="display dataTables_wrapper"><thead><tr><th class="tool">Tool</th><th class="total">answer_total</th><th class="total errors">error_total</th><th class="details">answer_CTLCardinality</th><th class="details errors">error_CTLCardinality</th><th class="details">answer_CTLFireability</th><th class="details errors">error_CTLFireability</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>BVT</td>
+      <td>27285</td>
+      <td>0</td>
+      <td>14023</td>
+      <td>0</td>
+      <td>13262</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>GreatSPN</td>
+      <td>10037</td>
+      <td>0</td>
+      <td>4943</td>
+      <td>0</td>
+      <td>5094</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ITS-Tools</td>
+      <td>11471</td>
+      <td>0</td>
+      <td>5686</td>
+      <td>0</td>
+      <td>5785</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ITS-Tools.L</td>
+      <td>10764</td>
+      <td>0</td>
+      <td>5414</td>
+      <td>0</td>
+      <td>5350</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Irma.full</td>
+      <td>7234</td>
+      <td>0</td>
+      <td>3847</td>
+      <td>0</td>
+      <td>3387</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Irma.struct</td>
+      <td>7266</td>
+      <td>0</td>
+      <td>3874</td>
+      <td>0</td>
+      <td>3392</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>LTSMin</td>
+      <td>8743</td>
+      <td>1</td>
+      <td>4453</td>
+      <td>0</td>
+      <td>4290</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>LoLA</td>
+      <td>21613</td>
+      <td>7</td>
+      <td>12006</td>
+      <td>6</td>
+      <td>9607</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>M4M.full</td>
+      <td>4884</td>
+      <td>9</td>
+      <td>2745</td>
+      <td>9</td>
+      <td>2139</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>M4M.struct</td>
+      <td>5150</td>
+      <td>4</td>
+      <td>2651</td>
+      <td>3</td>
+      <td>2499</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>Tapaal</td>
+      <td>25327</td>
+      <td>1</td>
+      <td>13411</td>
+      <td>0</td>
+      <td>11916</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>Ideal Tool</td>
+      <td>30304</td>
+      <td>0</td>
+      <td>15152</td>
+      <td>0</td>
+      <td>15152</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+      <script>
+        $(document).ready(function() {
+          let detailsVisible = true;
+          let errorsVisible = false;
+          let table = $('#myTable').DataTable({
+            "paging": false,
+            "order": [[1, "desc"]]
+          });
+
+          function updateVisibility() {
+            table.columns('.details:not(.errors)').visible(detailsVisible);
+            table.columns('.details.errors').visible(detailsVisible && errorsVisible);
+            table.columns('.total.errors').visible(errorsVisible);
+          }
+
+          updateVisibility();
+
+          $('#detailsToggle').on('change', function() {
+            detailsVisible = this.checked;
+            updateVisibility();
+          });
+
+          $('#errorsToggle').on('change', function() {
+            errorsVisible = this.checked;
+            updateVisibility();
+          });
+        });
+      </script>
+
+    </body>
+    </html>
+    

@@ -1,0 +1,8 @@
+"Tool","answer_total","error_total","answer_Liveness","error_Liveness","answer_OneSafe","error_OneSafe","answer_QuasiLiveness","error_QuasiLiveness","answer_ReachabilityDeadlock","error_ReachabilityDeadlock","answer_StableMarking","error_StableMarking"
+"2020-gold",5225,0,904,0,1237,0,948,0,1178,0,958,0
+"BVT",6815,0,1344,0,1410,0,1331,0,1368,0,1362,0
+"GreatSPN",3753,1,548,1,808,0,782,0,806,0,809,0
+"ITS-Tools",6630,0,1289,0,1392,0,1289,0,1339,0,1321,0
+"LoLA",6151,12,1244,0,1379,0,1188,0,1162,0,1178,12
+"Tapaal",5664,16,988,1,1345,0,1041,15,1211,0,1079,0
+"Ideal Tool",7055,0,1411,0,1411,0,1411,0,1411,0,1411,0
