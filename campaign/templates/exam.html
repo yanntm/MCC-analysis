@@ -35,6 +35,7 @@
 <div id="scatter" style="height:520px"></div>
 
 <h2>Values</h2>
+{% if exam == "StateSpace" %}<p class="muted">One row per model, one column per metric. Each cell lists the oracle, its supporting tools, and selected tool A. Filters retain models with any matching metric and show all four metrics.</p>{% endif %}
 <div class="controls">
   show <select id="valMode">
     <option value="all">all values</option>

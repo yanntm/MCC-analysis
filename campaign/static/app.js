@@ -103,7 +103,32 @@ function valueRows() {
   });
 }
 
+function stateSpaceValuesTable() {
+  const metrics = ["STATES", "TRANSITIONS", "MAX_TOKEN_IN_PLACE", "MAX_TOKEN_PER_MARKING"];
+  const selected = new Set(valueRows().map(r => r.model));
+  const models = new Map();
+  for (const r of DATA.values) {
+    if (!selected.has(r.model)) continue;
+    if (!models.has(r.model)) models.set(r.model, new Map());
+    models.get(r.model).set(r.name, r);
+  }
+  const data = [...models].map(([model, values]) => [model, ...metrics.map(metric => {
+    const r = values.get(metric);
+    if (!r) return "·";
+    const consensus = `<div><b>Oracle:</b> ${r.cons === null ? "·" : r.cons}</div>`;
+    const backing = `<div class="muted">${r.who.join(" ")}</div>`;
+    const v = r.vals[A] || [null, "none"];
+    const results = `<div><b>${A}:</b> <span class="${v[1]}">${v[0] === null ? "·" : v[0]}</span></div>`;
+    return consensus + backing + results;
+  })]);
+  if (valTable) { valTable.clear().rows.add(data).draw(); return; }
+  valTable = $("#values").DataTable({ data,
+    columns: [{ title: "model" }, ...metrics.map(title => ({ title }))],
+    pageLength: 25, deferRender: true, order: [[0, "asc"]], scrollX: true });
+}
+
 function valuesTable() {
+  if (DATA.examination === "StateSpace") return stateSpaceValuesTable();
   const rows = valueRows();
   const cols = [{ title: "formula" }, { title: "consensus" }, { title: "backed by" }];
   for (const s of sets) cols.push({ title: s });

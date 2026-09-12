@@ -58,6 +58,12 @@ page has, top to bottom:
    set's value coloured by status, filtered to disagreements, one-sided
    answers, or A's wrong / missed / bonus values.
 
+For StateSpace, the values table has one row per model and four metric columns:
+`STATES`, `TRANSITIONS`, `MAX_TOKEN_IN_PLACE`, and `MAX_TOKEN_PER_MARKING`.
+Each cell shows the oracle, its backing, and selected tool A with status colours.
+Changing A refreshes the values; B is used only by the comparison filters.
+Value filters select models with any matching metric and retain all four metrics.
+
 Tables are DataTables (sort, search, paging), the plot is Plotly, both from
 their CDNs as the rest of this site does; the data is embedded in the page as
 JSON, so the page is one file. `example.json` is the configuration of the
