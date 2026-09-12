@@ -13,3 +13,12 @@ td.bad, .wrong { background: #f8c8c8; }
 #pairs table td { cursor: pointer; }
 #pairs table td:hover { background: #eef; }
 a.log { font-size: 85%; }
+
+#values.state-space-values { table-layout: fixed; width: 100% !important; }
+#values.state-space-values th, #values.state-space-values td { overflow-wrap: anywhere; white-space: normal; }
+#values.state-space-values td { vertical-align: middle; }
+.metric-status { display: inline-block; padding: .15em .3em; font-weight: bold; }
+.metric-status.ok { color: #18752c; }
+.metric-status.wrong { color: #a00000; }
+.controls label { display: inline-block; margin-bottom: .4em; }
+.controls select { max-width: min(24em, 90vw); }

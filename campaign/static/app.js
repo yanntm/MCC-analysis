@@ -11,8 +11,9 @@ function logLink(s) { return s && s.log ? ` <a class="log" href="logs${s.log}" t
 
 function fillSelect(id, value) {
   const sel = document.getElementById(id);
+  if (!sel) return;
   sel.innerHTML = sets.map(s => `<option ${s === value ? "selected" : ""}>${s}</option>`).join("");
-  sel.onchange = () => { if (id === "setA") A = sel.value; else B = sel.value; pairFilter = null; redraw(); };
+  sel.onchange = () => { if (id === "setA" || id === "valSetA") A = sel.value; else B = sel.value; pairFilter = null; redraw(); };
 }
 
 function summaryTable() {
@@ -91,8 +92,15 @@ function scatter() {
 function valueRows() {
   const mode = document.getElementById("valMode").value;
   const re = new RegExp(document.getElementById("famFilter").value || ".", "i");
+  const instances = new Map(DATA.instances.map(r => [r.model, r.sets]));
   return DATA.values.filter(r => re.test(r.model)).filter(r => {
     const a = r.vals[A] || [null, "none"], b = r.vals[B] || [null, "none"];
+    const runs = instances.get(r.model) || {};
+    if (mode === "beatsA") return (runs[A]?.ok || 0) > (runs[B]?.ok || 0);
+    if (mode === "beatsB") return (runs[B]?.ok || 0) > (runs[A]?.ok || 0);
+    if (mode === "wrongAny") return Object.values(r.vals).some(v => v[1] === "wrong");
+    if (mode === "wrongB") return b[1] === "wrong";
+    if (mode === "timeoutA") return runs[A]?.status === "timeout";
     if (mode === "disagree") return a[0] !== null && b[0] !== null && a[0] !== b[0] && !(Math.abs(a[0] - b[0]) <= 1e-3 * Math.max(Math.abs(a[0]), Math.abs(b[0])));
     if (mode === "onlyA") return a[0] !== null && b[0] === null;
     if (mode === "onlyB") return a[0] === null && b[0] !== null;
@@ -103,28 +111,56 @@ function valueRows() {
   });
 }
 
+function htmlText(value) {
+  return String(value).replace(/[&<>"']/g, c => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"}[c]));
+}
+
+function compactCount(value) {
+  if (value === null || value === undefined) return "·";
+  const text = String(value);
+  if (!/^\d+$/.test(text)) return htmlText(text);
+  const digits = text.replace(/^0+(?=\d)/, "");
+  if (digits.length <= 6) return digits;
+  let exponent = digits.length - 1;
+  let leading = Number(digits.slice(0, 6)) + (digits[6] >= "5" ? 1 : 0);
+  if (leading === 1000000) { leading = 100000; exponent++; }
+  const mantissa = String(leading);
+  return `≈${mantissa[0]}.${mantissa.slice(1)} × 10<sup>${exponent}</sup>`;
+}
+
+function metricStatus(row, tool, run) {
+  const [value, status] = row?.vals[tool] || [null, "none"];
+  const label = status === "ok" ? "✓" : status === "wrong" ? "✗" : status === "bonus" ? "+" : "?";
+  const detail = value !== null ? `${tool}: ${value} (${status})` :
+    `${tool}: ${run?.status ? "no answer; " + run.status : "no collected run"}`;
+  const title = htmlText(detail);
+  const mark = `<span class="metric-status ${status}" title="${title}" aria-label="${title}">${label}</span>`;
+  return run?.log ? `<a href="/logs${encodeURI(run.log)}" target="_blank" title="${title}; open log">${mark}</a>` : mark;
+}
+
 function stateSpaceValuesTable() {
-  const metrics = ["STATES", "TRANSITIONS", "MAX_TOKEN_IN_PLACE", "MAX_TOKEN_PER_MARKING"];
+  const metrics = [["STATES", "States"], ["TRANSITIONS", "Transitions"],
+    ["MAX_TOKEN_IN_PLACE", "Max/place"], ["MAX_TOKEN_PER_MARKING", "Max/marking"]];
   const selected = new Set(valueRows().map(r => r.model));
+  const instances = new Map(DATA.instances.map(r => [r.model, r.sets]));
   const models = new Map();
   for (const r of DATA.values) {
     if (!selected.has(r.model)) continue;
     if (!models.has(r.model)) models.set(r.model, new Map());
     models.get(r.model).set(r.name, r);
   }
-  const data = [...models].map(([model, values]) => [model, ...metrics.map(metric => {
+  const data = [...models].map(([model, values]) => [htmlText(model), ...metrics.flatMap(([metric]) => {
     const r = values.get(metric);
-    if (!r) return "·";
-    const consensus = `<div><b>Oracle:</b> ${r.cons === null ? "·" : r.cons}</div>`;
-    const backing = `<div class="muted">${r.who.join(" ")}</div>`;
-    const v = r.vals[A] || [null, "none"];
-    const results = `<div><b>${A}:</b> <span class="${v[1]}">${v[0] === null ? "·" : v[0]}</span></div>`;
-    return consensus + backing + results;
+    const title = r ? `Oracle: ${r.cons ?? "unknown"}; backed by ${r.who.join(", ") || "unspecified"}` : "No oracle value";
+    return [`<span title="${htmlText(title)}">${compactCount(r?.cons)}</span>`,
+      metricStatus(r, A, instances.get(model)?.[A]), metricStatus(r, B, instances.get(model)?.[B])];
   })]);
   if (valTable) { valTable.clear().rows.add(data).draw(); return; }
   valTable = $("#values").DataTable({ data,
-    columns: [{ title: "model" }, ...metrics.map(title => ({ title }))],
-    pageLength: 25, deferRender: true, order: [[0, "asc"]], scrollX: true });
+    columns: [{ title: "Model", width: "24%" }, ...metrics.flatMap(([, title]) => [
+      { title: `${title}<br><small>oracle</small>`, width: "12%" },
+      { title: "A", width: "3.5%", orderable: false }, { title: "B", width: "3.5%", orderable: false }])],
+    autoWidth: false, pageLength: 25, deferRender: true, order: [[0, "asc"]] });
 }
 
 function valuesTable() {
@@ -141,10 +177,23 @@ function valuesTable() {
   valTable = $("#values").DataTable({ data, columns: cols, pageLength: 25, deferRender: true });
 }
 
-function redraw() { instancesTable(); scatter(); valuesTable(); }
+function redraw() {
+  for (const id of ["setA", "valSetA"]) fillSelect(id, A);
+  for (const id of ["setB", "valSetB"]) fillSelect(id, B);
+  instancesTable(); scatter(); valuesTable();
+}
 
 fillSelect("setA", A); fillSelect("setB", B);
 summaryTable(); pairsTable(); redraw();
-document.getElementById("famFilter").oninput = redraw;
+document.getElementById("famFilter").oninput = () => {
+  const local = document.getElementById("valFamily");
+  if (local) local.value = document.getElementById("famFilter").value;
+  redraw();
+};
+const valFamily = document.getElementById("valFamily");
+if (valFamily) valFamily.oninput = () => {
+  document.getElementById("famFilter").value = valFamily.value;
+  redraw();
+};
 document.getElementById("instMode").onchange = redraw;
 document.getElementById("valMode").onchange = redraw;

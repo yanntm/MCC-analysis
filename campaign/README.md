@@ -58,11 +58,17 @@ page has, top to bottom:
    set's value coloured by status, filtered to disagreements, one-sided
    answers, or A's wrong / missed / bonus values.
 
-For StateSpace, the values table has one row per model and four metric columns:
-`STATES`, `TRANSITIONS`, `MAX_TOKEN_IN_PLACE`, and `MAX_TOKEN_PER_MARKING`.
-Each cell shows the oracle, its backing, and selected tool A with status colours.
-Changing A refreshes the values; B is used only by the comparison filters.
-Value filters select models with any matching metric and retain all four metrics.
+For StateSpace, each model row has four metric groups: states, transitions,
+maximum tokens per place, and maximum tokens per marking. Each group shows
+one oracle value and narrow A/B status columns: check for agreement, cross
+for disagreement, plus for an answer without an oracle, question mark for no answer.
+Hover reveals exact values and oracle backing; a status links to its run log
+when available. Large integer counts are rounded to six significant digits
+using decimal digits, preserving the exponent even beyond floating-point range.
+The table wraps content to fixed column widths. Nearby A/B and family controls
+stay synchronized with the instance controls. Filters include correct-answer
+coverage, disagreements, errors and missing values; any matching metric keeps
+the model row and all four metrics.
 
 Tables are DataTables (sort, search, paging), the plot is Plotly, both from
 their CDNs as the rest of this site does; the data is embedded in the page as

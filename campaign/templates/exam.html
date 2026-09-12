@@ -35,10 +35,22 @@
 <div id="scatter" style="height:520px"></div>
 
 <h2>Values</h2>
-{% if exam == "StateSpace" %}<p class="muted">One row per model, one column per metric. Each cell lists the oracle, its supporting tools, and selected tool A. Filters retain models with any matching metric and show all four metrics.</p>{% endif %}
+{% if exam == "StateSpace" %}<p class="muted">✓ agrees with oracle · ✗ disagrees · + answer without oracle · ? no answer. Hover for exact values and oracle backing; click a status to open its log. Large counts use six significant digits. Filters keep models with any matching metric.</p>{% endif %}
 <div class="controls">
+  {% if exam == "StateSpace" %}
+  <label>family <input id="valFamily" placeholder="regex, e.g. ^Shield"></label>
+  <label>A <select id="valSetA"></select></label>
+  <label>B <select id="valSetB"></select></label>
+  {% endif %}
   show <select id="valMode">
     <option value="all">all values</option>
+    {% if exam == "StateSpace" %}
+    <option value="beatsA">A has more correct values than B</option>
+    <option value="beatsB">B has more correct values than A</option>
+    <option value="wrongAny">some set is wrong</option>
+    <option value="wrongB">B wrong</option>
+    <option value="timeoutA">A timed out</option>
+    {% endif %}
     <option value="disagree">A and B disagree</option>
     <option value="onlyA">A only</option>
     <option value="onlyB">B only</option>
@@ -47,7 +59,7 @@
     <option value="bonusA">A bonus</option>
   </select>
 </div>
-<table id="values" class="display compact"></table>
+<table id="values" class="display compact{% if exam == 'StateSpace' %} state-space-values{% endif %}"></table>
 
 <script>const DATA = {{ data }};</script>
 <script>{{ app_js }}</script>
