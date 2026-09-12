@@ -16,7 +16,7 @@ function summaryTable() {
   // three measures lead: how many models were answered whole, the median
   // model's completion, and only then the atom share, which a handful of huge
   // nets otherwise speaks for
-  const cols = ["set", "runs", "complete", "median completion", "completion", "models below half", "atoms", "answered", "timeouts", "failures", "witnessed", "proved", "open bounds", "confirmed", "contradicted", "engines", "total h", "walker h"];
+  const cols = ["set", "runs", "timeout s", "complete", "median completion", "completion", "models below half", "atoms", "answered", "timeouts", "failures", "witnessed", "proved", "open bounds", "confirmed", "contradicted", "engines", "total h", "walker h"];
   $("#summary").DataTable({ data: DATA.summary.map(r => cols.map(c => fmt(r[c]))), columns: cols.map(c => ({ title: c })), paging: false, searching: false, info: false, ordering: false });
 }
 

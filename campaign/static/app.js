@@ -17,9 +17,9 @@ function fillSelect(id, value) {
 }
 
 function summaryTable() {
-  const cols = ["set", "runs", "answered", "ok", "wrong", "missed", "bonus", "timeouts", "failures", "median s", "total h"];
+  const cols = ["set", "runs", "timeout s", "answered", "ok", "wrong", "missed", "bonus", "timeouts", "failures", "median s", "total h"];
   $("#summary").DataTable({ data: DATA.summary.map(r => cols.map(c => fmt(r[c]))), columns: cols.map(c => ({ title: c })),
-    paging: false, searching: false, info: false, order: [[3, "desc"]] });
+    paging: false, searching: false, info: false, order: [[4, "desc"]] });
 }
 
 function pairsTable() {
